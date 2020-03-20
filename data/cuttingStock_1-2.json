@@ -1,12 +1,13 @@
 {
   "SYNTAX": "MOSDEX/MOSDEX v1-2/MOSDEXSchemaV1-2.json",
   "cuttingStockMaster": {
-    "CLASS": "PROBLEM",
+    "CLASS": "MODULE",
+    "NAME": "cuttingStockMaster",
     "HEADING": {
       "DESCRIPTION": [
         "Illustrates how to set up in MOSDEX to specify a decomposition model.",
         "Cutting stock uses column-generation.",
-        "This is the master problem."
+        "This is the master MODULE."
       ],
       "VERSION"    : ["1-2"],
       "REFERENCE"  : ["https://github.com/IBMDecisionOptimization/DOcloud-Cutting-Stock-Java-Sample"],
@@ -30,33 +31,37 @@
     },
     "items": {
       "CLASS": "DATA",
+      "NAME": "items",
       "TYPE": "INPUT",
       "IMPORT_FROM": ["cuttingStockData.items"]
     },
     "patterns": {
       "CLASS": "DATA",
+      "NAME": "patterns",
       "TYPE": "INPUT",
       "INITIALIZE_FROM": ["cuttingStockData.patterns"],
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["*"]},
         {"DIRECTIVE": ["FROM"], "PREDICATE": ["patterns"]},
         {"DIRECTIVE": ["UNION", "SELECT"], "PREDICATE": ["*"]},
-        {"DIRECTIVE": ["FROM"], "PREDICATE": ["cuttingStockSubproblem.newPattern"]}
+        {"DIRECTIVE": ["FROM"], "PREDICATE": ["cuttingStockSubProblem.newPattern"]}
       ]
     },
     "slices": {
       "CLASS": "DATA",
+      "NAME": "slices",
       "TYPE": "INPUT",
       "INITIALIZE_FROM": ["cuttingStockData.slices"],
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["*"]},
         {"DIRECTIVE": ["FROM"], "PREDICATE": ["slices"]},
         {"DIRECTIVE": ["UNION", "SELECT"], "PREDICATE": ["*"]},
-        {"DIRECTIVE": ["FROM"], "PREDICATE": ["cuttingStockSubproblem.newSlices"]}
+        {"DIRECTIVE": ["FROM"], "PREDICATE": ["cuttingStockSubProblem.newSlices"]}
       ]
     },
     "rolls": {
       "CLASS": "VARIABLE",
+      "NAME": "rolls",
       "TYPE": "CONTINUOUS",
       "RECIPE": [
         {"DIRECTIVE": ["QUERY"], "PREDICATE": [
@@ -74,6 +79,7 @@
     },
     "cost": {
       "CLASS": "OBJECTIVE",
+      "NAME": "cost",
       "TYPE": "LINEAR",
       "SINGLETON": {
         "Name": "cost",
@@ -86,6 +92,7 @@
     },
     "cost_rolls": {
       "CLASS": "TERM",
+      "NAME": "cost_rolls",
       "TYPE": "LINEAR",
       "RECIPE": [
         {"DIRECTIVE": ["QUERY"], "PREDICATE": [
@@ -97,6 +104,7 @@
     },
     "ctOrder": {
       "CLASS": "CONSTRAINT",
+      "NAME": "ctOrder",
       "TYPE": "LINEAR",
       "RECIPE": [
         {"DIRECTIVE": ["QUERY"], "PREDICATE": [
@@ -114,6 +122,7 @@
     },
     "ctOrder_rolls": {
       "CLASS": "TERM",
+      "NAME": "ctOrder_rolls",
       "TYPE": "LINEAR",
       "RECIPE": [
         {"DIRECTIVE": ["QUERY"], "PREDICATE": [
@@ -127,6 +136,7 @@
     },
     "objective": {
       "CLASS": "DATA",
+      "NAME": "objective",
       "TYPE": "OUTPUT",
       "SINGLETON": {
         "value": "#Solver.getObjValue()"
@@ -134,6 +144,7 @@
     },
     "use": {
       "CLASS": "DATA",
+      "NAME": "use",
       "TYPE": "OUTPUT",
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["pattern", "Value AS number"]},
@@ -142,6 +153,7 @@
     },
     "duals": {
       "CLASS": "DATA",
+      "NAME": "duals",
       "TYPE": "OUTPUT",
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["item", "Dual AS price"]},
@@ -149,13 +161,14 @@
       ]
     }
   },
-  "cuttingStockSubproblem": {
-    "CLASS": "PROBLEM",
+  "cuttingStockSubProblem": {
+    "CLASS": "MODULE",
+    "NAME": "cuttingStockSubProblem",
     "HEADING": {
       "DESCRIPTION": [
         "Illustrates how to set up in MOSDEX to specify a decomposition model.",
         "Cutting stock uses column-generation.",
-        "This is the subproblem."
+        "This is the subMODULE."
       ],
       "VERSION"    : ["1.1.1"],
       "REFERENCE"  : ["https://github.com/IBMDecisionOptimization/DOcloud-Cutting-Stock-Java-Sample"],
@@ -175,6 +188,7 @@
     },
     "parameters": {
       "CLASS": "DATA",
+      "NAME": "parameters",
       "TYPE": "INPUT",
       "INITIALIZE_FROM": ["cuttingStockData.parameters"],
       "RECIPE": [
@@ -184,16 +198,19 @@
     },
     "items": {
       "CLASS": "DATA",
+      "NAME": "items",
       "TYPE": "INPUT",
       "IMPORT_FROM": ["cuttingStockData.items"]
     },
     "duals": {
       "CLASS": "DATA",
+      "NAME": "duals",
       "TYPE": "INPUT",
       "IMPORT_FROM": ["cuttingStockMaster.duals"]
     },
     "slice": {
       "CLASS": "VARIABLE",
+      "NAME": "slice",
       "TYPE": "INTEGER",
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": [
@@ -210,6 +227,7 @@
     },
     "ctFill": {
       "CLASS": "CONSTRAINT",
+      "NAME": "ctFill",
       "TYPE": "LINEAR",
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": [
@@ -224,6 +242,7 @@
     },
     "ctFill_slice": {
       "CLASS": "TERM",
+      "NAME": "ctFill_slice",
       "TYPE": "LINEAR",
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["'LINEAR' AS Type", "ctFill.Row AS Row", "slice.Column AS Column", "items.width AS Coefficient"]},
@@ -234,6 +253,7 @@
     },
     "reducedCost": {
       "CLASS": "VARIABLE",
+      "NAME": "reducedCost",
       "TYPE": "CONTINUOUS",
       "SINGLETON": {
         "Name": "reducedCost",
@@ -246,6 +266,7 @@
     },
     "deReducedCost": {
       "CLASS": "OBJECTIVE",
+      "NAME": "deReducedCost",
       "TYPE": "LINEAR",
       "SINGLETON": {
         "Name": "deReducedCost",
@@ -258,6 +279,7 @@
     },
     "deReducedCost_slice": {
       "CLASS": "TERM",
+      "NAME": "deReducedCost_slice",
       "TYPE": "LINEAR",
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["'LINEAR' AS Type", "'deReducedCost' AS Row", "slice.Column AS Column", "-duals.price AS Coefficient"]},
@@ -268,6 +290,7 @@
     },
     "deReducedCost_reducedCost": {
       "CLASS": "TERM",
+      "NAME": "deReducedCost_reducedCost",
       "TYPE": "LINEAR",
       "SINGLETON": {
         "Type": "LINEAR",
@@ -278,6 +301,7 @@
     },
     "objective": {
       "CLASS": "OBJECTIVE",
+      "NAME": "objective",
       "TYPE": "LINEAR",
       "SINGLETON": {
         "Name": "objective",
@@ -290,6 +314,7 @@
     },
     "objective_reducedCost": {
       "CLASS": "TERM",
+      "NAME": "objective_reducedCost",
       "TYPE": "LINEAR",
       "SINGLETON": {
         "Type": "LINEAR",
@@ -300,6 +325,7 @@
     },
     "newPattern": {
       "CLASS": "DATA",
+      "NAME": "newPattern",
       "TYPE": "OUTPUT",
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["parameters.nbPatterns AS id", "objective.Value AS cost"]},
@@ -308,6 +334,7 @@
     },
     "newSlices": {
       "CLASS": "DATA",
+      "NAME": "newSlices",
       "TYPE": "OUTPUT",
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["slice.item AS item", "parameters.nbPatterns AS pattern", "slice.Value AS number"]},
@@ -316,7 +343,8 @@
     }
   },
   "cuttingStockData": {
-    "CLASS": "PROBLEM",
+    "CLASS": "MODULE",
+    "NAME": "cuttingStockData",
     "HEADING": {
       "DESCRIPTION": [
         "Data for a cutting stock instance."
@@ -324,6 +352,7 @@
     },
     "parameters": {
       "CLASS": "DATA",
+      "NAME": "parameters",
       "TYPE": "INPUT",
       "SINGLETON": {
         "rollWidth": 110,
@@ -332,6 +361,7 @@
     },
     "items": {
       "CLASS": "DATA",
+      "NAME": "items",
       "TYPE": "INPUT",
       "SCHEMA": {
         "id": "STRING",
@@ -348,6 +378,7 @@
     },
     "patterns": {
       "CLASS": "DATA",
+      "NAME": "patterns",
       "TYPE": "INPUT",
       "SCHEMA": {
         "id": "INTEGER",
@@ -363,6 +394,7 @@
     },
     "slices": {
       "CLASS": "DATA",
+      "NAME": "slices",
       "TYPE": "INPUT",
       "SCHEMA": {
         "item": "STRING",

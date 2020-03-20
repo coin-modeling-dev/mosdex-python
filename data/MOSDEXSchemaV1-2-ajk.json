@@ -9,7 +9,7 @@
     "SYNTAX": {"type": "string", "format": "uri"}
   },
   "additionalProperties": {
-    "$ref": "#/definitions/PROBLEM"
+    "$ref": "#/definitions/MODULE"
   },
   "required": ["SYNTAX"],
   "minProperties": 2,
@@ -22,11 +22,12 @@
       "type": "string"
     },
   
-    "PROBLEM": {
-      "title": "PROBLEM",
+    "MODULE": {
+      "title": "MODULE",
       "type": "object",
       "properties": {
-        "CLASS": {"enum": ["PROBLEM"]},
+        "CLASS": {"enum": ["MODULE"]},
+        "NAME": {"type": "string"},
         "HEADING": {"$ref": "#/definitions/HEADING"},
         "SOLVER_PARAMETERS": {"$ref": "#/definitions/SOLVER_PARAMETERS"},
         "PATHS": {"$ref": "#/definitions/ArrayOfStrings"}
@@ -42,7 +43,7 @@
           {"$ref": "#/definitions/EXPRESSION"}
         ]
       },
-      "required": ["CLASS", "HEADING"]
+      "required": ["CLASS", "NAME", "HEADING"]
     },
   
     "ArrayOfStrings": {
@@ -78,6 +79,7 @@
       "type": "object",
       "properties": {
         "CLASS": {"enum": ["TABLE"]},
+        "NAME": {"type": "string"},
         "TYPE" : {"type": "string"},
         "HEADING": {"$ref": "#/definitions/HEADING"},
         "FOR_EACH": {"type": "string"},
@@ -92,7 +94,7 @@
         "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
         "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
-      "required": ["CLASS", "TYPE"],
+      "required": ["CLASS", "NAME", "TYPE"],
       "oneOf": [
         {"required": ["INSTANCE"]},
         {"required": ["SINGLETON"]},
@@ -113,6 +115,7 @@
       "type": "object",
       "properties": {
         "CLASS": {"enum": ["DATA"]},
+        "NAME": {"type": "string"},
         "TYPE" : {"enum": ["INPUT", "OUTPUT", "AUXILIARY"]},
         "HEADING": {"$ref": "#/definitions/HEADING"},
         "FOR_EACH": {"type": "string"},
@@ -127,7 +130,7 @@
         "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
         "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
-      "required": ["CLASS", "TYPE"],
+      "required": ["CLASS", "NAME", "TYPE"],
       "oneOf": [
         {"required": ["INSTANCE"]},
         {"required": ["SINGLETON"]},
@@ -202,6 +205,7 @@
       "type": "object",
       "properties": {
         "CLASS": {"enum": ["VARIABLE"]},
+        "NAME": {"type": "string"},
         "TYPE":{"enum": ["CONTINUOUS", "INTEGER", "BINARY"]},
         "HEADING": {"$ref": "#/definitions/HEADING"},
         "FOR_EACH": {"type": "string"},
@@ -244,7 +248,7 @@
         "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
         "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
-      "required": ["CLASS", "TYPE"],
+      "required": ["CLASS", "NAME", "TYPE"],
       "oneOf": [
         {"required": ["INSTANCE"]},
         {"required": ["SINGLETON"]},
@@ -265,6 +269,7 @@
       "type": "object",
       "properties": {
         "CLASS": {"enum": ["CONSTRAINT"]},
+        "NAME": {"type": "string"},
         "TYPE": {"enum": ["LINEAR", "QUADRATIC", "NONLINEAR"]},
         "HEADING": {"$ref": "#/definitions/HEADING"},
         "FOR_EACH": {"type": "string"},
@@ -301,7 +306,7 @@
         "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
         "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
-      "required": ["CLASS", "TYPE"],
+      "required": ["CLASS", "NAME", "TYPE"],
       "oneOf": [
         {"required": ["INSTANCE"]},
         {"required": ["SINGLETON"]},
@@ -322,6 +327,7 @@
       "type": "object",
       "properties": {
         "CLASS": {"enum": ["OBJECTIVE"]},
+        "NAME": {"type": "string"},
         "TYPE": {"enum": ["LINEAR", "QUADRATIC", "NONLINEAR"]},
         "HEADING": {"$ref": "#/definitions/HEADING"},
         "FOR_EACH": {"type": "string"},
@@ -360,7 +366,7 @@
         "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
         "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
-      "required": ["CLASS", "TYPE"],
+      "required": ["CLASS", "NAME", "TYPE"],
       "oneOf": [
         {"required": ["INSTANCE"]},
         {"required": ["SINGLETON"]},
@@ -382,6 +388,7 @@
       "type": "object",
       "properties": {
         "CLASS": {"enum": ["AJKTERM"]},
+        "NAME": {"type": "string"},
         "TYPE": {"enum": ["LINEAR"]},
         "HEADING": {"$ref": "#/definitions/HEADING"},
         "FOR_EACH": {"type": "string"},
@@ -418,7 +425,7 @@
         "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
         "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
-      "required": ["CLASS", "TYPE"],
+      "required": ["CLASS", "NAME", "TYPE"],
       "oneOf": [
         {"required": ["INSTANCE"]},
         {"required": ["SINGLETON"]},
@@ -450,6 +457,7 @@
       "type": "object",
       "properties": {
         "CLASS": {"enum": ["TERM"]},
+        "NAME": {"type": "string"},
         "TYPE": {"enum": ["LINEAR"]},
         "HEADING": {"$ref": "#/definitions/HEADING"},
         "FOR_EACH": {"type": "string"},
@@ -484,7 +492,7 @@
         "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
         "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
-      "required": ["CLASS", "TYPE"],
+      "required": ["CLASS", "NAME", "TYPE"],
       "oneOf": [
         {"required": ["INSTANCE"]},
         {"required": ["SINGLETON"]},
@@ -505,6 +513,7 @@
       "type": "object",
       "properties": {
         "CLASS": {"enum": ["TERM"]},
+        "NAME": {"type": "string"},
         "TYPE": {"enum": ["QUADRATIC"]},
         "HEADING": {"$ref": "#/definitions/HEADING"},
         "FOR_EACH": {"type": "string"},
@@ -541,7 +550,7 @@
         "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
         "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
-      "required": ["CLASS", "TYPE"],
+      "required": ["CLASS", "NAME", "TYPE"],
       "oneOf": [
         {"required": ["INSTANCE"]},
         {"required": ["SINGLETON"]},
@@ -562,6 +571,7 @@
       "type": "object",
       "properties": {
         "CLASS": {"enum": ["TERM"]},
+        "NAME": {"type": "string"},
         "TYPE": {"enum": ["NONLINEAR"]},
         "HEADING": {"$ref": "#/definitions/HEADING"},
         "FOR_EACH": {"type": "string"},
@@ -594,7 +604,7 @@
         "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
         "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
-      "required": ["CLASS", "TYPE"],
+      "required": ["CLASS", "NAME", "TYPE"],
       "oneOf": [
         {"required": ["INSTANCE"]},
         {"required": ["SINGLETON"]},
@@ -615,6 +625,7 @@
       "type": "object",
       "properties": {
         "CLASS": {"enum": ["EXPRESSION"]},
+        "NAME": {"type": "string"},
         "TYPE" : {"type": "string"},
         "HEADING": {"$ref": "#/definitions/HEADING"},
         "FOR_EACH": {"type": "string"},
@@ -629,7 +640,7 @@
         "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
         "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
-      "required": ["CLASS", "TYPE"],
+      "required": ["CLASS", "NAME", "TYPE"],
       "oneOf": [
         {"required": ["INSTANCE"]},
         {"required": ["SINGLETON"]},
