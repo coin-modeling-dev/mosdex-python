@@ -27,16 +27,24 @@ def mosdex_open_and_test(problem_file, schema_file, do_print=False):
     return problem_json, valid
 
 
-def mosdex_members(mosdex_problem: dict, do_print=False):
-    static_members = ["SYNTAX", "CLASS", "HEADING", "NAME"]
-    mosdex_classes = set([mosdex_problem[k]["CLASS"] for k in mosdex_problem
-                          if k not in static_members])
+mosdex_static_members = ["SYNTAX", "CLASS", "HEADING", "NAME"]
+
+
+def mosdex_members(mosdex_problem: dict, mosdex_class=None, do_print=False):
+    if mosdex_class is None:
+        mosdex_classes = set([mosdex_problem[k]["CLASS"] for k in mosdex_problem
+                              if k not in mosdex_static_members])
+    else:
+        mosdex_classes = [mosdex_class]
+
     members = {}
-    for m in mosdex_classes:
-        members[m] = [mosdex_problem[k] for k in mosdex_problem
-                      if k not in static_members and mosdex_problem[k]["CLASS"] == m]
+    for m1 in mosdex_classes:
+        members[m1] = {}
+        for k1, v in mosdex_problem.items():
+            if k1 not in mosdex_static_members and mosdex_problem[k1]["CLASS"] == m1:
+                members[m1][k1] = v
         if do_print:
-            print("{:12s} {}".format(m, [k["NAME"] for k in members[m]]))
+            print("{:12s} {}".format(m1, list(members[m1].keys())))
     return members
 
 
@@ -52,7 +60,34 @@ if __name__ == "__main__":
                                              os.path.join(schema_dir, mosdex_schema_file))
 
     # print out the high level members of the mosdex problem
-    modules = mosdex_members(cs_json, do_print=True)
-    for p in modules["MODULE"]:
-        print("\n{}".format(p["NAME"]))
-        mosdex_members(p, do_print=True)
+    cs_modules = mosdex_members(cs_json, do_print=True)["MODULE"]
+    for k, m in cs_modules.items():
+        print("\n{}".format(k))
+        mosdex_members(m, do_print=True)
+    print()
+
+    # Let's get the data
+    cs_data = {}
+    for k, m in cs_modules.items():
+        cs_data[k] = mosdex_members(m)["DATA"]
+
+    # Print out the INPUT data
+    for k, m in cs_data.items():
+        for k1, m1 in m.items():
+            mosdex_data_io = m1["TYPE"]
+            if "RECIPE" in m1:
+                print("{}.{}.{}:".format(k, k1, mosdex_data_io))
+                print("\t{}".format("RECIPE"))
+                for step in m1["RECIPE"]:
+                    print("\t\t{}".format(step))
+            if "SINGLETON" in m1:
+                print("{}.{}.{}:".format(k, k1, mosdex_data_io))
+                print("\t{} {}".format("SINGLETON", m1["SINGLETON"]))
+            if "SCHEMA" in m1:
+                print("{}.{}.{}:".format(k, k1, mosdex_data_io))
+                print("\t{} {}".format("SCHEMA", m1["SCHEMA"]))
+                if "INSTANCE" in m1:
+                    print("\t{} {}".format("INSTANCE", m1["INSTANCE"]))
+
+
+
