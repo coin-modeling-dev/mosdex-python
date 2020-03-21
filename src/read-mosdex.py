@@ -71,7 +71,7 @@ if __name__ == "__main__":
     for k, m in cs_modules.items():
         cs_data[k] = mosdex_members(m)["DATA"]
 
-    # Print out the INPUT data
+    # Print out the data elements
     for k, m in cs_data.items():
         for k1, m1 in m.items():
             mosdex_data_io = m1["TYPE"]
