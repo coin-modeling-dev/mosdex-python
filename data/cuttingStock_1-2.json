@@ -3,6 +3,7 @@
   "cuttingStockMaster": {
     "CLASS": "MODULE",
     "NAME": "cuttingStockMaster",
+    "DEPENDS": ["cuttingStockSubProblem", "cuttingStockData"],
     "HEADING": {
       "DESCRIPTION": [
         "Illustrates how to set up in MOSDEX to specify a decomposition model.",
@@ -33,12 +34,14 @@
       "CLASS": "DATA",
       "NAME": "items",
       "TYPE": "INPUT",
+      "DEPENDS": ["cuttingStockData.items"],
       "IMPORT_FROM": ["cuttingStockData.items"]
     },
     "patterns": {
       "CLASS": "DATA",
       "NAME": "patterns",
       "TYPE": "INPUT",
+      "DEPENDS": ["cuttingStockData.items", "cuttingStockSubProblem.newPattern"],
       "INITIALIZE_FROM": ["cuttingStockData.patterns"],
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["*"]},
@@ -51,6 +54,7 @@
       "CLASS": "DATA",
       "NAME": "slices",
       "TYPE": "INPUT",
+      "DEPENDS": ["cuttingStockData.slices", "cuttingStockSubProblem.newSlices"],
       "INITIALIZE_FROM": ["cuttingStockData.slices"],
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["*"]},
@@ -63,6 +67,7 @@
       "CLASS": "VARIABLE",
       "NAME": "rolls",
       "TYPE": "CONTINUOUS",
+      "DEPENDS": ["patterns"],
       "RECIPE": [
         {"DIRECTIVE": ["QUERY"], "PREDICATE": [
           "SELECT",
@@ -94,6 +99,7 @@
       "CLASS": "TERM",
       "NAME": "cost_rolls",
       "TYPE": "LINEAR",
+      "DEPENDS": ["patterns", "rolls"],
       "RECIPE": [
         {"DIRECTIVE": ["QUERY"], "PREDICATE": [
           "SELECT", "'LINEAR' AS Type" , "'cost' AS Row", "rolls.Column AS Column", "patterns.cost AS Coefficient",
@@ -106,6 +112,7 @@
       "CLASS": "CONSTRAINT",
       "NAME": "ctOrder",
       "TYPE": "LINEAR",
+      "DEPENDS": ["items"],
       "RECIPE": [
         {"DIRECTIVE": ["QUERY"], "PREDICATE": [
           "SELECT",
@@ -124,6 +131,7 @@
       "CLASS": "TERM",
       "NAME": "ctOrder_rolls",
       "TYPE": "LINEAR",
+      "DEPENDS": ["slices", "ctOrder", "rolls", "patterns"],
       "RECIPE": [
         {"DIRECTIVE": ["QUERY"], "PREDICATE": [
           "SELECT", "'LINEAR' AS Type", "ctOrder.Row AS Row", "rolls.Column AS Column", "slices.number AS Coefficient",
@@ -146,6 +154,7 @@
       "CLASS": "DATA",
       "NAME": "use",
       "TYPE": "OUTPUT",
+      "DEPENDS": ["rolls"],
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["pattern", "Value AS number"]},
         {"DIRECTIVE": ["FROM"], "PREDICATE": ["rolls"]}
@@ -155,6 +164,7 @@
       "CLASS": "DATA",
       "NAME": "duals",
       "TYPE": "OUTPUT",
+      "DEPENDS": ["ctOrder"],
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["item", "Dual AS price"]},
         {"DIRECTIVE": ["FROM"], "PREDICATE": ["ctOrder"]}
@@ -164,6 +174,7 @@
   "cuttingStockSubProblem": {
     "CLASS": "MODULE",
     "NAME": "cuttingStockSubProblem",
+    "DEPENDS": ["cuttingStockMaster", "cuttingStockData"],
     "HEADING": {
       "DESCRIPTION": [
         "Illustrates how to set up in MOSDEX to specify a decomposition model.",
@@ -190,6 +201,7 @@
       "CLASS": "DATA",
       "NAME": "parameters",
       "TYPE": "INPUT",
+      "DEPENDS": ["cuttingStockData.parameters"],
       "INITIALIZE_FROM": ["cuttingStockData.parameters"],
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["rollWidth", "nbPatterns+1 AS nbPatterns"]},
@@ -200,18 +212,21 @@
       "CLASS": "DATA",
       "NAME": "items",
       "TYPE": "INPUT",
+      "DEPENDS": ["cuttingStockData.items"],
       "IMPORT_FROM": ["cuttingStockData.items"]
     },
     "duals": {
       "CLASS": "DATA",
       "NAME": "duals",
       "TYPE": "INPUT",
+      "DEPENDS": ["cuttingStockMaster.duals"],
       "IMPORT_FROM": ["cuttingStockMaster.duals"]
     },
     "slice": {
       "CLASS": "VARIABLE",
       "NAME": "slice",
       "TYPE": "INTEGER",
+      "DEPENDS": ["items"],
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": [
           "'slice' AS Name",
@@ -229,6 +244,7 @@
       "CLASS": "CONSTRAINT",
       "NAME": "ctFill",
       "TYPE": "LINEAR",
+      "DEPENDS": ["parameters"],
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": [
           "'ctFill' AS Name",
@@ -244,6 +260,7 @@
       "CLASS": "TERM",
       "NAME": "ctFill_slice",
       "TYPE": "LINEAR",
+      "DEPENDS": ["ctFill", "slice", "items"],
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["'LINEAR' AS Type", "ctFill.Row AS Row", "slice.Column AS Column", "items.width AS Coefficient"]},
         {"DIRECTIVE": ["FROM"], "PREDICATE": ["ctFill"]},
@@ -281,6 +298,7 @@
       "CLASS": "TERM",
       "NAME": "deReducedCost_slice",
       "TYPE": "LINEAR",
+      "DEPENDS": ["deReducedCost", "slice", "duals", "items"],
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["'LINEAR' AS Type", "'deReducedCost' AS Row", "slice.Column AS Column", "-duals.price AS Coefficient"]},
         {"DIRECTIVE": ["FROM"], "PREDICATE": ["items"]},
@@ -327,6 +345,7 @@
       "CLASS": "DATA",
       "NAME": "newPattern",
       "TYPE": "OUTPUT",
+      "DEPENDS": ["parameters", "objective"],
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["parameters.nbPatterns AS id", "objective.Value AS cost"]},
         {"DIRECTIVE": ["FROM"], "PREDICATE": ["parameters", "objective"]}
@@ -336,6 +355,7 @@
       "CLASS": "DATA",
       "NAME": "newSlices",
       "TYPE": "OUTPUT",
+      "DEPENDS": ["slice", "parameters"],
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["slice.item AS item", "parameters.nbPatterns AS pattern", "slice.Value AS number"]},
         {"DIRECTIVE": ["FROM"], "PREDICATE": ["slice", "parameters"]}
@@ -353,7 +373,7 @@
     "parameters": {
       "CLASS": "DATA",
       "NAME": "parameters",
-      "TYPE": "INPUT",
+      "TYPE": "OUTPUT",
       "SINGLETON": {
         "rollWidth": 110,
         "nbPatterns": 5
@@ -362,7 +382,7 @@
     "items": {
       "CLASS": "DATA",
       "NAME": "items",
-      "TYPE": "INPUT",
+      "TYPE": "OUTPUT",
       "SCHEMA": {
         "id": "STRING",
         "width": "INTEGER",
@@ -379,7 +399,7 @@
     "patterns": {
       "CLASS": "DATA",
       "NAME": "patterns",
-      "TYPE": "INPUT",
+      "TYPE": "OUTPUT",
       "SCHEMA": {
         "id": "INTEGER",
         "cost": "INTEGER"
@@ -395,7 +415,7 @@
     "slices": {
       "CLASS": "DATA",
       "NAME": "slices",
-      "TYPE": "INPUT",
+      "TYPE": "OUTPUT",
       "SCHEMA": {
         "item": "STRING",
         "pattern": "INTEGER",

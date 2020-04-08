@@ -27,12 +27,22 @@ def mosdex_open_and_test(problem_file, schema_file, do_print=False):
     return problem_json, valid
 
 
-mosdex_static_members = ["SYNTAX", "CLASS", "HEADING", "NAME"]
+mosdex_static_members = ["SYNTAX", "CLASS", "HEADING", "NAME", "DEPENDS"]
+mosdex_types = ["INPUT", "OUTPUT"]
 
 
-def mosdex_members(mosdex_problem: dict, mosdex_class=None, do_print=False):
+def mosdex_depends(mosdex_entity: dict, do_print=False):
+    if "DEPENDS" in mosdex_entity.keys():
+        if do_print:
+            print("{:12s} {}".format("DEPENDS", mosdex_entity["DEPENDS"]))
+        return mosdex_entity["DEPENDS"]
+    else:
+        return None
+
+
+def mosdex_members(mosdex_entity: dict, mosdex_class=None, do_print=False):
     if mosdex_class is None:
-        mosdex_classes = set([mosdex_problem[k]["CLASS"] for k in mosdex_problem
+        mosdex_classes = set([mosdex_entity[k]["CLASS"] for k in mosdex_entity
                               if k not in mosdex_static_members])
     else:
         mosdex_classes = [mosdex_class]
@@ -40,8 +50,8 @@ def mosdex_members(mosdex_problem: dict, mosdex_class=None, do_print=False):
     members = {}
     for m1 in mosdex_classes:
         members[m1] = {}
-        for k1, v in mosdex_problem.items():
-            if k1 not in mosdex_static_members and mosdex_problem[k1]["CLASS"] == m1:
+        for k1, v in mosdex_entity.items():
+            if k1 not in mosdex_static_members and mosdex_entity[k1]["CLASS"] == m1:
                 members[m1][k1] = v
         if do_print:
             print("{:12s} {}".format(m1, list(members[m1].keys())))
@@ -63,6 +73,7 @@ if __name__ == "__main__":
     cs_modules = mosdex_members(cs_json, do_print=True)["MODULE"]
     for k, m in cs_modules.items():
         print("\n{}".format(k))
+        mosdex_depends(m, do_print=True)
         mosdex_members(m, do_print=True)
     print()
 
@@ -77,6 +88,8 @@ if __name__ == "__main__":
             mosdex_data_io = m1["TYPE"]
             if "RECIPE" in m1:
                 print("{}.{}.{}:".format(k, k1, mosdex_data_io))
+                if "DEPENDS" in m1:
+                    print("\t{}\t{}".format("DEPENDS", m1["DEPENDS"]))
                 print("\t{}".format("RECIPE"))
                 for step in m1["RECIPE"]:
                     print("\t\t{}".format(step))
