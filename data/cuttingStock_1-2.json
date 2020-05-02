@@ -43,42 +43,41 @@
       "CLASS": "DATA",
       "NAME": "items",
       "TYPE": "INPUT",
-      "DEPENDS": ["cuttingStockData.items"],
       "IMPORT_FROM": ["cuttingStockData.items"]
     },
     "patterns": {
       "CLASS": "DATA",
       "NAME": "patterns",
       "TYPE": "INPUT",
-      "DEPENDS": ["cuttingStockData.items", "cuttingStockNewPattern.newPattern"],
       "INITIALIZE_FROM": ["cuttingStockData.patterns"],
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["*"]},
         {"DIRECTIVE": ["FROM"], "PREDICATE": ["patterns"]},
         {"DIRECTIVE": ["UNION", "SELECT"], "PREDICATE": ["*"]},
-        {"DIRECTIVE": ["FROM"], "PREDICATE": ["cuttingStockNewPattern.newPattern"]}
+        {"DIRECTIVE": ["FROM"], "PREDICATE": ["cuttingStockNewPattern.newPattern"]},
+        {"DEPENDS": ["cuttingStockNewPattern.newPattern"]}
       ]
     },
     "slices": {
       "CLASS": "DATA",
       "NAME": "slices",
       "TYPE": "INPUT",
-      "DEPENDS": ["cuttingStockData.slices", "cuttingStockNewPattern.newSlices"],
       "INITIALIZE_FROM": ["cuttingStockData.slices"],
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["*"]},
         {"DIRECTIVE": ["FROM"], "PREDICATE": ["slices"]},
         {"DIRECTIVE": ["UNION", "SELECT"], "PREDICATE": ["*"]},
-        {"DIRECTIVE": ["FROM"], "PREDICATE": ["cuttingStockNewPattern.newSlices"]}
+        {"DIRECTIVE": ["FROM"], "PREDICATE": ["cuttingStockNewPattern.newSlices"]},
+        {"DEPENDS": ["cuttingStockData.slices", "cuttingStockNewPattern.newSlices"]}
       ]
     },
     "rolls": {
       "CLASS": "VARIABLE",
       "NAME": "rolls",
       "TYPE": "CONTINUOUS",
-      "DEPENDS": ["patterns"],
       "RECIPE": [
-        {"DIRECTIVE": ["QUERY"], "PREDICATE": [
+        {"DIRECTIVE": ["QUERY"],
+          "PREDICATE": [
           "SELECT",
             "'rolls' AS Name",
             "'CONTINUOUS' AS Type",
@@ -88,7 +87,8 @@
             "'infinity' AS UpperBound",
             "null AS Value",
           "FROM", "patterns"]
-        }
+        },
+        {"DEPENDS": ["patterns"]}
       ]
     },
     "cost": {
@@ -108,20 +108,19 @@
       "CLASS": "TERM",
       "NAME": "cost_rolls",
       "TYPE": "LINEAR",
-      "DEPENDS": ["patterns", "rolls"],
       "RECIPE": [
         {"DIRECTIVE": ["QUERY"], "PREDICATE": [
           "SELECT", "'LINEAR' AS Type" , "'cost' AS Row", "rolls.Column AS Column", "patterns.cost AS Coefficient",
           "FROM", "rolls",
           "JOIN", "patterns", "ON", "(rolls.pattern = patterns.id)"]
-        }
+        },
+        {"DEPENDS": ["patterns", "rolls"]}
       ]
     },
     "ctOrder": {
       "CLASS": "CONSTRAINT",
       "NAME": "ctOrder",
       "TYPE": "LINEAR",
-      "DEPENDS": ["items"],
       "RECIPE": [
         {"DIRECTIVE": ["QUERY"], "PREDICATE": [
           "SELECT",
@@ -133,14 +132,14 @@
             "items.order AS RHS",
             "null AS Dual",
           "FROM","items"]
-        }
+        },
+        {"DEPENDS": ["items"]}
       ]
     },
     "ctOrder_rolls": {
       "CLASS": "TERM",
       "NAME": "ctOrder_rolls",
       "TYPE": "LINEAR",
-      "DEPENDS": ["slices", "ctOrder", "rolls", "patterns"],
       "RECIPE": [
         {"DIRECTIVE": ["QUERY"], "PREDICATE": [
           "SELECT", "'LINEAR' AS Type", "ctOrder.Row AS Row", "rolls.Column AS Column", "slices.number AS Coefficient",
@@ -148,7 +147,8 @@
           "JOIN", "patterns",
           "JOIN", "slices", "ON", "((ctOrder.item = slices.item)", "AND", "(patterns.id = slices.pattern))",
           "JOIN", "rolls", "ON", "(patterns.id = rolls.pattern)"]
-        }
+        },
+        {"DEPENDS": ["slices", "ctOrder", "rolls", "patterns"]}
       ]
     },
     "objective": {
@@ -163,20 +163,20 @@
       "CLASS": "DATA",
       "NAME": "use",
       "TYPE": "OUTPUT",
-      "DEPENDS": ["rolls"],
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["pattern", "Value AS number"]},
-        {"DIRECTIVE": ["FROM"], "PREDICATE": ["rolls"]}
+        {"DIRECTIVE": ["FROM"], "PREDICATE": ["rolls"]},
+        {"DEPENDS": ["rolls"]}
       ]
     },
     "duals": {
       "CLASS": "DATA",
       "NAME": "duals",
       "TYPE": "OUTPUT",
-      "DEPENDS": ["ctOrder"],
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["item", "Dual AS price"]},
-        {"DIRECTIVE": ["FROM"], "PREDICATE": ["ctOrder"]}
+        {"DIRECTIVE": ["FROM"], "PREDICATE": ["ctOrder"]},
+        {"DEPENDS": ["ctOrder"]}
       ]
     }
   },
@@ -210,32 +210,29 @@
       "CLASS": "DATA",
       "NAME": "parameters",
       "TYPE": "INPUT",
-      "DEPENDS": ["cuttingStockData.parameters"],
       "INITIALIZE_FROM": ["cuttingStockData.parameters"],
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["rollWidth", "nbPatterns+1 AS nbPatterns"]},
-        {"DIRECTIVE": ["FROM"], "PREDICATE": ["parameters"]}
+        {"DIRECTIVE": ["FROM"], "PREDICATE": ["parameters"]},
+        {"DEPENDS": ["rollWidth", "nbPatterns", "parameters"]}
       ]
     },
     "items": {
       "CLASS": "DATA",
       "NAME": "items",
       "TYPE": "INPUT",
-      "DEPENDS": ["cuttingStockData.items"],
       "IMPORT_FROM": ["cuttingStockData.items"]
     },
     "duals": {
       "CLASS": "DATA",
       "NAME": "duals",
       "TYPE": "INPUT",
-      "DEPENDS": ["cuttingStockRolls.duals"],
       "IMPORT_FROM": ["cuttingStockRolls.duals"]
     },
     "slice": {
       "CLASS": "VARIABLE",
       "NAME": "slice",
       "TYPE": "INTEGER",
-      "DEPENDS": ["items"],
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": [
           "'slice' AS Name",
@@ -246,14 +243,14 @@
           "'infinity' AS UpperBound",
           "null AS Value"]
         },
-        {"DIRECTIVE": ["FROM"], "PREDICATE": ["items"]}
+        {"DIRECTIVE": ["FROM"], "PREDICATE": ["items"]},
+        {"DEPENDS": ["items"]}
       ]
     },
     "ctFill": {
       "CLASS": "CONSTRAINT",
       "NAME": "ctFill",
       "TYPE": "LINEAR",
-      "DEPENDS": ["parameters"],
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": [
           "'ctFill' AS Name",
@@ -262,19 +259,20 @@
           "'LE' AS Sense",
           "parameters.rollWidth AS RHS"]
         },
-        {"DIRECTIVE": ["FROM"], "PREDICATE": ["parameters"]}
+        {"DIRECTIVE": ["FROM"], "PREDICATE": ["parameters"]},
+        {"DEPENDS": ["parameters"]}
       ]
     },
     "ctFill_slice": {
       "CLASS": "TERM",
       "NAME": "ctFill_slice",
       "TYPE": "LINEAR",
-      "DEPENDS": ["ctFill", "slice", "items"],
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["'LINEAR' AS Type", "ctFill.Row AS Row", "slice.Column AS Column", "items.width AS Coefficient"]},
         {"DIRECTIVE": ["FROM"], "PREDICATE": ["ctFill"]},
         {"DIRECTIVE": ["JOIN"], "PREDICATE": ["items"]},
-        {"DIRECTIVE": ["JOIN"], "PREDICATE": ["slice"]}, {"DIRECTIVE": ["ON"], "PREDICATE": ["(slice.item = items.id)"]}
+        {"DIRECTIVE": ["JOIN"], "PREDICATE": ["slice"]}, {"DIRECTIVE": ["ON"], "PREDICATE": ["(slice.item = items.id)"]},
+        {"DEPENDS": ["ctFill", "slice", "items"]}
       ]
     },
     "reducedCost": {
@@ -307,12 +305,12 @@
       "CLASS": "TERM",
       "NAME": "deReducedCost_slice",
       "TYPE": "LINEAR",
-      "DEPENDS": ["deReducedCost", "slice", "duals", "items"],
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["'LINEAR' AS Type", "'deReducedCost' AS Row", "slice.Column AS Column", "-duals.price AS Coefficient"]},
         {"DIRECTIVE": ["FROM"], "PREDICATE": ["items"]},
         {"DIRECTIVE": ["JOIN"], "PREDICATE": ["slice"]}, {"DIRECTIVE": ["ON"], "PREDICATE": ["(slice.item = items.id)"]},
-        {"DIRECTIVE": ["JOIN"], "PREDICATE": ["duals"]}, {"DIRECTIVE": ["ON"], "PREDICATE": ["(duals.item = items.id)"]}
+        {"DIRECTIVE": ["JOIN"], "PREDICATE": ["duals"]}, {"DIRECTIVE": ["ON"], "PREDICATE": ["(duals.item = items.id)"]},
+        {"DEPENDS": ["deReducedCost", "slice", "duals", "items"]}
       ]
     },
     "deReducedCost_reducedCost": {
@@ -354,20 +352,20 @@
       "CLASS": "DATA",
       "NAME": "newPattern",
       "TYPE": "OUTPUT",
-      "DEPENDS": ["parameters", "objective"],
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["parameters.nbPatterns AS id", "objective.Value AS cost"]},
-        {"DIRECTIVE": ["FROM"], "PREDICATE": ["parameters", "objective"]}
+        {"DIRECTIVE": ["FROM"], "PREDICATE": ["parameters", "objective"]},
+        {"DEPENDS": ["parameters", "objective"]}
       ]
     },
     "newSlices": {
       "CLASS": "DATA",
       "NAME": "newSlices",
       "TYPE": "OUTPUT",
-      "DEPENDS": ["slice", "parameters"],
       "RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["slice.item AS item", "parameters.nbPatterns AS pattern", "slice.Value AS number"]},
-        {"DIRECTIVE": ["FROM"], "PREDICATE": ["slice", "parameters"]}
+        {"DIRECTIVE": ["FROM"], "PREDICATE": ["slice", "parameters"]},
+        {"DEPENDS": ["slice", "parameters"]}
       ]
     }
   },

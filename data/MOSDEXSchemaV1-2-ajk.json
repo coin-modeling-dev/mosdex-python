@@ -93,8 +93,7 @@
         "RECIPE": {"$ref": "#/definitions/RECIPE"},
         "IMPORT_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
         "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
-        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"},
-        "DEPENDS": {"$ref": "#/definitions/ArrayOfStrings"}
+        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
       "required": ["CLASS", "NAME", "TYPE"],
       "oneOf": [
@@ -130,8 +129,7 @@
         "RECIPE": {"$ref": "#/definitions/RECIPE"},
         "IMPORT_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
         "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
-        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"},
-        "DEPENDS": {"$ref": "#/definitions/ArrayOfStrings"}
+        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
       "required": ["CLASS", "NAME", "TYPE"],
       "oneOf": [
@@ -198,7 +196,8 @@
       "type": "object",
       "properties": {
         "DIRECTIVE": {"$ref": "#/definitions/ArrayOfStrings" },
-        "PREDICATE": {"$ref": "#/definitions/ArrayOfStrings" }
+        "PREDICATE": {"$ref": "#/definitions/ArrayOfStrings" },
+        "DEPENDS": {"$ref": "#/definitions/ArrayOfStrings" }
       }
     },
     
@@ -249,8 +248,7 @@
         "RECIPE": {"$ref": "#/definitions/RECIPE"},
         "IMPORT_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
         "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
-        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"},
-        "DEPENDS": {"$ref": "#/definitions/ArrayOfStrings"}
+        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
       "required": ["CLASS", "NAME", "TYPE"],
       "oneOf": [
@@ -308,8 +306,7 @@
         "RECIPE": {"$ref": "#/definitions/RECIPE"},
         "IMPORT_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
         "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
-        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"},
-        "DEPENDS": {"$ref": "#/definitions/ArrayOfStrings"}
+        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
       "required": ["CLASS", "NAME", "TYPE"],
       "oneOf": [
@@ -369,8 +366,7 @@
         "RECIPE": {"$ref": "#/definitions/RECIPE"},
         "IMPORT_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
         "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
-        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"},
-        "DEPENDS": {"$ref": "#/definitions/ArrayOfStrings"}
+        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
       "required": ["CLASS", "NAME", "TYPE"],
       "oneOf": [
@@ -429,8 +425,7 @@
         "RECIPE": {"$ref": "#/definitions/RECIPE"},
         "IMPORT_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
         "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
-        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"},
-        "DEPENDS": {"$ref": "#/definitions/ArrayOfStrings"}
+        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
       "required": ["CLASS", "NAME", "TYPE"],
       "oneOf": [
@@ -497,8 +492,7 @@
         "RECIPE": {"$ref": "#/definitions/RECIPE"},
         "IMPORT_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
         "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
-        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"},
-        "DEPENDS": {"$ref": "#/definitions/ArrayOfStrings"}
+        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
       "required": ["CLASS", "NAME", "TYPE"],
       "oneOf": [
@@ -556,8 +550,7 @@
         "RECIPE": {"$ref": "#/definitions/RECIPE"},
         "IMPORT_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
         "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
-        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"},
-        "DEPENDS": {"$ref": "#/definitions/ArrayOfStrings"}
+        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
       "required": ["CLASS", "NAME", "TYPE"],
       "oneOf": [
@@ -611,8 +604,7 @@
         "RECIPE": {"$ref": "#/definitions/RECIPE"},
         "IMPORT_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
         "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
-        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"},
-        "DEPENDS": {"$ref": "#/definitions/ArrayOfStrings"}
+        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
       "required": ["CLASS", "NAME", "TYPE"],
       "oneOf": [
@@ -648,8 +640,7 @@
         "RECIPE": {"$ref": "#/definitions/RECIPE"},
         "IMPORT_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
         "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
-        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"},
-        "DEPENDS": {"$ref": "#/definitions/ArrayOfStrings"}
+        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
       "required": ["CLASS", "NAME", "TYPE"],
       "oneOf": [
