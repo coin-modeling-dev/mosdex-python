@@ -189,23 +189,41 @@ if __name__ == "__main__":
                              s_id=singletons_id, n=s_name, v=s_value, r=r_value, m=k, i=k1)
                     singletons_id += 1
             if "SCHEMA" in m1:
-                db.query('INSERT INTO modules_table (module_name, item_name, table_name, recipe_name)'
-                         'VALUES(:mname, :iname, :tname, :rname)',
-                         mname=k, iname=k1, tname=k1, rname=None)
-                sql_string = 'CREATE TABLE ' + k1
-                sep_string = ' ('
+                table_name = k1 + '_table'
+                db.query('INSERT INTO modules_table (module_id, module_name, item_name, table_name, recipe_name)'
+                         'VALUES(:module_id, :mname, :iname, :tname, :rname)',
+                         module_id=modules_id, mname=k, iname=k1, tname=table_name, rname=None)
+                modules_id += 1
+                sql_string = 'CREATE TABLE ' + table_name + '  (' + k1 + '_id integer PRIMARY KEY'
+                table_id = k1 + '_id'
+                arg_string = ' (' + table_id
+                val_string = ' (' + ':' + table_id
+                col_list = [table_id]
                 for col_name, col_type in m1["SCHEMA"].items():
-                    sql_string = sql_string + sep_string + col_name + ' ' + col_type
-                    if sep_string is ' (':
-                        sep_string = ', '
-                sql_string = sql_string + ' )'
+                    sql_string = sql_string + ', ' + col_name + ' ' + col_type
+                    arg_string = arg_string + ', ' + col_name
+                    val_string = val_string + ', ' + ':' + col_name
+                    col_list.append(col_name)
+                sql_string = sql_string + ')'
+                arg_string = arg_string + ')'
+                val_string = val_string + ')'
                 print("\t{}".format(sql_string))
+                print("\t{}".format(arg_string))
+                print("\t{}".format(val_string))
+                db.query(sql_string)
+                count = 0
+                for row in m1["INSTANCE"]:
+                    row.insert(0, count)
+                    row_dict = dict(zip(col_list, row))
+                    print("\t{}".format(row_dict))
+                    db.query('INSERT INTO ' + table_name + arg_string + ' VALUES ' + val_string, **row_dict)
+
+                    count += 1
 
     print("\n***List the Tables***")
-    rows = db.query('SELECT * FROM modules_table')
-    print(rows.export('csv'))
-    rows = db.query('SELECT * FROM singletons_table')
-    print(rows.export('csv'))
+    for table in db.get_table_names():
+        print("\n**{}**".format(table))
+        print(db.query('SELECT * FROM ' + table).dataset)
 
 
 '''

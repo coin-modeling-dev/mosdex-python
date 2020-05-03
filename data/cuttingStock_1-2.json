@@ -393,7 +393,7 @@
       "SCHEMA": {
         "id": "STRING",
         "width": "INTEGER",
-        "order": "INTEGER"
+        "order_size": "INTEGER"
       },
       "INSTANCE": [
         ["XJC001_1", 20, 48],
