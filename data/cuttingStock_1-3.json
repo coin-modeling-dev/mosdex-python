@@ -180,9 +180,9 @@
       ]
     }
   },
-  "cuttingStockNewPattern": {
+  "cuttingStockLink": {
     "CLASS": "MODULE",
-    "NAME": "cuttingStockNewPattern",
+    "NAME": "cuttingStockLink",
     "DEPENDS": ["cuttingStockRolls", "cuttingStockData"],
     "HEADING": {
       "DESCRIPTION": [
@@ -243,8 +243,7 @@
           "'infinity' AS UpperBound",
           "null AS Value"]
         },
-        {"DIRECTIVE": ["FROM"], "PREDICATE": ["items"]},
-        {"DEPENDS": ["items"]}
+        {"DIRECTIVE": ["FROM"], "PREDICATE": ["cuttingStockData.items"]}
       ]
     },
     "ctFill": {
@@ -260,7 +259,7 @@
           "parameters.rollWidth AS RHS"]
         },
         {"DIRECTIVE": ["FROM"], "PREDICATE": ["parameters"]},
-        {"DEPENDS": ["parameters"]}
+        {"DEPENDS": ["parameters", "really this is just a single row with parameters.rollWidth as upperbound"]}
       ]
     },
     "ctFill_slice": {
@@ -272,7 +271,7 @@
         {"DIRECTIVE": ["FROM"], "PREDICATE": ["ctFill"]},
         {"DIRECTIVE": ["JOIN"], "PREDICATE": ["items"]},
         {"DIRECTIVE": ["JOIN"], "PREDICATE": ["slice"]}, {"DIRECTIVE": ["ON"], "PREDICATE": ["(slice.item = items.id)"]},
-        {"DEPENDS": ["ctFill", "slice", "items"]}
+        {"DEPENDS": ["ctFill", "slice", "items", "really this is just slice[item.id]*item.width"]}
       ]
     },
     "reducedCost": {
@@ -367,6 +366,104 @@
         {"DIRECTIVE": ["FROM"], "PREDICATE": ["slice", "parameters"]},
         {"DEPENDS": ["slice", "parameters"]}
       ]
+    }
+  },
+  "cuttingStockKnapsack": {
+    "CLASS": "MODULE",
+    "NAME": "cuttingStockKnapsack",
+    "DEPENDS": ["cuttingStockLink", "cuttingStockData"],
+    "HEADING": {
+      "DESCRIPTION": [
+        "Illustrates how to set up in MOSDEX to specify a decomposition model.",
+        "Cutting stock uses column-generation.",
+        "This is the subMODULE."
+      ],
+      "VERSION"    : ["1.1.1"],
+      "REFERENCE"  : ["https://github.com/IBMDecisionOptimization/DOcloud-Cutting-Stock-Java-Sample"],
+      "AUTHOR"     : ["Jeremy A. Bloom (jeremyblmca@gmail.com)"],
+      "NOTICES"    : ["Copyright © 2019 Jeremy A. Bloom"],
+      "MATH": [
+        "dvar int slice[items] in 0..100000; // Number of slices of this item in the new pattern",
+        "dexpr float reducedCost =",
+        "  1 - sum(i in items, d in duals : i.id==d.item) d.price * slice[i];",
+        "",
+        "minimize reducedCost;",
+        "subject to {",
+        "  ctFill:",
+        "    sum(i in items) i.width * slice[i] <= parameter.rollWidth;",
+        "}"
+      ]
+    },
+    "parameters": {
+      "CLASS": "DATA",
+      "NAME": "parameters",
+      "TYPE": "INPUT",
+      "IMPORT_FROM": ["cuttingStockData.parameters"]
+    },
+    "items": {
+      "CLASS": "DATA",
+      "NAME": "items",
+      "TYPE": "INPUT",
+      "IMPORT_FROM": ["cuttingStockData.items"]
+    },
+    "slice": {
+      "CLASS": "VARIABLE",
+      "NAME": "slice",
+      "TYPE": "INTEGER",
+      "RECIPE": [
+        {"DIRECTIVE": ["SELECT"], "PREDICATE": [
+          "'slice' AS Name",
+          "'INTEGER' AS Type",
+          "items.id AS item",
+          "CONCAT('slice','_', items.id) AS Column",
+          "0.0 AS LowerBound",
+          "'infinity' AS UpperBound",
+          "null AS Value"]
+        },
+        {"DIRECTIVE": ["FROM"], "PREDICATE": ["cuttingStockData.items"]}
+      ]
+    },
+    "ctFill": {
+      "CLASS": "CONSTRAINT",
+      "NAME": "ctFill",
+      "TYPE": "LINEAR",
+      "RECIPE": [
+        {"DIRECTIVE": ["SELECT"], "PREDICATE": [
+          "'ctFill' AS Name",
+          "'LINEAR' AS Type",
+          "'ctFill' AS Row",
+          "'LE' AS Sense",
+          "parameters.rollWidth AS RHS"]
+        },
+        {"DIRECTIVE": ["FROM"], "PREDICATE": ["parameters"]},
+        {"DEPENDS": ["parameters", "really this is just a single row with parameters.rollWidth as upperbound"]}
+      ]
+    },
+    "ctFill_slice": {
+      "CLASS": "TERM",
+      "NAME": "ctFill_slice",
+      "TYPE": "LINEAR",
+      "RECIPE": [
+        {"DIRECTIVE": ["SELECT"], "PREDICATE": ["'LINEAR' AS Type", "ctFill.Row AS Row",
+          "slice.Column AS Column", "items.width AS Coefficient"]},
+        {"DIRECTIVE": ["FROM"], "PREDICATE": ["ctFill"]},
+        {"DIRECTIVE": ["JOIN"], "PREDICATE": ["items"]},
+        {"DIRECTIVE": ["JOIN"], "PREDICATE": ["slice"]}, {"DIRECTIVE": ["ON"], "PREDICATE": ["(slice.item = items.id)"]},
+        {"DEPENDS": ["ctFill", "slice", "items", "really this is just slice[item.id]*item.width"]}
+      ]
+    },
+    "objective": {
+      "CLASS": "OBJECTIVE",
+      "NAME": "objective",
+      "TYPE": "LINEAR",
+      "SINGLETON": {
+        "Name": "objective",
+        "Type": "LINEAR",
+        "Row": "objective",
+        "Constant": 1.0,
+        "Sense": "MINIMIZE",
+        "Value": null
+      }
     }
   },
   "cuttingStockData": {
