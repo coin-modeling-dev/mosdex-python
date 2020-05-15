@@ -110,7 +110,7 @@ if __name__ == "__main__":
     # Provide the file and schema locations
     schema_dir = "data"
     file_dir = "data"
-    mosdex_problem_file = "cuttingStock_1-3.json"
+    mosdex_problem_file = "cuttingStock_1-2.json"
     mosdex_schema_file = "MOSDEXSchemaV1-3-ajk.json"
 
     # Open and test the mosdex problem against the schema
