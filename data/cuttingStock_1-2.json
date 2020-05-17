@@ -37,13 +37,13 @@
     "items": {
       "CLASS": "DATA",
       "TYPE": "INPUT",
-      "IMPORT_FROM": ["cuttingStockData.items"]
+      "IMPORT_FROM": "cuttingStockData.items"
     },
     "patterns": {
       "CLASS": "DATA",
       "TYPE": "INPUT",
-      "INITIALIZE_FROM": ["cuttingStockData.patterns"],
-      "RECIPE": [
+      "INITIALIZE_FROM": "cuttingStockData.patterns",
+      "UPDATE_RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["*"]},
         {"DIRECTIVE": ["FROM"], "PREDICATE": ["patterns"]},
         {"DIRECTIVE": ["UNION", "SELECT"], "PREDICATE": ["*"]},
@@ -53,8 +53,8 @@
     "slices": {
       "CLASS": "DATA",
       "TYPE": "INPUT",
-      "INITIALIZE_FROM": ["cuttingStockData.slices"],
-      "RECIPE": [
+      "INITIALIZE_FROM": "cuttingStockData.slices",
+      "UPDATE_RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["*"]},
         {"DIRECTIVE": ["FROM"], "PREDICATE": ["slices"]},
         {"DIRECTIVE": ["UNION", "SELECT"], "PREDICATE": ["*"]},
@@ -183,8 +183,8 @@
     "parameters": {
       "CLASS": "DATA",
       "TYPE": "INPUT",
-      "INITIALIZE_FROM": ["cuttingStockData.parameters"],
-      "RECIPE": [
+      "INITIALIZE_FROM": "cuttingStockData.parameters",
+      "UPDATE_RECIPE": [
         {"DIRECTIVE": ["SELECT"], "PREDICATE": ["rollWidth", "nbPatterns+1 AS nbPatterns"]},
         {"DIRECTIVE": ["FROM"], "PREDICATE": ["parameters"]}
       ]
@@ -192,12 +192,12 @@
     "items": {
       "CLASS": "DATA",
       "TYPE": "INPUT",
-      "IMPORT_FROM": ["cuttingStockData.items"]
+      "IMPORT_FROM": "cuttingStockData.items"
     },
     "duals": {
       "CLASS": "DATA",
       "TYPE": "INPUT",
-      "IMPORT_FROM": ["cuttingStockMaster.duals"]
+      "IMPORT_FROM": "cuttingStockMaster.duals"
     },
     "slice": {
       "CLASS": "VARIABLE",

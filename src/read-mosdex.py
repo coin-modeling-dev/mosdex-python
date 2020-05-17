@@ -79,6 +79,20 @@ mosdex_static_members = ["SYNTAX", "CLASS", "HEADING", "NAME", "DEPENDS", "ALGOR
 mosdex_types = ["INPUT", "OUTPUT"]
 
 
+def mosdex_recipe(recipe: list, do_print=False):
+    recipe_string = ""
+    for i in recipe:
+        d = i["DIRECTIVE"]
+        p = i["PREDICATE"]
+        recipe_add = " ".join(d + p)
+        recipe_string = recipe_string + " " + recipe_add
+        if do_print:
+            print(d, p, recipe_add)
+    if do_print:
+        print(recipe_string)
+    return recipe_string
+
+
 def mosdex_depends(mosdex_entity: dict, do_print=False):
     if "DEPENDS" in mosdex_entity.keys():
         if do_print:
@@ -159,14 +173,14 @@ if __name__ == "__main__":
     modules_id = 0
     db.query('DROP TABLE IF EXISTS modules_table')
     db.query('CREATE TABLE modules_table ( module_id integer KEY, module_name text, item_name text, '
-             'table_name text, recipe_name text, '
+             'class_name text, table_name text, recipe_string text, recipe_update text, '
              'CONSTRAINT module_item_pair PRIMARY KEY (module_name, item_name)) ')
 
     # Create the singletons table
     singletons_id = 0
     db.query('DROP TABLE IF EXISTS singletons_table')
     db.query('CREATE TABLE singletons_table ( singleton_id integer KEY, '
-             'module_name text, item_name text, singleton_name text, '
+             'module_name text, item_name text, class_name text, singleton_name text, '
              's_value number, s_recipe text)')
 
     # Commence Algorithm processing
@@ -184,12 +198,41 @@ if __name__ == "__main__":
 
             for k1 in m["INITIALIZE"]:
                 m1 = m[k1]
-                print("\t\t{}.{}.{}:".format(m1["CLASS"], k, k1))
+                c1 = m1["CLASS"]
+                print("\t\t{}.{}.{}:".format(c1, k, k1))
+                u1 = None
+                r1 = None
+                if "RECIPE" in m1:
+                    # print("\t\t{}.{} RECIPE {}".format(k, k1, m1["RECIPE"]))
+                    table_name = k + '_' + k1
+                    r1 = mosdex_recipe(m1["RECIPE"])
+                    db.query('INSERT INTO modules_table (module_id, module_name, item_name, class_name,'
+                             'table_name, recipe_string)'
+                             'VALUES(:module_id, :mname, :iname, :cname, :tname, :rname)',
+                             module_id=modules_id, mname=k, iname=k1, cname=c1, tname=table_name, rname=r1)
+                if "UPDATE_RECIPE" in m1:
+                    # print("\t\t{}.{} UPDATE_RECIPE {}".format(k, k1, m1["UPDATE_RECIPE"]))
+                    u1 = mosdex_recipe(m1["UPDATE_RECIPE"])
+                if "INITIALIZE_FROM" in m1:
+                    table_name = m1["INITIALIZE_FROM"].replace('.', '_')
+                    print("\t\t{}.{} INITIALIZE_FROM {}".format(k, k1, table_name))
+                    db.query('INSERT INTO modules_table (module_id, module_name, item_name, class_name,'
+                             'table_name, recipe_string, recipe_update)'
+                             'VALUES(:module_id, :mname, :iname, :cname, :tname, :rname, :uname)',
+                             module_id=modules_id, mname=k, iname=k1, cname=c1, tname=table_name,
+                             rname=r1, uname=u1)
+                if "IMPORT_FROM" in m1:
+                    table_name = m1["IMPORT_FROM"].replace('.', '_')
+                    print("\t\t{}.{} IMPORT_FROM {}".format(k, k1, table_name))
+                    db.query('INSERT INTO modules_table (module_id, module_name, item_name, class_name,'
+                             'table_name)'
+                             'VALUES(:module_id, :mname, :iname, :cname, :tname)',
+                             module_id=modules_id, mname=k, iname=k1, cname=c1, tname=table_name)
                 if "SINGLETON" in m1:
-                    recipe_name = None
-                    db.query('INSERT INTO modules_table (module_id, module_name, item_name, table_name, recipe_name) '
-                             'VALUES(:mid, :mname, :iname, :tname, :rname)',
-                             mid=modules_id, mname=k, iname=k1, tname="singletons_table", rname=recipe_name)
+                    db.query('INSERT INTO modules_table (module_id, module_name, item_name, class_name, '
+                             'table_name) '
+                             'VALUES(:mid, :mname, :iname, :cname, :tname)',
+                             mid=modules_id, mname=k, iname=k1, cname=c1, tname="singletons_table")
                     modules_id += 1
                     for s_name, s_value in m1["SINGLETON"].items():
                         r_value = None
@@ -197,15 +240,16 @@ if __name__ == "__main__":
                             r_value = s_value
                             s_value = None
                         db.query('INSERT INTO singletons_table (singleton_id, singleton_name, '
-                                 's_value, s_recipe, module_name, item_name ) '
-                                 'VALUES(:s_id, :n, :v, :r, :m , :i) ',
-                                 s_id=singletons_id, n=s_name, v=s_value, r=r_value, m=k, i=k1)
+                                 's_value, s_recipe, module_name, item_name, class_name ) '
+                                 'VALUES(:s_id, :n, :v, :r, :m , :i, :c) ',
+                                 s_id=singletons_id, n=s_name, v=s_value, r=r_value, m=k, i=k1, c=c1)
                         singletons_id += 1
                 if "SCHEMA" in m1:
-                    table_name = k1 + '_table'
-                    db.query('INSERT INTO modules_table (module_id, module_name, item_name, table_name, recipe_name)'
-                             'VALUES(:module_id, :mname, :iname, :tname, :rname)',
-                             module_id=modules_id, mname=k, iname=k1, tname=table_name, rname=None)
+                    table_name = k + '_' + k1
+                    db.query('INSERT INTO modules_table (module_id, module_name, item_name, class_name,'
+                             'table_name, recipe_string)'
+                             'VALUES(:module_id, :mname, :iname, :cname, :tname, :rname)',
+                             module_id=modules_id, mname=k, iname=k1, cname=c1, tname=table_name, rname=None)
                     modules_id += 1
                     sql_string = 'CREATE TABLE ' + table_name + '  (' + k1 + '_id integer PRIMARY KEY'
                     table_id = k1 + '_id'
@@ -237,7 +281,6 @@ if __name__ == "__main__":
     for table in db.get_table_names():
         print("\n**{}**".format(table))
         print(db.query('SELECT * FROM ' + table).dataset)
-
 
 '''
     # Use in-memory database
@@ -271,4 +314,3 @@ if __name__ == "__main__":
                                 );"""
 
 '''
-

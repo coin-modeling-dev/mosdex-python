@@ -102,8 +102,9 @@
         "INSTANCE": {"$ref": "#/definitions/INSTANCE"},
         "SINGLETON": {"$ref": "#/definitions/SINGLETON"},
         "RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "IMPORT_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
-        "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
+        "UPDATE_RECIPE": {"$ref": "#/definitions/RECIPE"},
+        "IMPORT_FROM": {"type": "string"},
+        "INITIALIZE_FROM": {"type": "string"},
         "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
       "required": ["CLASS", "NAME", "TYPE"],
@@ -116,7 +117,7 @@
       "dependencies": {
         "FIELDS": ["INSTANCE"],
         "INSTANCE": ["SCHEMA"],
-        "INITIALIZE_FROM": ["RECIPE"]
+        "INITIALIZE_FROM": ["UPDATE_RECIPE"]
       },
       "additionalProperties": true
     },
@@ -138,8 +139,9 @@
         "INSTANCE": {"$ref": "#/definitions/INSTANCE"},
         "SINGLETON": {"$ref": "#/definitions/SINGLETON"},
         "RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "IMPORT_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
-        "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
+        "UPDATE_RECIPE": {"$ref": "#/definitions/RECIPE"},
+        "IMPORT_FROM": {"type": "string"},
+        "INITIALIZE_FROM": {"type": "string"},
         "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
       "required": ["CLASS", "NAME", "TYPE"],
@@ -152,7 +154,7 @@
       "dependencies": {
         "FIELDS": ["INSTANCE"],
         "INSTANCE": ["SCHEMA"],
-        "INITIALIZE_FROM": ["RECIPE"]
+        "INITIALIZE_FROM": ["UPDATE_RECIPE"]
       },
       "additionalProperties": false
     },
@@ -257,8 +259,9 @@
           "required": ["Name", "Type", "Column"]
         },
         "RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "IMPORT_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
-        "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
+        "UPDATE_RECIPE": {"$ref": "#/definitions/RECIPE"},
+        "IMPORT_FROM": {"type": "string"},
+        "INITIALIZE_FROM": {"type": "string"},
         "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
       "required": ["CLASS", "NAME", "TYPE"],
@@ -271,7 +274,7 @@
       "dependencies": {
         "FIELDS": ["INSTANCE"],
         "INSTANCE": ["SCHEMA"],
-        "INITIALIZE_FROM": ["RECIPE"]
+        "INITIALIZE_FROM": ["UPDATE_RECIPE"]
       },
       "additionalProperties": false
     },
@@ -315,8 +318,9 @@
           "required": ["Name", "Type", "Row", "Sense", "RHS"]
         },
         "RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "IMPORT_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
-        "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
+        "UPDATE_RECIPE": {"$ref": "#/definitions/RECIPE"},
+        "IMPORT_FROM": {"type": "string"},
+        "INITIALIZE_FROM": {"type": "string"},
         "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
       "required": ["CLASS", "NAME", "TYPE"],
@@ -329,7 +333,7 @@
       "dependencies": {
         "FIELDS": ["INSTANCE"],
         "INSTANCE": ["SCHEMA"],
-        "INITIALIZE_FROM": ["RECIPE"]
+        "INITIALIZE_FROM": ["UPDATE_RECIPE"]
       },
       "additionalProperties": false
     },
@@ -375,8 +379,9 @@
           "required": ["Name", "Type", "Row", "Sense"]
         },
         "RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "IMPORT_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
-        "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
+        "UPDATE_RECIPE": {"$ref": "#/definitions/RECIPE"},
+        "IMPORT_FROM": {"type": "string"},
+        "INITIALIZE_FROM": {"type": "string"},
         "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
       "required": ["CLASS", "NAME", "TYPE"],
@@ -389,7 +394,7 @@
       "dependencies": {
         "FIELDS": ["INSTANCE"],
         "INSTANCE": ["SCHEMA"],
-        "INITIALIZE_FROM": ["RECIPE"]
+        "INITIALIZE_FROM": ["UPDATE_RECIPE"]
       },
       "additionalProperties": false
     },
@@ -434,8 +439,9 @@
           "required": ["Type", "Row", "Column", "Coefficient"]
         },
         "RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "IMPORT_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
-        "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
+        "UPDATE_RECIPE": {"$ref": "#/definitions/RECIPE"},
+        "IMPORT_FROM": {"type": "string"},
+        "INITIALIZE_FROM": {"type": "string"},
         "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
       "required": ["CLASS", "NAME", "TYPE"],
@@ -448,7 +454,7 @@
       "dependencies": {
         "FIELDS": ["INSTANCE"],
         "INSTANCE": ["SCHEMA"],
-        "INITIALIZE_FROM": ["RECIPE"]
+        "INITIALIZE_FROM": ["UPDATE_RECIPE"]
       },
       "additionalProperties": false
     },
@@ -501,8 +507,9 @@
           "required": ["Type", "Row", "Column", "Coefficient"]
         },
         "RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "IMPORT_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
-        "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
+        "UPDATE_RECIPE": {"$ref": "#/definitions/RECIPE"},
+        "IMPORT_FROM": {"type": "string"},
+        "INITIALIZE_FROM": {"type": "string"},
         "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
       "required": ["CLASS", "NAME", "TYPE"],
@@ -515,7 +522,7 @@
       "dependencies": {
         "FIELDS": ["INSTANCE"],
         "INSTANCE": ["SCHEMA"],
-        "INITIALIZE_FROM": ["RECIPE"]
+        "INITIALIZE_FROM": ["UPDATE_RECIPE"]
       },
       "additionalProperties": false
     },
@@ -559,8 +566,9 @@
           "required": ["Type", "Row", "Column1", "Column2"]
         },
         "RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "IMPORT_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
-        "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
+        "UPDATE_RECIPE": {"$ref": "#/definitions/RECIPE"},
+        "IMPORT_FROM": {"type": "string"},
+        "INITIALIZE_FROM": {"type": "string"},
         "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
       "required": ["CLASS", "NAME", "TYPE"],
@@ -573,7 +581,7 @@
       "dependencies": {
         "FIELDS": ["INSTANCE"],
         "INSTANCE": ["SCHEMA"],
-        "INITIALIZE_FROM": ["RECIPE"]
+        "INITIALIZE_FROM": ["UPDATE_RECIPE"]
       },
       "additionalProperties": false
     },
@@ -613,8 +621,9 @@
           "required": ["Type", "Row", "Expression"]
         },
         "RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "IMPORT_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
-        "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
+        "UPDATE_RECIPE": {"$ref": "#/definitions/RECIPE"},
+        "IMPORT_FROM": {"type": "string"},
+        "INITIALIZE_FROM": {"type": "string"},
         "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
       "required": ["CLASS", "NAME", "TYPE"],
@@ -627,7 +636,7 @@
       "dependencies": {
         "FIELDS": ["INSTANCE"],
         "INSTANCE": ["SCHEMA"],
-        "INITIALIZE_FROM": ["RECIPE"]
+        "INITIALIZE_FROM": ["UPDATE_RECIPE"]
       },
       "additionalProperties": false
     },
@@ -649,8 +658,9 @@
         "INSTANCE": {"$ref": "#/definitions/INSTANCE"},
         "SINGLETON": {"$ref": "#/definitions/SINGLETON"},
         "RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "IMPORT_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
-        "INITIALIZE_FROM": {"$ref": "#/definitions/ArrayOfStrings"},
+        "UPDATE_RECIPE": {"$ref": "#/definitions/RECIPE"},
+        "IMPORT_FROM": {"type": "string"},
+        "INITIALIZE_FROM": {"type": "string"},
         "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
       },
       "required": ["CLASS", "NAME", "TYPE"],
@@ -663,7 +673,7 @@
       "dependencies": {
         "FIELDS": ["INSTANCE"],
         "INSTANCE": ["SCHEMA"],
-        "INITIALIZE_FROM": ["RECIPE"]
+        "INITIALIZE_FROM": ["UPDATE_RECIPE"]
       },
       "additionalProperties": false
     }
