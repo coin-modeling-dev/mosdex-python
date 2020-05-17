@@ -21,6 +21,16 @@
       "description": "Placeholder for objects yet to be defined",
       "type": "string"
     },
+    "ALGORITHM": {
+      "title": "ALGORITHM",
+      "type": "object",
+      "properties": {
+        "CLASS": {"enum": ["ALGORITHM"]},
+        "NAME": {"type": "string"},
+        "HEADING": {"$ref": "#/definitions/HEADING"},
+        "INITIALIZE": {"$ref": "#/definitions/ArrayOfStrings"}
+      }
+    },
   
     "MODULE": {
       "title": "MODULE",
@@ -31,7 +41,8 @@
         "HEADING": {"$ref": "#/definitions/HEADING"},
         "SOLVER_PARAMETERS": {"$ref": "#/definitions/SOLVER_PARAMETERS"},
         "PATHS": {"$ref": "#/definitions/ArrayOfStrings"},
-        "DEPENDS": {"$ref": "#/definitions/ArrayOfStrings"}
+        "DEPENDS": {"$ref": "#/definitions/ArrayOfStrings"},
+        "INITIALIZE": {"$ref": "#/definitions/ArrayOfStrings"}
       },
       "additionalProperties": {
         "oneOf": [

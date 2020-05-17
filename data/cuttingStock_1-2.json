@@ -1,5 +1,10 @@
 {
   "SYNTAX": "MOSDEX/MOSDEX v1-2/MOSDEXSchemaV1-2.json",
+  "cuttingStockColumnGeneration": {
+    "CLASS": "ALGORITHM",
+    "NAME": "columnGeneration",
+    "INITIALIZE": ["cuttingStockData", "cuttingStockMaster", "cuttingStockSubproblem"]
+  },
   "cuttingStockMaster": {
     "CLASS": "MODULE",
     "HEADING": {
@@ -28,6 +33,7 @@
         "}"
       ]
     },
+    "INITIALIZE": ["items", "patterns", "slices", "rolls", "cost", "cost_rolls", "ctOrder", "ctOrder_rolls"],
     "items": {
       "CLASS": "DATA",
       "TYPE": "INPUT",
@@ -173,6 +179,7 @@
         "}"
       ]
     },
+    "INITIALIZE": ["parameters", "items", "slice", "ctFill", "ctFill_slice"],
     "parameters": {
       "CLASS": "DATA",
       "TYPE": "INPUT",
@@ -322,6 +329,7 @@
         "Data for a cutting stock instance."
       ]
     },
+    "INITIALIZE": ["parameters", "items", "patterns", "slices"],
     "parameters": {
       "CLASS": "DATA",
       "TYPE": "INPUT",

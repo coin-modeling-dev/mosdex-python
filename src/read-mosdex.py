@@ -64,7 +64,7 @@ def mosdex_open_and_test(problem_file, schema_file, do_print=False):
             print("NO: Mosdex problem {} is not a valid instance of Mosdex schema {}".
                   format(mosdex_problem_file, mosdex_schema_file))
             pp = pprint.PrettyPrinter(indent=4)
-            for error in sorted(validator.iter_errors(cs_json), key=str):
+            for error in sorted(validator.iter_errors(problem_json), key=str):
                 print()
                 pp.pprint(error.message)
         else:
@@ -75,7 +75,7 @@ def mosdex_open_and_test(problem_file, schema_file, do_print=False):
     return problem_json, valid
 
 
-mosdex_static_members = ["SYNTAX", "CLASS", "HEADING", "NAME", "DEPENDS"]
+mosdex_static_members = ["SYNTAX", "CLASS", "HEADING", "NAME", "DEPENDS", "ALGORITHM", "INITIALIZE"]
 mosdex_types = ["INPUT", "OUTPUT"]
 
 
@@ -115,7 +115,8 @@ if __name__ == "__main__":
 
     # Open and test the mosdex problem against the schema
     cs_json, is_valid = mosdex_open_and_test(os.path.join(file_dir, mosdex_problem_file),
-                                             os.path.join(schema_dir, mosdex_schema_file))
+                                             os.path.join(schema_dir, mosdex_schema_file),
+                                             do_print=False)
 
     # print out the high level members of the mosdex problem
     cs_modules = mosdex_members(cs_json, do_print=True)["MODULE"]
@@ -125,6 +126,7 @@ if __name__ == "__main__":
         mosdex_members(m, do_print=True)
     print()
 
+    """
     # Let's get the data
     cs_data = {}
     for k, m in cs_modules.items():
@@ -148,77 +150,88 @@ if __name__ == "__main__":
                 if "INSTANCE" in m1:
                     print("\t\t{}: {}".format("INSTANCE", m1["INSTANCE"]))
 
+    """
+
+    # Initialize database
     db = records.Database('sqlite://')
 
     # Create modules table
+    modules_id = 0
     db.query('DROP TABLE IF EXISTS modules_table')
     db.query('CREATE TABLE modules_table ( module_id integer KEY, module_name text, item_name text, '
              'table_name text, recipe_name text, '
              'CONSTRAINT module_item_pair PRIMARY KEY (module_name, item_name)) ')
 
     # Create the singletons table
+    singletons_id = 0
     db.query('DROP TABLE IF EXISTS singletons_table')
     db.query('CREATE TABLE singletons_table ( singleton_id integer KEY, '
              'module_name text, item_name text, singleton_name text, '
              's_value number, s_recipe text)')
 
-    print("\n\n***Process the modules***")
-    # Process the modules
-    modules_id = 0
-    singletons_id = 0
-    for k, m in cs_modules.items():
+    # Commence Algorithm processing
+    cs_algorithm = mosdex_members(cs_json)["ALGORITHM"]
 
-        # add the data items
-        data = mosdex_members(m)["DATA"]
-        for k1, m1 in data.items():
-            if "SINGLETON" in m1:
-                recipe_name = None
-                db.query('INSERT INTO modules_table (module_id, module_name, item_name, table_name, recipe_name) '
-                         'VALUES(:mid, :mname, :iname, :tname, :rname)',
-                         mid=modules_id, mname=k, iname=k1, tname="singletons_table", rname=recipe_name)
-                modules_id += 1
-                print("\t{}.{}:".format(k, k1))
-                for s_name, s_value in m1["SINGLETON"].items():
-                    r_value = None
-                    if type(s_value) is str:
-                        r_value = s_value
-                        s_value = None
-                    db.query('INSERT INTO singletons_table (singleton_id, singleton_name, '
-                             's_value, s_recipe, module_name, item_name ) '
-                             'VALUES(:s_id, :n, :v, :r, :m , :i) ',
-                             s_id=singletons_id, n=s_name, v=s_value, r=r_value, m=k, i=k1)
-                    singletons_id += 1
-            if "SCHEMA" in m1:
-                table_name = k1 + '_table'
-                db.query('INSERT INTO modules_table (module_id, module_name, item_name, table_name, recipe_name)'
-                         'VALUES(:module_id, :mname, :iname, :tname, :rname)',
-                         module_id=modules_id, mname=k, iname=k1, tname=table_name, rname=None)
-                modules_id += 1
-                sql_string = 'CREATE TABLE ' + table_name + '  (' + k1 + '_id integer PRIMARY KEY'
-                table_id = k1 + '_id'
-                arg_string = ' (' + table_id
-                val_string = ' (' + ':' + table_id
-                col_list = [table_id]
-                for col_name, col_type in m1["SCHEMA"].items():
-                    sql_string = sql_string + ', ' + col_name + ' ' + col_type
-                    arg_string = arg_string + ', ' + col_name
-                    val_string = val_string + ', ' + ':' + col_name
-                    col_list.append(col_name)
-                sql_string = sql_string + ')'
-                arg_string = arg_string + ')'
-                val_string = val_string + ')'
-                print("\t{}".format(sql_string))
-                print("\t{}".format(arg_string))
-                print("\t{}".format(val_string))
-                db.query(sql_string)
-                count = 0
-                for row in m1["INSTANCE"]:
-                    row.insert(0, count)
-                    row_dict = dict(zip(col_list, row))
-                    print("\t{}".format(row_dict))
-                    db.query('INSERT INTO ' + table_name + arg_string + ' VALUES ' + val_string, **row_dict)
+    for name, algorithm in cs_algorithm.items():
+        print("\n\n**** Initializing {} ****\n".format(name))
+        print("\tAlgorithm {}".format(algorithm["NAME"]))
+        print("\tInitialization sequence {}".format(algorithm["INITIALIZE"]))
 
-                    count += 1
+        for k in algorithm["INITIALIZE"]:
+            print("\n\tModule {}".format(k))
+            m = cs_modules[k]
+            print("\tInitialization sequence: {}".format(m["INITIALIZE"]))
+
+            for k1 in m["INITIALIZE"]:
+                m1 = m[k1]
+                print("\t\t{}.{}.{}:".format(m1["CLASS"], k, k1))
+                if "SINGLETON" in m1:
+                    recipe_name = None
+                    db.query('INSERT INTO modules_table (module_id, module_name, item_name, table_name, recipe_name) '
+                             'VALUES(:mid, :mname, :iname, :tname, :rname)',
+                             mid=modules_id, mname=k, iname=k1, tname="singletons_table", rname=recipe_name)
+                    modules_id += 1
+                    for s_name, s_value in m1["SINGLETON"].items():
+                        r_value = None
+                        if type(s_value) is str:
+                            r_value = s_value
+                            s_value = None
+                        db.query('INSERT INTO singletons_table (singleton_id, singleton_name, '
+                                 's_value, s_recipe, module_name, item_name ) '
+                                 'VALUES(:s_id, :n, :v, :r, :m , :i) ',
+                                 s_id=singletons_id, n=s_name, v=s_value, r=r_value, m=k, i=k1)
+                        singletons_id += 1
+                if "SCHEMA" in m1:
+                    table_name = k1 + '_table'
+                    db.query('INSERT INTO modules_table (module_id, module_name, item_name, table_name, recipe_name)'
+                             'VALUES(:module_id, :mname, :iname, :tname, :rname)',
+                             module_id=modules_id, mname=k, iname=k1, tname=table_name, rname=None)
+                    modules_id += 1
+                    sql_string = 'CREATE TABLE ' + table_name + '  (' + k1 + '_id integer PRIMARY KEY'
+                    table_id = k1 + '_id'
+                    arg_string = ' (' + table_id
+                    val_string = ' (' + ':' + table_id
+                    col_list = [table_id]
+                    for col_name, col_type in m1["SCHEMA"].items():
+                        sql_string = sql_string + ', ' + col_name + ' ' + col_type
+                        arg_string = arg_string + ', ' + col_name
+                        val_string = val_string + ', ' + ':' + col_name
+                        col_list.append(col_name)
+                    sql_string = sql_string + ')'
+                    arg_string = arg_string + ')'
+                    val_string = val_string + ')'
+                    # print("\t{}".format(sql_string))
+                    # print("\t{}".format(arg_string))
+                    # print("\t{}".format(val_string))
+                    db.query(sql_string)
+                    count = 0
+                    for row in m1["INSTANCE"]:
+                        row.insert(0, count)
+                        row_dict = dict(zip(col_list, row))
+                        # print("\t{}".format(row_dict))
+                        db.query('INSERT INTO ' + table_name + arg_string + ' VALUES ' + val_string, **row_dict)
+
+                        count += 1
 
     print("\n***List the Tables***")
     for table in db.get_table_names():
