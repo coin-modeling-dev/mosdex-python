@@ -1,0 +1,273 @@
+{
+  "SYNTAX": "MOSDEX/MOSDEX v1-2/MOSDEXSchemaV1-2.json",
+  "sailcoSolve": {
+    "CLASS": "ALGORITHM",
+    "NAME": "sailcoSolve",
+    "INITIALIZE": ["sailco"]
+  },
+  "sailco": {
+    "CLASS" : "MODULE",
+    "HEADING": {
+      "DESCRIPTION": ["Inventory problem with lagged decision variables"],
+      "VERSION"    : ["1-2"],
+      "REFERENCE"  : ["https://www.ibm.com/support/knowledgecenter/SSSA5P_12.7.1/ilog.odms.ide.help/OPL_Studio/opllanguser/topics/opl_languser_app_areas_pwl_inventory.html"],
+      "AUTHOR"     : ["Jeremy A. Bloom (jeremyblmca@gmail.com)"],
+      "NOTICES"    : ["Copyright © 2019 Jeremy A. Bloom"],
+      "MATH": [
+        "minimize",
+          "sum( t in Periods ) ( RegularCost * Regular[t] ) +",
+          "sum( t in Periods ) ( ExtraCost * Extra[t] ) +",
+          "sum( t in Periods ) ( InventoryCost * Inventory[t] );",
+        "subject to {",
+          "forall( t in Periods )",
+            "ctCapacity[t]: Regular[t] <= Capacity;",
+          "forall( t in Periods )",
+            "ctBoat[t]:",
+              "if (t>1)",
+                "Regular[t] + Extra[t] + Inventory[t-1] - Inventory[t] == Demand[t];",
+              "else //t=1",
+                "Regular[t] + Extra[t] - Inventory[t] == Demand[t] - InitialInventory;",
+        "}"
+      ]
+    },
+    "periods": {
+      "CLASS": "DATA",
+      "TYPE": "INPUT",
+      "SCHEMA": {
+        "period": "INTEGER"
+      },
+      "INSTANCE": [[1], [2], [3], [4]]
+    },
+    "demands": {
+      "CLASS": "DATA",
+      "TYPE": "INPUT",
+      "SCHEMA": {
+        "period": "INTEGER",
+        "demand": "DOUBLE"
+      },
+      "INSTANCE"      : [
+        [1, 40.0],
+        [2, 60.0],
+        [3, 72.0],
+        [4, 25.0]
+      ]
+    },
+    "parameters": {
+      "CLASS": "DATA",
+      "TYPE": "INPUT",
+      "SINGLETON": {
+        "regularCost"     : 400.0,
+        "extraCost"       : 450.0,
+        "capacity"        : 40.0,
+        "initialInventory": 10.0,
+        "inventoryCost"   : 20.0
+      }
+    },
+    "production": {
+      "CLASS": "DATA",
+      "TYPE": "OUTPUT",
+      "SCHEMA": {
+        "period"               : "DOUBLE",
+        "regular"              : "DOUBLE",
+        "extra"                : "DOUBLE",
+        "inventory"            : "DOUBLE",
+        "marginalCapacityValue": "DOUBLE"
+      },
+      "RECIPE": [
+        {"DIRECTIVE": ["SELECT"], "PREDICATE": [
+          "period",
+          "regular.Value AS regular",
+          "extra.Value AS extra",
+          "inventory.Value AS inventory",
+          "ctCapacity.Dual AS marginalCapacityValue"]
+        },
+        {"DIRECTIVE": ["FROM"], "PREDICATE": ["periods"]},
+        {"DIRECTIVE": ["JOIN"], "PREDICATE": ["regular", "USING", "period"]},
+        {"DIRECTIVE": ["JOIN"], "PREDICATE": ["extra", "USING", "period"]},
+        {"DIRECTIVE": ["JOIN"], "PREDICATE": ["inventory", "USING", "period"]},
+        {"DIRECTIVE": ["JOIN"], "PREDICATE": ["ctCapacity", "USING", "period"]}
+      ]
+    },
+    "regular": {
+      "CLASS": "VARIABLE",
+      "TYPE": "CONTINUOUS",
+      "RECIPE": [
+        {"DIRECTIVE": ["QUERY"],"PREDICATE":
+          ["SELECT",
+            "'regular' AS Name",
+            "period",
+            "CONCAT('regular','_', period) AS Column",
+            "'CONTINUOUS' AS Type",
+            "0.0 AS LowerBound",
+            "'infinity' AS UpperBound",
+          "FROM", "periods"]
+        }
+      ]
+    },
+    "extra": {
+      "CLASS": "VARIABLE",
+      "TYPE": "CONTINUOUS",
+      "RECIPE": [
+        {"DIRECTIVE": ["QUERY"],"PREDICATE":
+          ["SELECT",
+          "'extra' AS Name",
+          "period",
+          "CONCAT('extra','_', period) AS Column",
+          "'CONTINUOUS' AS Type",
+          "0.0 AS LowerBound",
+          "'infinity' AS UpperBound",
+          "FROM", "periods"]
+        }
+      ]
+    },
+    "inventory": {
+      "CLASS": "VARIABLE",
+      "TYPE": "CONTINUOUS",
+      "RECIPE": [
+        {"DIRECTIVE": ["QUERY"],"PREDICATE":
+          ["SELECT",
+            "'inventory' AS Name",
+            "period",
+            "CONCAT('inventory','_', period) AS Column",
+            "'CONTINUOUS' AS Type",
+            "0.0 AS LowerBound",
+            "'infinity' AS UpperBound",
+          "FROM", "periods"]
+        }
+      ]
+    },
+    "ctCapacity": {
+      "CLASS": "CONSTRAINT",
+      "TYPE" : "LINEAR",
+      "RECIPE": [
+        {"DIRECTIVE": ["QUERY"],"PREDICATE": [
+          "SELECT",
+            "'ctCapacity' AS Name",
+            "period",
+            "CONCAT('ctCapacity','_', period) AS Row",
+            "'LINEAR' AS Type",
+            "'<=' AS Sense",
+            "parameters.capacity AS RHS",
+          "FROM", "periods"]
+        }
+      ]
+    },
+    "ctBoat": {
+      "CLASS": "CONSTRAINT",
+      "TYPE" : "LINEAR",
+      "RECIPE": [
+        {"DIRECTIVE": ["QUERY"],"PREDICATE": [
+          "SELECT",
+            "'ctBoat' AS Name",
+            "period",
+            "CONCAT('ctBoat','_', period) AS Row",
+            "'LINEAR' AS Type",
+            "'==' AS Sense",
+            "demands.demand AS RHS",
+          "FROM", "periods",
+          "WHERE", "periods.period >1"]
+        }
+      ]
+    },
+    "ctBoat_1": {
+      "CLASS": "CONSTRAINT",
+      "TYPE" : "LINEAR",
+      "RECIPE": [
+        {"DIRECTIVE": ["QUERY"],"PREDICATE": [
+          "SELECT",
+            "'ctBoat_1' AS Name",
+            "period",
+            "'ctBoat_1' AS Row",
+            "'LINEAR' AS Type",
+            "'==' AS Sense",
+            "(demands.demand - parameters.initialInventory) AS RHS",
+          "FROM", "periods",
+          "WHERE", "periods.period ==1"]
+        }
+      ]
+    },
+    "totalCost": {
+      "CLASS": "OBJECTIVE",
+      "TYPE" : "LINEAR",
+      "SINGLETON": {
+        "Name": "totalCost",
+        "Type": "LINEAR",
+        "Row": "totalCost",
+        "Constant": 0.0,
+        "Sense":"MINIMIZE",
+        "Value": null
+      }
+    },
+    "ctCapacity_regular": {
+      "CLASS": "TERM",
+      "TYPE": "LINEAR",
+      "RECIPE": [
+        {"DIRECTIVE": ["QUERY"],"PREDICATE": [
+          "SELECT",
+            "'LINEAR' AS Type" ,
+            "CONCAT('ctCapacity','_', period) AS Row",
+            "CONCAT('regular','_', period) AS Column",
+            "1.0 AS Coefficient",
+          "FROM", "periods"]
+        }
+      ]
+    },
+    "ctBoat_regular": {
+      "CLASS": "TERM",
+      "TYPE": "LINEAR",
+      "RECIPE": [
+        {"DIRECTIVE": ["QUERY"],"PREDICATE": [
+          "SELECT",
+            "'LINEAR' AS Type" ,
+            "CONCAT('ctBoat','_', period) AS Row",
+            "CONCAT('regular','_', period) AS Column",
+            "1.0 AS Coefficient",
+          "FROM", "periods"]
+        }
+      ]
+    },
+    "ctBoat_extra": {
+      "CLASS": "TERM",
+      "TYPE": "LINEAR",
+      "RECIPE": [
+        {"DIRECTIVE": ["QUERY"],"PREDICATE": [
+          "SELECT",
+            "'LINEAR' AS Type" ,
+            "CONCAT('ctBoat','_', period) AS Row",
+            "CONCAT('extra','_', period) AS Column",
+            "1.0 AS Coefficient",
+          "FROM", "periods"]
+        }
+      ]
+    },
+    "ctBoat_inventory": {
+      "CLASS": "TERM",
+      "TYPE": "LINEAR",
+      "RECIPE": [
+        {"DIRECTIVE": ["QUERY"],"PREDICATE": [
+          "SELECT",
+            "'LINEAR' AS Type" ,
+            "CONCAT('ctBoat','_', period) AS Row",
+            "CONCAT('inventory','_', period) AS Column",
+            "-1.0 AS Coefficient",
+          "FROM", "periods"]
+        }
+      ]
+    },
+    "ctBoat_lagged_inventory": {
+      "CLASS": "TERM",
+      "TYPE": "LINEAR",
+      "RECIPE": [
+        {"DIRECTIVE": ["QUERY"],"PREDICATE": [
+          "SELECT",
+            "'LINEAR' AS Type" ,
+            "CONCAT('ctBoat','_', period) AS Row",
+            "CONCAT('inventory','_', (period-1)) AS Column",
+            "1.0 AS Coefficient",
+          "FROM", "periods",
+          "WHERE", "periods.period > 1"]
+        }
+      ]
+    }
+  }
+}
