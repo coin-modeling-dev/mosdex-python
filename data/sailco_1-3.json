@@ -1,0 +1,460 @@
+{
+  "SYNTAX": "MOSDEX/MOSDEX v1-2/MOSDEXSchemaV1-2.json",
+  "sailcoSolve": {
+    "CLASS": "ALGORITHM",
+    "NAME": "sailcoSolve",
+    "INITIALIZE": [
+      "sailco"
+    ]
+  },
+  "sailco": {
+    "CLASS": "MODULE",
+    "HEADING": {
+      "DESCRIPTION": [
+        "Inventory problem with lagged decision variables"
+      ],
+      "VERSION": [
+        "1-2"
+      ],
+      "REFERENCE": [
+        "https://www.ibm.com/support/knowledgecenter/SSSA5P_12.7.1/ilog.odms.ide.help/OPL_Studio/opllanguser/topics/opl_languser_app_areas_pwl_inventory.html"
+      ],
+      "AUTHOR": [
+        "Jeremy A. Bloom (jeremyblmca@gmail.com)"
+      ],
+      "NOTICES": [
+        "Copyright © 2019 Jeremy A. Bloom"
+      ],
+      "MATH": [
+        "minimize",
+        "sum( t in Periods ) ( RegularCost * Regular[t] ) +",
+        "sum( t in Periods ) ( ExtraCost * Extra[t] ) +",
+        "sum( t in Periods ) ( InventoryCost * Inventory[t] );",
+        "subject to {",
+        "forall( t in Periods )",
+        "ctCapacity[t]: Regular[t] <= Capacity;",
+        "forall( t in Periods )",
+        "ctBoat[t]:",
+        "if (t>1)",
+        "Regular[t] + Extra[t] + Inventory[t-1] - Inventory[t] == Demand[t];",
+        "else //t=1",
+        "Regular[t] + Extra[t] - Inventory[t] == Demand[t] - InitialInventory;",
+        "}"
+      ]
+    },
+    "periods": {
+      "CLASS": "DATA",
+      "TYPE": "INPUT",
+      "SCHEMA": {
+        "period": "INTEGER"
+      },
+      "INSTANCE": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ]
+      ]
+    },
+    "demands": {
+      "CLASS": "DATA",
+      "TYPE": "INPUT",
+      "SCHEMA": {
+        "period": "INTEGER",
+        "demand": "DOUBLE"
+      },
+      "INSTANCE": [
+        [
+          1,
+          40.0
+        ],
+        [
+          2,
+          60.0
+        ],
+        [
+          3,
+          72.0
+        ],
+        [
+          4,
+          25.0
+        ]
+      ]
+    },
+    "parameters": {
+      "CLASS": "DATA",
+      "TYPE": "INPUT",
+      "SCHEMA": {
+        "name": "STRING",
+        "value": "DOUBLE"
+      },
+      "INSTANCE": [
+        [
+          "regularCost",
+          400.0
+        ],
+        [
+          "extraCost",
+          450.0
+        ],
+        [
+          "capacity",
+          40.0
+        ],
+        [
+          "initialInventory",
+          10.0
+        ],
+        [
+          "inventoryCost",
+          20.0
+        ]
+      ]
+    },
+    "production": {
+      "CLASS": "DATA",
+      "TYPE": "OUTPUT",
+      "RECIPE": [
+        {
+          "DIRECTIVE": [
+            "SELECT"
+          ],
+          "PREDICATE": [
+            "sailco_periods.period ",
+            "regular.Value AS Regular",
+            "extra.Value AS Extra",
+            "inventory.Value AS Inventory",
+            "ctCapacity.Dual AS MarginalCapacityValue"
+          ]
+        },
+        {
+          "DIRECTIVE": [
+            "FROM"
+          ],
+          "PREDICATE": [
+            "sailco_periods.periods"
+          ]
+        },
+        {
+          "DIRECTIVE": [
+            "JOIN"
+          ],
+          "PREDICATE": [
+            "regular",
+            "USING",
+            "period"
+          ]
+        },
+        {
+          "DIRECTIVE": [
+            "JOIN"
+          ],
+          "PREDICATE": [
+            "extra",
+            "USING",
+            "period"
+          ]
+        },
+        {
+          "DIRECTIVE": [
+            "JOIN"
+          ],
+          "PREDICATE": [
+            "inventory",
+            "USING",
+            "period"
+          ]
+        },
+        {
+          "DIRECTIVE": [
+            "JOIN"
+          ],
+          "PREDICATE": [
+            "ctCapacity",
+            "USING",
+            "period"
+          ]
+        }
+      ]
+    },
+    "regular": {
+      "CLASS": "VARIABLE",
+      "TYPE": "CONTINUOUS",
+      "RECIPE": [
+        {
+          "DIRECTIVE": "SELECT",
+          "PREDICATE": [
+            "period ",
+            "'regular' ||'_' || period AS Column",
+            "0.0 AS LowerBound",
+            "'infinity' AS UpperBound",
+            "sailco_parameters.value AS Objective",
+            "0.0 AS Value"
+          ]
+        },
+        {
+          "DIRECTIVE": "FROM",
+          "PREDICATE": [
+            "sailco_periods", "sailco_parameters"
+          ]
+        },
+        {"DIRECTIVE": "WHERE", "PREDICATE": ["sailco_parameters.name == 'regularCost'"]}
+      ]
+    },
+    "extra": {
+      "CLASS": "VARIABLE",
+      "TYPE": "CONTINUOUS",
+      "RECIPE": [
+        {
+          "DIRECTIVE": "SELECT",
+          "PREDICATE": [
+            "period",
+            "'extra' || '_' || period AS Column",
+            "0.0 AS LowerBound",
+            "'infinity' AS UpperBound",
+            "sailco_parameters.value AS Objective",
+            "0.0 AS Value"
+          ]
+        },
+        {
+          "DIRECTIVE": "FROM",
+          "PREDICATE": [
+            "sailco_periods", "sailco_parameters"
+          ]
+        },
+        {"DIRECTIVE": "WHERE", "PREDICATE": ["sailco_parameters.name == 'extraCost'"]}
+      ]
+    },
+    "inventory": {
+      "CLASS": "VARIABLE",
+      "TYPE": "CONTINUOUS",
+      "RECIPE": [
+        {
+          "DIRECTIVE": "SELECT",
+          "PREDICATE": [
+            "period",
+            "'inventory' || '_' || period AS Column",
+            "0.0 AS LowerBound",
+            "'infinity' AS UpperBound",
+            "sailco_parameters.value AS Objective",
+            "0.0 AS Value"
+          ]
+        },
+        {
+          "DIRECTIVE": "FROM",
+          "PREDICATE": [
+            "sailco_periods", "sailco_parameters"
+          ]
+        },
+        {"DIRECTIVE": "WHERE", "PREDICATE": ["sailco_parameters.name == 'extraCost'"]}
+      ]
+    },
+    "ctCapacity": {
+      "CLASS": "CONSTRAINT",
+      "TYPE": "LINEAR",
+      "RECIPE": [
+        {
+          "DIRECTIVE": "SELECT",
+          "PREDICATE": [
+            "period ",
+            "'ctCapacity' || '_' ||  period AS Row",
+            "'<=' AS Sense",
+            "sailco_parameters.value AS RHS"
+          ]
+        },
+        {
+          "DIRECTIVE": "FROM",
+          "PREDICATE": [
+            "sailco_periods", "sailco_parameters"
+          ]
+        },
+        {
+          "DIRECTIVE": "WHERE",
+          "PREDICATE": [
+            "sailco_parameters.name == 'capacity'"
+          ]
+        }
+      ]
+    },
+    "ctBoat": {
+      "CLASS": "CONSTRAINT",
+      "TYPE": "LINEAR",
+      "RECIPE": [
+        {
+          "DIRECTIVE": "SELECT",
+          "PREDICATE": [
+            "period AS Period",
+            "'ctBoat' || '_' ||  period AS Row",
+            "'==' AS Sense",
+            "demand AS RHS"
+          ]
+        },
+        {
+          "DIRECTIVE": "FROM",
+          "PREDICATE": ["sailco_demands"]
+        },
+        {
+          "DIRECTIVE": "WHERE",
+          "PREDICATE": ["period > 1"]
+        }
+      ]
+    },
+    "ctBoat_1": {
+      "CLASS": "CONSTRAINT",
+      "TYPE": "LINEAR",
+      "RECIPE": [
+        {
+          "DIRECTIVE": "SELECT",
+          "PREDICATE": [
+            "sailco_periods.period ",
+            "'ctBoat_1' AS Row",
+            "'==' AS Sense",
+            "(sailco_demands.demand - sailco_parameters.value) AS RHS"
+          ]
+        },
+        {
+          "DIRECTIVE": "FROM",
+          "PREDICATE": [
+            "sailco_periods", "sailco_parameters", "sailco_demands"
+          ]
+        },
+        {
+          "DIRECTIVE": "WHERE",
+          "PREDICATE": [
+            "sailco_periods.period == 1"
+          ]
+        },
+        {
+          "DIRECTIVE": "AND",
+          "PREDICATE": [
+            "sailco_parameters.name == 'initialInventory'"
+          ]
+        }
+      ]
+    },
+    "totalCost": {
+      "CLASS": "OBJECTIVE",
+      "TYPE": "LINEAR",
+      "RECIPE": [
+        {"DIRECTIVE": "SELECT", "PREDICATE": [
+          "SUM( sailco_regular.objective * sailco_regular.value + sailco_extra.objective * sailco_extra.value + sailco_inventory.objective * sailco_inventory.value )"
+        ]},
+        {"DIRECTIVE": "FROM", "PREDICATE": ["sailco_regular","sailco_extra", "sailco_inventory"]}
+      ]
+    },
+    "ctCapacity_regular": {
+      "CLASS": "TERM",
+      "TYPE": "LINEAR",
+      "RECIPE": [
+        {
+          "DIRECTIVE": "SELECT",
+          "PREDICATE": [
+            "'ctCapacity' || '_' ||  period AS Row",
+            "'regular' || '_' ||  period AS Column",
+            "1.0 AS Coefficient"
+          ]
+        },
+        {
+          "DIRECTIVE": "FROM",
+          "PREDICATE": [
+            "sailco_periods"
+          ]
+        }
+      ]
+    },
+    "ctBoat_regular": {
+      "CLASS": "TERM",
+      "TYPE": "LINEAR",
+      "RECIPE": [
+        {
+          "DIRECTIVE": "SELECT",
+          "PREDICATE": [
+            "'ctBoat' || '_' ||  period AS Row",
+            "'regular' || '_' ||  period AS Column",
+            "1.0 AS Coefficient"
+          ]
+        },
+        {
+          "DIRECTIVE": "FROM",
+          "PREDICATE": [
+            "sailco_periods"
+          ]
+        }
+      ]
+    },
+    "ctBoat_extra": {
+      "CLASS": "TERM",
+      "TYPE": "LINEAR",
+      "RECIPE": [
+        {
+          "DIRECTIVE": "SELECT",
+          "PREDICATE": [
+            "'ctBoat' || '_' ||  period AS Row",
+            "'extra' || '_' ||  period AS Column",
+            "1.0 AS Coefficient"
+          ]
+        },
+        {
+          "DIRECTIVE": "FROM",
+          "PREDICATE": [
+            "sailco_periods"
+          ]
+        }
+      ]
+    },
+    "ctBoat_inventory": {
+      "CLASS": "TERM",
+      "TYPE": "LINEAR",
+      "RECIPE": [
+        {
+          "DIRECTIVE": "SELECT",
+          "PREDICATE": [
+            "'ctBoat' || '_' ||  period AS Row",
+            "'inventory' || '_' ||  period AS Column",
+            "-1.0 AS Coefficient"
+          ]
+        },
+        {
+          "DIRECTIVE": "FROM",
+          "PREDICATE": [
+            "sailco_periods"
+          ]
+        }
+      ]
+    },
+    "ctBoat_lagged_inventory": {
+      "CLASS": "TERM",
+      "TYPE": "LINEAR",
+      "RECIPE": [
+        {
+          "DIRECTIVE": "SELECT",
+          "PREDICATE": [
+            "'ctBoat' || '_' ||  period AS Row",
+            "'inventory' || '_' ||  (period - 1) AS Column",
+            "1.0 AS Coefficient"
+          ]
+        },
+        {
+          "DIRECTIVE": "FROM",
+          "PREDICATE": [
+            "sailco_periods"
+          ]
+        },
+        {
+          "DIRECTIVE": "WHERE",
+          "PREDICATE": [
+            "sailco_periods.period > 1"
+          ]
+        }
+      ]
+    }
+  }
+}
