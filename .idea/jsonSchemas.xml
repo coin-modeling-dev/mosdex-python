@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JsonSchemaMappingsProjectConfiguration">
+    <state>
+      <map>
+        <entry key="Mosdex 1.3">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="Mosdex 1.3" />
+              <option name="relativePathToSchema" value="data/MOSDEXSchemaV1-3-ajk.json" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="path" value="data/sailco_1-3.json" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="data/MOSDEXSchemaV1-3-ajk.json" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
+      </map>
+    </state>
+  </component>
+</project>

@@ -9,7 +9,8 @@
     "SYNTAX": {"type": "string", "format": "uri"}
   },
   "additionalProperties": {
-    "$ref": "#/definitions/MODULE"
+    "$ref1": "#/definitions/MODULE",
+    "$ref2": "#/definitions/ALGORITHM"
   },
   "required": ["SYNTAX"],
   "minProperties": 2,
@@ -21,17 +22,41 @@
       "description": "Placeholder for objects yet to be defined",
       "type": "string"
     },
+
     "ALGORITHM": {
       "title": "ALGORITHM",
       "type": "object",
       "properties": {
-        "CLASS": {"enum": ["ALGORITHM"]},
-        "NAME": {"type": "string"},
-        "HEADING": {"$ref": "#/definitions/HEADING"},
-        "INITIALIZE": {"$ref": "#/definitions/ArrayOfStrings"}
-      }
+        "CLASS": {
+          "enum": [
+            "ALGORITHM"
+          ]
+        },
+        "NAME": {
+          "type": "string"
+        },
+        "HEADING": {
+          "$ref": "#/definitions/HEADING"
+        },
+        "SOLVER_PARAMETERS": {
+          "$ref": "#/definitions/SOLVER_PARAMETERS"
+        },
+        "PATHS": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        },
+        "DEPENDS": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        },
+        "INITIALIZE": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        }
+      },
+      "required": [
+        "CLASS",
+        "NAME"
+      ]
     },
-  
+
     "MODULE": {
       "title": "MODULE",
       "type": "object",
@@ -55,7 +80,10 @@
           {"$ref": "#/definitions/EXPRESSION"}
         ]
       },
-      "required": ["CLASS", "NAME", "HEADING"]
+      "required": [
+        "CLASS",
+        "NAME"
+      ]
     },
   
     "ArrayOfStrings": {
@@ -208,9 +236,15 @@
       "title": "Clause",
       "type": "object",
       "properties": {
-        "DIRECTIVE": {"$ref": "#/definitions/ArrayOfStrings" },
-        "PREDICATE": {"$ref": "#/definitions/ArrayOfStrings" },
-        "DEPENDS": {"$ref": "#/definitions/ArrayOfStrings" }
+        "DIRECTIVE": {
+          "type": "string"
+        },
+        "PREDICATE": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        },
+        "DEPENDS": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        }
       }
     },
     

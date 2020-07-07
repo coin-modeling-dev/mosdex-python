@@ -1,11 +1,16 @@
 {
-  "SYNTAX": "MOSDEX/MOSDEX v1-2/MOSDEXSchemaV1-2.json",
+  "SYNTAX": "MOSDEXSchemaV1-3-ajk.json",
   "sailcoSolve": {
     "CLASS": "ALGORITHM",
     "NAME": "sailcoSolve",
     "INITIALIZE": [
       "sailco"
-    ]
+    ],
+    "HEADING": {
+      "DESCRIPTION": [
+        "Just initialization at this point"
+      ]
+    }
   },
   "sailco": {
     "CLASS": "MODULE",
@@ -61,7 +66,8 @@
         [
           4
         ]
-      ]
+      ],
+      "NAME": "periods"
     },
     "demands": {
       "CLASS": "DATA",
@@ -87,9 +93,11 @@
           4,
           25.0
         ]
-      ]
+      ],
+      "NAME": ""
     },
     "parameters": {
+      "NAME": "parameters",
       "CLASS": "DATA",
       "TYPE": "INPUT",
       "SCHEMA": {
@@ -121,12 +129,11 @@
     },
     "production": {
       "CLASS": "DATA",
+      "NAME": "production",
       "TYPE": "OUTPUT",
       "RECIPE": [
         {
-          "DIRECTIVE": [
-            "SELECT"
-          ],
+          "DIRECTIVE": "SELECT",
           "PREDICATE": [
             "sailco_periods.period ",
             "regular.Value AS Regular",
@@ -136,17 +143,13 @@
           ]
         },
         {
-          "DIRECTIVE": [
-            "FROM"
-          ],
+          "DIRECTIVE": "FROM",
           "PREDICATE": [
             "sailco_periods.periods"
           ]
         },
         {
-          "DIRECTIVE": [
-            "JOIN"
-          ],
+          "DIRECTIVE": "JOIN",
           "PREDICATE": [
             "regular",
             "USING",
@@ -154,9 +157,7 @@
           ]
         },
         {
-          "DIRECTIVE": [
-            "JOIN"
-          ],
+          "DIRECTIVE": "JOIN",
           "PREDICATE": [
             "extra",
             "USING",
@@ -164,9 +165,7 @@
           ]
         },
         {
-          "DIRECTIVE": [
-            "JOIN"
-          ],
+          "DIRECTIVE": "JOIN",
           "PREDICATE": [
             "inventory",
             "USING",
@@ -174,9 +173,7 @@
           ]
         },
         {
-          "DIRECTIVE": [
-            "JOIN"
-          ],
+          "DIRECTIVE": "JOIN",
           "PREDICATE": [
             "ctCapacity",
             "USING",
@@ -203,11 +200,18 @@
         {
           "DIRECTIVE": "FROM",
           "PREDICATE": [
-            "sailco_periods", "sailco_parameters"
+            "sailco_periods",
+            "sailco_parameters"
           ]
         },
-        {"DIRECTIVE": "WHERE", "PREDICATE": ["sailco_parameters.name == 'regularCost'"]}
-      ]
+        {
+          "DIRECTIVE": "WHERE",
+          "PREDICATE": [
+            "sailco_parameters.name == 'regularCost'"
+          ]
+        }
+      ],
+      "NAME": "regular"
     },
     "extra": {
       "CLASS": "VARIABLE",
@@ -227,11 +231,18 @@
         {
           "DIRECTIVE": "FROM",
           "PREDICATE": [
-            "sailco_periods", "sailco_parameters"
+            "sailco_periods",
+            "sailco_parameters"
           ]
         },
-        {"DIRECTIVE": "WHERE", "PREDICATE": ["sailco_parameters.name == 'extraCost'"]}
-      ]
+        {
+          "DIRECTIVE": "WHERE",
+          "PREDICATE": [
+            "sailco_parameters.name == 'extraCost'"
+          ]
+        }
+      ],
+      "NAME": "regular"
     },
     "inventory": {
       "CLASS": "VARIABLE",
@@ -251,11 +262,18 @@
         {
           "DIRECTIVE": "FROM",
           "PREDICATE": [
-            "sailco_periods", "sailco_parameters"
+            "sailco_periods",
+            "sailco_parameters"
           ]
         },
-        {"DIRECTIVE": "WHERE", "PREDICATE": ["sailco_parameters.name == 'extraCost'"]}
-      ]
+        {
+          "DIRECTIVE": "WHERE",
+          "PREDICATE": [
+            "sailco_parameters.name == 'extraCost'"
+          ]
+        }
+      ],
+      "NAME": "inventory"
     },
     "ctCapacity": {
       "CLASS": "CONSTRAINT",
@@ -273,7 +291,8 @@
         {
           "DIRECTIVE": "FROM",
           "PREDICATE": [
-            "sailco_periods", "sailco_parameters"
+            "sailco_periods",
+            "sailco_parameters"
           ]
         },
         {
@@ -282,7 +301,8 @@
             "sailco_parameters.name == 'capacity'"
           ]
         }
-      ]
+      ],
+      "NAME": "ctCapacity"
     },
     "ctBoat": {
       "CLASS": "CONSTRAINT",
@@ -299,13 +319,18 @@
         },
         {
           "DIRECTIVE": "FROM",
-          "PREDICATE": ["sailco_demands"]
+          "PREDICATE": [
+            "sailco_demands"
+          ]
         },
         {
           "DIRECTIVE": "WHERE",
-          "PREDICATE": ["period > 1"]
+          "PREDICATE": [
+            "period > 1"
+          ]
         }
-      ]
+      ],
+      "NAME": "ctBoat"
     },
     "ctBoat_1": {
       "CLASS": "CONSTRAINT",
@@ -338,17 +363,29 @@
             "sailco_parameters.name == 'initialInventory'"
           ]
         }
-      ]
+      ],
+      "NAME": "ctBoat_1"
     },
     "totalCost": {
       "CLASS": "OBJECTIVE",
       "TYPE": "LINEAR",
       "RECIPE": [
-        {"DIRECTIVE": "SELECT", "PREDICATE": [
-          "SUM( sailco_regular.objective * sailco_regular.value + sailco_extra.objective * sailco_extra.value + sailco_inventory.objective * sailco_inventory.value )"
-        ]},
-        {"DIRECTIVE": "FROM", "PREDICATE": ["sailco_regular","sailco_extra", "sailco_inventory"]}
-      ]
+        {
+          "DIRECTIVE": "SELECT",
+          "PREDICATE": [
+            "SUM( sailco_regular.objective * sailco_regular.value + sailco_extra.objective * sailco_extra.value + sailco_inventory.objective * sailco_inventory.value )"
+          ]
+        },
+        {
+          "DIRECTIVE": "FROM",
+          "PREDICATE": [
+            "sailco_regular",
+            "sailco_extra",
+            "sailco_inventory"
+          ]
+        }
+      ],
+      "NAME": "totalCost"
     },
     "ctCapacity_regular": {
       "CLASS": "TERM",
@@ -368,7 +405,8 @@
             "sailco_periods"
           ]
         }
-      ]
+      ],
+      "NAME": "ctCapacity_regular"
     },
     "ctBoat_regular": {
       "CLASS": "TERM",
@@ -388,7 +426,8 @@
             "sailco_periods"
           ]
         }
-      ]
+      ],
+      "NAME": "ctBoat_regular"
     },
     "ctBoat_extra": {
       "CLASS": "TERM",
@@ -408,7 +447,8 @@
             "sailco_periods"
           ]
         }
-      ]
+      ],
+      "NAME": "ctBoat_extra"
     },
     "ctBoat_inventory": {
       "CLASS": "TERM",
@@ -428,7 +468,8 @@
             "sailco_periods"
           ]
         }
-      ]
+      ],
+      "NAME": "ctBoat_inventory"
     },
     "ctBoat_lagged_inventory": {
       "CLASS": "TERM",
@@ -454,7 +495,9 @@
             "sailco_periods.period > 1"
           ]
         }
-      ]
-    }
+      ],
+      "NAME": "ctBoat_lagged_inventory"
+    },
+    "NAME": "ctBoat_lagged_inventory"
   }
 }
