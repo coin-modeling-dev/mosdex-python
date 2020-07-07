@@ -144,7 +144,6 @@ if __name__ == "__main__":
                                              os.path.join(schema_dir, mosdex_schema_file),
                                              do_print=True)
 
-    # print out the high level members of the mosdex problem
     cs_modules = mosdex_members(cs_json, do_print=True)["MODULE"]
     for k, m in cs_modules.items():
         print("\n{}".format(k))
