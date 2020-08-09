@@ -61,13 +61,32 @@
       "title": "MODULE",
       "type": "object",
       "properties": {
-        "CLASS": {"enum": ["MODULE"]},
-        "NAME": {"type": "string"},
-        "HEADING": {"$ref": "#/definitions/HEADING"},
-        "SOLVER_PARAMETERS": {"$ref": "#/definitions/SOLVER_PARAMETERS"},
-        "PATHS": {"$ref": "#/definitions/ArrayOfStrings"},
-        "DEPENDS": {"$ref": "#/definitions/ArrayOfStrings"},
-        "INITIALIZE": {"$ref": "#/definitions/ArrayOfStrings"}
+        "CLASS": {
+          "enum": [
+            "MODULE"
+          ]
+        },
+        "NAME": {
+          "type": "string"
+        },
+        "HEADING": {
+          "$ref": "#/definitions/HEADING"
+        },
+        "SOLVER_PARAMETERS": {
+          "$ref": "#/definitions/SOLVER_PARAMETERS"
+        },
+        "PATHS": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        },
+        "DEPENDS": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        },
+        "INITIALIZE": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        },
+        "METADATA": {
+          "$ref": "#/definitions/ArrayOfObjects"
+        }
       },
       "additionalProperties": {
         "oneOf": [
@@ -85,19 +104,30 @@
         "NAME"
       ]
     },
-  
     "ArrayOfStrings": {
       "title": "ArrayOfStrings",
       "type": "array",
-      "items": {"type": "string"}
+      "items": {
+        "type": "string"
+      }
     },
-    
+    "ArrayOfObjects": {
+      "title": "ArrayOfObjects",
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
     "HEADING": {
       "title": "HEADING",
       "type": "object",
       "properties": {
-        "DESCRIPTION": {"$ref": "#/definitions/ArrayOfStrings"},
-        "VERSION": {"$ref": "#/definitions/ArrayOfStrings"},
+        "DESCRIPTION": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        },
+        "VERSION": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        },
         "REFERENCE": {"$ref": "#/definitions/ArrayOfStrings"},
         "AUTHOR": {"$ref": "#/definitions/ArrayOfStrings"},
         "NOTICES": {"$ref": "#/definitions/ArrayOfStrings"},

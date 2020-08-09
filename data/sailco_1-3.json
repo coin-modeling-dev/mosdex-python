@@ -50,6 +50,13 @@
     "periods": {
       "CLASS": "DATA",
       "TYPE": "INPUT",
+      "METADATA": [
+        {
+          "col_name": "periods",
+          "col_type": "INTEGER",
+          "col_usage": "KEY"
+        }
+      ],
       "SCHEMA": {
         "period": "INTEGER"
       },
