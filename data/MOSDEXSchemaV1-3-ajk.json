@@ -16,13 +16,11 @@
   "minProperties": 2,
   
   "definitions": {
-    
     "Dummy": {
       "title": "Dummy",
       "description": "Placeholder for objects yet to be defined",
       "type": "string"
     },
-
     "ALGORITHM": {
       "title": "ALGORITHM",
       "type": "object",
@@ -56,7 +54,6 @@
         "NAME"
       ]
     },
-
     "MODULE": {
       "title": "MODULE",
       "type": "object",
@@ -83,20 +80,31 @@
         },
         "INITIALIZE": {
           "$ref": "#/definitions/ArrayOfStrings"
-        },
-        "METADATA": {
-          "$ref": "#/definitions/ArrayOfObjects"
         }
       },
       "additionalProperties": {
         "oneOf": [
-          {"$ref": "#/definitions/Table"},
-          {"$ref": "#/definitions/DATA"},
-          {"$ref": "#/definitions/VARIABLE"},
-          {"$ref": "#/definitions/CONSTRAINT"},
-          {"$ref": "#/definitions/OBJECTIVE"},
-          {"$ref": "#/definitions/TERM"},
-          {"$ref": "#/definitions/EXPRESSION"}
+          {
+            "$ref": "#/definitions/Table"
+          },
+          {
+            "$ref": "#/definitions/DATA"
+          },
+          {
+            "$ref": "#/definitions/VARIABLE"
+          },
+          {
+            "$ref": "#/definitions/CONSTRAINT"
+          },
+          {
+            "$ref": "#/definitions/OBJECTIVE"
+          },
+          {
+            "$ref": "#/definitions/TERM"
+          },
+          {
+            "$ref": "#/definitions/EXPRESSION"
+          }
         ]
       },
       "required": [
@@ -111,11 +119,34 @@
         "type": "string"
       }
     },
-    "ArrayOfObjects": {
-      "title": "ArrayOfObjects",
+    "ColumnType": {
+      "title": "ColumnType",
+      "enum": [
+        "STRING",
+        "INTEGER",
+        "BINARY",
+        "DOUBLE",
+        "IEEEDOUBLE"
+      ]
+    },
+    "ColumnUsage": {
+      "title": "ColumnUsage",
+      "enum": [
+        "KEY",
+        "FOREIGN_KEY",
+        "VALUE"
+      ]
+    },
+    "ColumnMetaData": {
+      "col_name": "string",
+      "col_type": "#/definitions/ColumnType",
+      "col_usage": "#/definitions/ColumnUsage"
+    },
+    "ArrayOfColumnMetaData": {
+      "title": "ArrayOfColumnMetaData",
       "type": "array",
       "items": {
-        "type": "object"
+        "$ref": "#/definitions/ColumnMetaData"
       }
     },
     "HEADING": {
@@ -190,17 +221,42 @@
         "TYPE" : {"enum": ["INPUT", "OUTPUT", "AUXILIARY"]},
         "HEADING": {"$ref": "#/definitions/HEADING"},
         "FOR_EACH": {"type": "string"},
-        "INDEX": {"type": "string"},
-        "SCHEMA": {"$ref": "#/definitions/SCHEMA"},
-        "KEYS": {"$ref": "#/definitions/ArrayOfStrings"},
-        "FIELDS": {"$ref": "#/definitions/ArrayOfStrings"},
-        "INSTANCE": {"$ref": "#/definitions/INSTANCE"},
-        "SINGLETON": {"$ref": "#/definitions/SINGLETON"},
-        "RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "UPDATE_RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "IMPORT_FROM": {"type": "string"},
-        "INITIALIZE_FROM": {"type": "string"},
-        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
+        "INDEX": {
+          "type": "string"
+        },
+        "SCHEMA": {
+          "$ref": "#/definitions/SCHEMA"
+        },
+        "KEYS": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        },
+        "FIELDS": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        },
+        "INSTANCE": {
+          "$ref": "#/definitions/INSTANCE"
+        },
+        "SINGLETON": {
+          "$ref": "#/definitions/SINGLETON"
+        },
+        "RECIPE": {
+          "$ref": "#/definitions/RECIPE"
+        },
+        "UPDATE_RECIPE": {
+          "$ref": "#/definitions/RECIPE"
+        },
+        "IMPORT_FROM": {
+          "type": "string"
+        },
+        "INITIALIZE_FROM": {
+          "type": "string"
+        },
+        "EXPORT_TO": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        },
+        "METADATA": {
+          "$ref": "#/definitions/ArrayOfColumnMetaData"
+        }
       },
       "required": ["CLASS", "NAME", "TYPE"],
       "oneOf": [

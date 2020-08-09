@@ -83,6 +83,18 @@
         "period": "INTEGER",
         "demand": "DOUBLE"
       },
+      "METADATA": [
+        {
+          "col_name": "periods",
+          "col_type": "INTEGER",
+          "col_usage": "FOREIGN_KEY"
+        },
+        {
+          "col_name": "demands",
+          "col_type": "DOUBLE",
+          "col_usage": "VALUE"
+        }
+      ],
       "INSTANCE": [
         [
           1,
@@ -111,6 +123,18 @@
         "name": "STRING",
         "value": "DOUBLE"
       },
+      "METADATA": [
+        {
+          "col_name": "parameters",
+          "col_type": "string",
+          "col_usage": "KEY"
+        },
+        {
+          "col_name": "value",
+          "col_type": "DOUBLE",
+          "col_usage": "VALUE"
+        }
+      ],
       "INSTANCE": [
         [
           "regularCost",
