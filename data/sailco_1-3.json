@@ -50,13 +50,11 @@
     "periods": {
       "CLASS": "DATA",
       "TYPE": "INPUT",
-      "METADATA": [
-        {
-          "col_name": "periods",
-          "col_type": "INTEGER",
-          "col_usage": "KEY"
-        }
-      ],
+      "METADATA": {
+        "item_name": "Periods",
+        "item_type": "INTEGER",
+        "item_usage": "KEY"
+      },
       "SCHEMA": {
         "period": "INTEGER"
       },
@@ -83,18 +81,20 @@
         "period": "INTEGER",
         "demand": "DOUBLE"
       },
-      "METADATA": [
-        {
-          "col_name": "periods",
-          "col_type": "INTEGER",
-          "col_usage": "FOREIGN_KEY"
-        },
-        {
-          "col_name": "demands",
-          "col_type": "DOUBLE",
-          "col_usage": "VALUE"
-        }
-      ],
+      "METADATA": {
+        "item_name": [
+          "Periods",
+          "Demands"
+        ],
+        "item_type": [
+          "INTEGER",
+          "DOUBLE"
+        ],
+        "item_usage": [
+          "FOREIGN_KEY",
+          "VALUE"
+        ]
+      },
       "INSTANCE": [
         [
           1,
@@ -123,18 +123,20 @@
         "name": "STRING",
         "value": "DOUBLE"
       },
-      "METADATA": [
-        {
-          "col_name": "parameters",
-          "col_type": "string",
-          "col_usage": "KEY"
-        },
-        {
-          "col_name": "value",
-          "col_type": "DOUBLE",
-          "col_usage": "VALUE"
-        }
-      ],
+      "METADATA": {
+        "item_name": [
+          "Name",
+          "Value"
+        ],
+        "item_type": [
+          "STRING",
+          "DOUBLE"
+        ],
+        "item_usage": [
+          "KEY",
+          "VALUE"
+        ]
+      },
       "INSTANCE": [
         [
           "regularCost",
@@ -162,6 +164,29 @@
       "CLASS": "DATA",
       "NAME": "production",
       "TYPE": "OUTPUT",
+      "METADATA": {
+        "item_name": [
+          "Periods",
+          "Regular",
+          "Extra",
+          "Inventory",
+          "MarginalCapacityValue"
+        ],
+        "item_type": [
+          "INTEGER",
+          "DOUBLE",
+          "DOUBLE",
+          "DOUBLE",
+          "DOUBLE"
+        ],
+        "item_usage": [
+          "FOREIGN_KEY",
+          "VALUE",
+          "VALUE",
+          "VALUE",
+          "DUAL"
+        ]
+      },
       "RECIPE": [
         {
           "DIRECTIVE": "SELECT",
@@ -216,6 +241,32 @@
     "regular": {
       "CLASS": "VARIABLE",
       "TYPE": "CONTINUOUS",
+      "METADATA": {
+        "item_name": [
+          "Periods",
+          "Column",
+          "LowerBound",
+          "UpperBound",
+          "Objective",
+          "Value"
+        ],
+        "item_type": [
+          "INTEGER",
+          "STRING",
+          "DOUBLE",
+          "DOUBLE",
+          "DOUBLE",
+          "DOUBLE"
+        ],
+        "item_usage": [
+          "FOREIGN_KEY",
+          "LABEL",
+          "VALUE",
+          "VALUE",
+          "VALUE",
+          "VALUE"
+        ]
+      },
       "RECIPE": [
         {
           "DIRECTIVE": "SELECT",
@@ -247,6 +298,32 @@
     "extra": {
       "CLASS": "VARIABLE",
       "TYPE": "CONTINUOUS",
+      "METADATA": {
+        "item_name": [
+          "Periods",
+          "Column",
+          "LowerBound",
+          "UpperBound",
+          "Objective",
+          "Value"
+        ],
+        "item_type": [
+          "INTEGER",
+          "STRING",
+          "DOUBLE",
+          "DOUBLE",
+          "DOUBLE",
+          "DOUBLE"
+        ],
+        "item_usage": [
+          "FOREIGN_KEY",
+          "LABEL",
+          "VALUE",
+          "VALUE",
+          "VALUE",
+          "VALUE"
+        ]
+      },
       "RECIPE": [
         {
           "DIRECTIVE": "SELECT",
@@ -278,6 +355,32 @@
     "inventory": {
       "CLASS": "VARIABLE",
       "TYPE": "CONTINUOUS",
+      "METADATA": {
+        "item_name": [
+          "Periods",
+          "Column",
+          "LowerBound",
+          "UpperBound",
+          "Objective",
+          "Value"
+        ],
+        "item_type": [
+          "INTEGER",
+          "STRING",
+          "DOUBLE",
+          "DOUBLE",
+          "DOUBLE",
+          "DOUBLE"
+        ],
+        "item_usage": [
+          "FOREIGN_KEY",
+          "LABEL",
+          "VALUE",
+          "VALUE",
+          "VALUE",
+          "VALUE"
+        ]
+      },
       "RECIPE": [
         {
           "DIRECTIVE": "SELECT",
@@ -309,6 +412,26 @@
     "ctCapacity": {
       "CLASS": "CONSTRAINT",
       "TYPE": "LINEAR",
+      "METADATA": {
+        "item_name": [
+          "Periods",
+          "Row",
+          "Sense",
+          "RHS"
+        ],
+        "item_type": [
+          "INTEGER",
+          "STRING",
+          "STRING",
+          "DOUBLE"
+        ],
+        "item_usage": [
+          "FOREIGN_KEY",
+          "LABEL",
+          "SENSE",
+          "VALUE"
+        ]
+      },
       "RECIPE": [
         {
           "DIRECTIVE": "SELECT",
@@ -338,6 +461,26 @@
     "ctBoat": {
       "CLASS": "CONSTRAINT",
       "TYPE": "LINEAR",
+      "METADATA": {
+        "item_name": [
+          "Periods",
+          "Row",
+          "Sense",
+          "RHS"
+        ],
+        "item_type": [
+          "INTEGER",
+          "STRING",
+          "STRING",
+          "DOUBLE"
+        ],
+        "item_usage": [
+          "FOREIGN_KEY",
+          "LABEL",
+          "SENSE",
+          "VALUE"
+        ]
+      },
       "RECIPE": [
         {
           "DIRECTIVE": "SELECT",
@@ -366,6 +509,26 @@
     "ctBoat_1": {
       "CLASS": "CONSTRAINT",
       "TYPE": "LINEAR",
+      "METADATA": {
+        "item_name": [
+          "Periods",
+          "Row",
+          "Sense",
+          "RHS"
+        ],
+        "item_type": [
+          "INTEGER",
+          "STRING",
+          "STRING",
+          "DOUBLE"
+        ],
+        "item_usage": [
+          "FOREIGN_KEY",
+          "LABEL",
+          "SENSE",
+          "VALUE"
+        ]
+      },
       "RECIPE": [
         {
           "DIRECTIVE": "SELECT",
@@ -400,6 +563,17 @@
     "totalCost": {
       "CLASS": "OBJECTIVE",
       "TYPE": "LINEAR",
+      "METADATA": {
+        "item_name": [
+          "Value"
+        ],
+        "item_type": [
+          "DOUBLE"
+        ],
+        "item_usage": [
+          "OBJECTIVE_VALUE"
+        ]
+      },
       "RECIPE": [
         {
           "DIRECTIVE": "SELECT",
@@ -421,6 +595,23 @@
     "ctCapacity_regular": {
       "CLASS": "TERM",
       "TYPE": "LINEAR",
+      "METADATA": {
+        "item_name": [
+          "Row",
+          "Column",
+          "Value"
+        ],
+        "item_type": [
+          "STRING",
+          "STRING",
+          "DOUBLE"
+        ],
+        "item_usage": [
+          "ROW_INDEX",
+          "COL_INDEX",
+          "VALUE"
+        ]
+      },
       "RECIPE": [
         {
           "DIRECTIVE": "SELECT",
@@ -442,6 +633,23 @@
     "ctBoat_regular": {
       "CLASS": "TERM",
       "TYPE": "LINEAR",
+      "METADATA": {
+        "item_name": [
+          "Row",
+          "Column",
+          "Value"
+        ],
+        "item_type": [
+          "STRING",
+          "STRING",
+          "DOUBLE"
+        ],
+        "item_usage": [
+          "ROW_INDEX",
+          "COL_INDEX",
+          "VALUE"
+        ]
+      },
       "RECIPE": [
         {
           "DIRECTIVE": "SELECT",
@@ -463,6 +671,23 @@
     "ctBoat_extra": {
       "CLASS": "TERM",
       "TYPE": "LINEAR",
+      "METADATA": {
+        "item_name": [
+          "Row",
+          "Column",
+          "Value"
+        ],
+        "item_type": [
+          "STRING",
+          "STRING",
+          "DOUBLE"
+        ],
+        "item_usage": [
+          "ROW_INDEX",
+          "COL_INDEX",
+          "VALUE"
+        ]
+      },
       "RECIPE": [
         {
           "DIRECTIVE": "SELECT",
@@ -484,6 +709,23 @@
     "ctBoat_inventory": {
       "CLASS": "TERM",
       "TYPE": "LINEAR",
+      "METADATA": {
+        "item_name": [
+          "Row",
+          "Column",
+          "Value"
+        ],
+        "item_type": [
+          "STRING",
+          "STRING",
+          "DOUBLE"
+        ],
+        "item_usage": [
+          "ROW_INDEX",
+          "COL_INDEX",
+          "VALUE"
+        ]
+      },
       "RECIPE": [
         {
           "DIRECTIVE": "SELECT",
@@ -505,6 +747,23 @@
     "ctBoat_lagged_inventory": {
       "CLASS": "TERM",
       "TYPE": "LINEAR",
+      "METADATA": {
+        "item_name": [
+          "Row",
+          "Column",
+          "Value"
+        ],
+        "item_type": [
+          "STRING",
+          "STRING",
+          "DOUBLE"
+        ],
+        "item_usage": [
+          "ROW_INDEX",
+          "COL_INDEX",
+          "VALUE"
+        ]
+      },
       "RECIPE": [
         {
           "DIRECTIVE": "SELECT",

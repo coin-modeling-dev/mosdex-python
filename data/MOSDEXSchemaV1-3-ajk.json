@@ -119,34 +119,50 @@
         "type": "string"
       }
     },
-    "ColumnType": {
-      "title": "ColumnType",
-      "enum": [
-        "STRING",
-        "INTEGER",
-        "BINARY",
-        "DOUBLE",
-        "IEEEDOUBLE"
-      ]
-    },
-    "ColumnUsage": {
-      "title": "ColumnUsage",
-      "enum": [
-        "KEY",
-        "FOREIGN_KEY",
-        "VALUE"
-      ]
-    },
-    "ColumnMetaData": {
-      "col_name": "string",
-      "col_type": "#/definitions/ColumnType",
-      "col_usage": "#/definitions/ColumnUsage"
-    },
-    "ArrayOfColumnMetaData": {
-      "title": "ArrayOfColumnMetaData",
+    "ItemTypeArray": {
+      "title": "ItemTypeArray",
       "type": "array",
       "items": {
-        "$ref": "#/definitions/ColumnMetaData"
+        "enum": [
+          "STRING",
+          "INTEGER",
+          "BINARY",
+          "DOUBLE",
+          "IEEEDOUBLE"
+        ]
+      }
+    },
+    "ItemUsageArray": {
+      "title": "ItemUsageArray",
+      "type": "array",
+      "items": {
+        "enum": [
+          "KEY",
+          "FOREIGN_KEY",
+          "VALUE",
+          "DUAL",
+          "REDUCED_COST",
+          "LABEL",
+          "SENSE",
+          "OBJECTIVE_VALUE",
+          "ROW_INDEX",
+          "COL_INDEX"
+        ]
+      }
+    },
+    "ItemMetaData": {
+      "title": "ItemMetaData",
+      "type": "object",
+      "properties": {
+        "item_name": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        },
+        "item_type": {
+          "$ref": "#/definitions/ItemTypeArray"
+        },
+        "item_usage": {
+          "$ref": "#/definitions/ItemUsageArray"
+        }
       }
     },
     "HEADING": {
@@ -186,27 +202,72 @@
         "FOR_EACH": {"type": "string"},
         "INDEX": {"type": "string"},
         "SCHEMA": {"$ref": "#/definitions/SCHEMA"},
-        "KEYS": {"$ref": "#/definitions/ArrayOfStrings"},
-        "FIELDS": {"$ref": "#/definitions/ArrayOfStrings"},
-        "INSTANCE": {"$ref": "#/definitions/INSTANCE"},
-        "SINGLETON": {"$ref": "#/definitions/SINGLETON"},
-        "RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "UPDATE_RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "IMPORT_FROM": {"type": "string"},
-        "INITIALIZE_FROM": {"type": "string"},
-        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
+        "KEYS": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        },
+        "FIELDS": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        },
+        "INSTANCE": {
+          "$ref": "#/definitions/INSTANCE"
+        },
+        "SINGLETON": {
+          "$ref": "#/definitions/SINGLETON"
+        },
+        "RECIPE": {
+          "$ref": "#/definitions/RECIPE"
+        },
+        "UPDATE_RECIPE": {
+          "$ref": "#/definitions/RECIPE"
+        },
+        "IMPORT_FROM": {
+          "type": "string"
+        },
+        "INITIALIZE_FROM": {
+          "type": "string"
+        },
+        "EXPORT_TO": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        }
       },
-      "required": ["CLASS", "NAME", "TYPE"],
+      "required": [
+        "CLASS",
+        "NAME",
+        "TYPE",
+        "METADATA"
+      ],
       "oneOf": [
-        {"required": ["INSTANCE"]},
-        {"required": ["SINGLETON"]},
-        {"required": ["RECIPE"]},
-        {"required": ["IMPORT_FROM"]}
+        {
+          "required": [
+            "INSTANCE"
+          ]
+        },
+        {
+          "required": [
+            "SINGLETON"
+          ]
+        },
+        {
+          "required": [
+            "RECIPE"
+          ]
+        },
+        {
+          "required": [
+            "IMPORT_FROM"
+          ]
+        }
       ],
       "dependencies": {
-        "FIELDS": ["INSTANCE"],
-        "INSTANCE": ["SCHEMA"],
-        "INITIALIZE_FROM": ["UPDATE_RECIPE"]
+        "FIELDS": [
+          "INSTANCE"
+        ],
+        "INSTANCE": [
+          "SCHEMA"
+        ],
+        "INITIALIZE_FROM": [
+          "UPDATE_RECIPE"
+        ]
       },
       "additionalProperties": true
     },
@@ -255,20 +316,47 @@
           "$ref": "#/definitions/ArrayOfStrings"
         },
         "METADATA": {
-          "$ref": "#/definitions/ArrayOfColumnMetaData"
+          "$ref": "#/definitions/ItemMetaData"
         }
       },
-      "required": ["CLASS", "NAME", "TYPE"],
+      "required": [
+        "CLASS",
+        "NAME",
+        "TYPE",
+        "METADATA"
+      ],
       "oneOf": [
-        {"required": ["INSTANCE"]},
-        {"required": ["SINGLETON"]},
-        {"required": ["RECIPE"]},
-        {"required": ["IMPORT_FROM"]}
+        {
+          "required": [
+            "INSTANCE"
+          ]
+        },
+        {
+          "required": [
+            "SINGLETON"
+          ]
+        },
+        {
+          "required": [
+            "RECIPE"
+          ]
+        },
+        {
+          "required": [
+            "IMPORT_FROM"
+          ]
+        }
       ],
       "dependencies": {
-        "FIELDS": ["INSTANCE"],
-        "INSTANCE": ["SCHEMA"],
-        "INITIALIZE_FROM": ["UPDATE_RECIPE"]
+        "FIELDS": [
+          "INSTANCE"
+        ],
+        "INSTANCE": [
+          "SCHEMA"
+        ],
+        "INITIALIZE_FROM": [
+          "UPDATE_RECIPE"
+        ]
       },
       "additionalProperties": false
     },
@@ -375,26 +463,73 @@
             },
             "Value": {"type": ["number", "null", "string"]}
           },
-          "additionalProperties": {"type": ["string", "number", "null"]},
-          "required": ["Name", "Type", "Column"]
+          "additionalProperties": {
+            "type": [
+              "string",
+              "number",
+              "null"
+            ]
+          },
+          "required": [
+            "Name",
+            "Type",
+            "Column"
+          ]
         },
-        "RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "UPDATE_RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "IMPORT_FROM": {"type": "string"},
-        "INITIALIZE_FROM": {"type": "string"},
-        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
+        "RECIPE": {
+          "$ref": "#/definitions/RECIPE"
+        },
+        "UPDATE_RECIPE": {
+          "$ref": "#/definitions/RECIPE"
+        },
+        "IMPORT_FROM": {
+          "type": "string"
+        },
+        "INITIALIZE_FROM": {
+          "type": "string"
+        },
+        "EXPORT_TO": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        }
       },
-      "required": ["CLASS", "NAME", "TYPE"],
+      "required": [
+        "CLASS",
+        "NAME",
+        "TYPE",
+        "METADATA"
+      ],
       "oneOf": [
-        {"required": ["INSTANCE"]},
-        {"required": ["SINGLETON"]},
-        {"required": ["RECIPE"]},
-        {"required": ["IMPORT_FROM"]}
+        {
+          "required": [
+            "INSTANCE"
+          ]
+        },
+        {
+          "required": [
+            "SINGLETON"
+          ]
+        },
+        {
+          "required": [
+            "RECIPE"
+          ]
+        },
+        {
+          "required": [
+            "IMPORT_FROM"
+          ]
+        }
       ],
       "dependencies": {
-        "FIELDS": ["INSTANCE"],
-        "INSTANCE": ["SCHEMA"],
-        "INITIALIZE_FROM": ["UPDATE_RECIPE"]
+        "FIELDS": [
+          "INSTANCE"
+        ],
+        "INSTANCE": [
+          "SCHEMA"
+        ],
+        "INITIALIZE_FROM": [
+          "UPDATE_RECIPE"
+        ]
       },
       "additionalProperties": false
     },
@@ -434,26 +569,75 @@
             "Sense": {"enum": ["LE", "EQ", "GE", "<=", "==", ">="]},
             "RHS": {"type": "number"}
           },
-          "additionalProperties": {"type": ["string", "number", "null"]},
-          "required": ["Name", "Type", "Row", "Sense", "RHS"]
+          "additionalProperties": {
+            "type": [
+              "string",
+              "number",
+              "null"
+            ]
+          },
+          "required": [
+            "Name",
+            "Type",
+            "Row",
+            "Sense",
+            "RHS"
+          ]
         },
-        "RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "UPDATE_RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "IMPORT_FROM": {"type": "string"},
-        "INITIALIZE_FROM": {"type": "string"},
-        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
+        "RECIPE": {
+          "$ref": "#/definitions/RECIPE"
+        },
+        "UPDATE_RECIPE": {
+          "$ref": "#/definitions/RECIPE"
+        },
+        "IMPORT_FROM": {
+          "type": "string"
+        },
+        "INITIALIZE_FROM": {
+          "type": "string"
+        },
+        "EXPORT_TO": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        }
       },
-      "required": ["CLASS", "NAME", "TYPE"],
+      "required": [
+        "CLASS",
+        "NAME",
+        "TYPE",
+        "METADATA"
+      ],
       "oneOf": [
-        {"required": ["INSTANCE"]},
-        {"required": ["SINGLETON"]},
-        {"required": ["RECIPE"]},
-        {"required": ["IMPORT_FROM"]}
+        {
+          "required": [
+            "INSTANCE"
+          ]
+        },
+        {
+          "required": [
+            "SINGLETON"
+          ]
+        },
+        {
+          "required": [
+            "RECIPE"
+          ]
+        },
+        {
+          "required": [
+            "IMPORT_FROM"
+          ]
+        }
       ],
       "dependencies": {
-        "FIELDS": ["INSTANCE"],
-        "INSTANCE": ["SCHEMA"],
-        "INITIALIZE_FROM": ["UPDATE_RECIPE"]
+        "FIELDS": [
+          "INSTANCE"
+        ],
+        "INSTANCE": [
+          "SCHEMA"
+        ],
+        "INITIALIZE_FROM": [
+          "UPDATE_RECIPE"
+        ]
       },
       "additionalProperties": false
     },
@@ -495,26 +679,74 @@
             "Constant": {"type": "number"},
             "Value": {"type": ["number", "null", "string"]}
           },
-          "additionalProperties": {"type": ["string", "number", "null"]},
-          "required": ["Name", "Type", "Row", "Sense"]
+          "additionalProperties": {
+            "type": [
+              "string",
+              "number",
+              "null"
+            ]
+          },
+          "required": [
+            "Name",
+            "Type",
+            "Row",
+            "Sense"
+          ]
         },
-        "RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "UPDATE_RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "IMPORT_FROM": {"type": "string"},
-        "INITIALIZE_FROM": {"type": "string"},
-        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
+        "RECIPE": {
+          "$ref": "#/definitions/RECIPE"
+        },
+        "UPDATE_RECIPE": {
+          "$ref": "#/definitions/RECIPE"
+        },
+        "IMPORT_FROM": {
+          "type": "string"
+        },
+        "INITIALIZE_FROM": {
+          "type": "string"
+        },
+        "EXPORT_TO": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        }
       },
-      "required": ["CLASS", "NAME", "TYPE"],
+      "required": [
+        "CLASS",
+        "NAME",
+        "TYPE",
+        "METADATA"
+      ],
       "oneOf": [
-        {"required": ["INSTANCE"]},
-        {"required": ["SINGLETON"]},
-        {"required": ["RECIPE"]},
-        {"required": ["IMPORT_FROM"]}
+        {
+          "required": [
+            "INSTANCE"
+          ]
+        },
+        {
+          "required": [
+            "SINGLETON"
+          ]
+        },
+        {
+          "required": [
+            "RECIPE"
+          ]
+        },
+        {
+          "required": [
+            "IMPORT_FROM"
+          ]
+        }
       ],
       "dependencies": {
-        "FIELDS": ["INSTANCE"],
-        "INSTANCE": ["SCHEMA"],
-        "INITIALIZE_FROM": ["UPDATE_RECIPE"]
+        "FIELDS": [
+          "INSTANCE"
+        ],
+        "INSTANCE": [
+          "SCHEMA"
+        ],
+        "INITIALIZE_FROM": [
+          "UPDATE_RECIPE"
+        ]
       },
       "additionalProperties": false
     },
@@ -555,26 +787,74 @@
             "Column": {"type": ["string", "integer"]},
             "Coefficient": {"type": "number"}
           },
-          "additionalProperties": {"type": ["string", "number", "null"]},
-          "required": ["Type", "Row", "Column", "Coefficient"]
+          "additionalProperties": {
+            "type": [
+              "string",
+              "number",
+              "null"
+            ]
+          },
+          "required": [
+            "Type",
+            "Row",
+            "Column",
+            "Coefficient"
+          ]
         },
-        "RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "UPDATE_RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "IMPORT_FROM": {"type": "string"},
-        "INITIALIZE_FROM": {"type": "string"},
-        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
+        "RECIPE": {
+          "$ref": "#/definitions/RECIPE"
+        },
+        "UPDATE_RECIPE": {
+          "$ref": "#/definitions/RECIPE"
+        },
+        "IMPORT_FROM": {
+          "type": "string"
+        },
+        "INITIALIZE_FROM": {
+          "type": "string"
+        },
+        "EXPORT_TO": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        }
       },
-      "required": ["CLASS", "NAME", "TYPE"],
+      "required": [
+        "CLASS",
+        "NAME",
+        "TYPE",
+        "METADATA"
+      ],
       "oneOf": [
-        {"required": ["INSTANCE"]},
-        {"required": ["SINGLETON"]},
-        {"required": ["RECIPE"]},
-        {"required": ["IMPORT_FROM"]}
+        {
+          "required": [
+            "INSTANCE"
+          ]
+        },
+        {
+          "required": [
+            "SINGLETON"
+          ]
+        },
+        {
+          "required": [
+            "RECIPE"
+          ]
+        },
+        {
+          "required": [
+            "IMPORT_FROM"
+          ]
+        }
       ],
       "dependencies": {
-        "FIELDS": ["INSTANCE"],
-        "INSTANCE": ["SCHEMA"],
-        "INITIALIZE_FROM": ["UPDATE_RECIPE"]
+        "FIELDS": [
+          "INSTANCE"
+        ],
+        "INSTANCE": [
+          "SCHEMA"
+        ],
+        "INITIALIZE_FROM": [
+          "UPDATE_RECIPE"
+        ]
       },
       "additionalProperties": false
     },
@@ -623,26 +903,74 @@
             "Column": {"type": ["string", "integer"]},
             "Coefficient": {"type": ["number"]}
           },
-          "additionalProperties": {"type": ["string", "number", "null"]},
-          "required": ["Type", "Row", "Column", "Coefficient"]
+          "additionalProperties": {
+            "type": [
+              "string",
+              "number",
+              "null"
+            ]
+          },
+          "required": [
+            "Type",
+            "Row",
+            "Column",
+            "Coefficient"
+          ]
         },
-        "RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "UPDATE_RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "IMPORT_FROM": {"type": "string"},
-        "INITIALIZE_FROM": {"type": "string"},
-        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
+        "RECIPE": {
+          "$ref": "#/definitions/RECIPE"
+        },
+        "UPDATE_RECIPE": {
+          "$ref": "#/definitions/RECIPE"
+        },
+        "IMPORT_FROM": {
+          "type": "string"
+        },
+        "INITIALIZE_FROM": {
+          "type": "string"
+        },
+        "EXPORT_TO": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        }
       },
-      "required": ["CLASS", "NAME", "TYPE"],
+      "required": [
+        "CLASS",
+        "NAME",
+        "TYPE",
+        "METADATA"
+      ],
       "oneOf": [
-        {"required": ["INSTANCE"]},
-        {"required": ["SINGLETON"]},
-        {"required": ["RECIPE"]},
-        {"required": ["IMPORT_FROM"]}
+        {
+          "required": [
+            "INSTANCE"
+          ]
+        },
+        {
+          "required": [
+            "SINGLETON"
+          ]
+        },
+        {
+          "required": [
+            "RECIPE"
+          ]
+        },
+        {
+          "required": [
+            "IMPORT_FROM"
+          ]
+        }
       ],
       "dependencies": {
-        "FIELDS": ["INSTANCE"],
-        "INSTANCE": ["SCHEMA"],
-        "INITIALIZE_FROM": ["UPDATE_RECIPE"]
+        "FIELDS": [
+          "INSTANCE"
+        ],
+        "INSTANCE": [
+          "SCHEMA"
+        ],
+        "INITIALIZE_FROM": [
+          "UPDATE_RECIPE"
+        ]
       },
       "additionalProperties": false
     },
@@ -682,26 +1010,74 @@
             "Column2": {"type": ["string", "integer"]},
             "Coefficient": {"type": "number"}
           },
-          "additionalProperties": {"type": ["string", "number", "null"]},
-          "required": ["Type", "Row", "Column1", "Column2"]
+          "additionalProperties": {
+            "type": [
+              "string",
+              "number",
+              "null"
+            ]
+          },
+          "required": [
+            "Type",
+            "Row",
+            "Column1",
+            "Column2"
+          ]
         },
-        "RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "UPDATE_RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "IMPORT_FROM": {"type": "string"},
-        "INITIALIZE_FROM": {"type": "string"},
-        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
+        "RECIPE": {
+          "$ref": "#/definitions/RECIPE"
+        },
+        "UPDATE_RECIPE": {
+          "$ref": "#/definitions/RECIPE"
+        },
+        "IMPORT_FROM": {
+          "type": "string"
+        },
+        "INITIALIZE_FROM": {
+          "type": "string"
+        },
+        "EXPORT_TO": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        }
       },
-      "required": ["CLASS", "NAME", "TYPE"],
+      "required": [
+        "CLASS",
+        "NAME",
+        "TYPE",
+        "METADATA"
+      ],
       "oneOf": [
-        {"required": ["INSTANCE"]},
-        {"required": ["SINGLETON"]},
-        {"required": ["RECIPE"]},
-        {"required": ["IMPORT_FROM"]}
+        {
+          "required": [
+            "INSTANCE"
+          ]
+        },
+        {
+          "required": [
+            "SINGLETON"
+          ]
+        },
+        {
+          "required": [
+            "RECIPE"
+          ]
+        },
+        {
+          "required": [
+            "IMPORT_FROM"
+          ]
+        }
       ],
       "dependencies": {
-        "FIELDS": ["INSTANCE"],
-        "INSTANCE": ["SCHEMA"],
-        "INITIALIZE_FROM": ["UPDATE_RECIPE"]
+        "FIELDS": [
+          "INSTANCE"
+        ],
+        "INSTANCE": [
+          "SCHEMA"
+        ],
+        "INITIALIZE_FROM": [
+          "UPDATE_RECIPE"
+        ]
       },
       "additionalProperties": false
     },
@@ -737,26 +1113,73 @@
             "Row": {"type": ["string", "integer"]},
             "Expression": {"type": "string"}
           },
-          "additionalProperties": {"type": ["string", "number", "null"]},
-          "required": ["Type", "Row", "Expression"]
+          "additionalProperties": {
+            "type": [
+              "string",
+              "number",
+              "null"
+            ]
+          },
+          "required": [
+            "Type",
+            "Row",
+            "Expression"
+          ]
         },
-        "RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "UPDATE_RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "IMPORT_FROM": {"type": "string"},
-        "INITIALIZE_FROM": {"type": "string"},
-        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
+        "RECIPE": {
+          "$ref": "#/definitions/RECIPE"
+        },
+        "UPDATE_RECIPE": {
+          "$ref": "#/definitions/RECIPE"
+        },
+        "IMPORT_FROM": {
+          "type": "string"
+        },
+        "INITIALIZE_FROM": {
+          "type": "string"
+        },
+        "EXPORT_TO": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        }
       },
-      "required": ["CLASS", "NAME", "TYPE"],
+      "required": [
+        "CLASS",
+        "NAME",
+        "TYPE",
+        "METADATA"
+      ],
       "oneOf": [
-        {"required": ["INSTANCE"]},
-        {"required": ["SINGLETON"]},
-        {"required": ["RECIPE"]},
-        {"required": ["IMPORT_FROM"]}
+        {
+          "required": [
+            "INSTANCE"
+          ]
+        },
+        {
+          "required": [
+            "SINGLETON"
+          ]
+        },
+        {
+          "required": [
+            "RECIPE"
+          ]
+        },
+        {
+          "required": [
+            "IMPORT_FROM"
+          ]
+        }
       ],
       "dependencies": {
-        "FIELDS": ["INSTANCE"],
-        "INSTANCE": ["SCHEMA"],
-        "INITIALIZE_FROM": ["UPDATE_RECIPE"]
+        "FIELDS": [
+          "INSTANCE"
+        ],
+        "INSTANCE": [
+          "SCHEMA"
+        ],
+        "INITIALIZE_FROM": [
+          "UPDATE_RECIPE"
+        ]
       },
       "additionalProperties": false
     },
@@ -773,27 +1196,72 @@
         "FOR_EACH": {"type": "string"},
         "INDEX": {"type": "string"},
         "SCHEMA": {"$ref": "#/definitions/SCHEMA"},
-        "KEYS": {"$ref": "#/definitions/ArrayOfStrings"},
-        "FIELDS": {"$ref": "#/definitions/ArrayOfStrings"},
-        "INSTANCE": {"$ref": "#/definitions/INSTANCE"},
-        "SINGLETON": {"$ref": "#/definitions/SINGLETON"},
-        "RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "UPDATE_RECIPE": {"$ref": "#/definitions/RECIPE"},
-        "IMPORT_FROM": {"type": "string"},
-        "INITIALIZE_FROM": {"type": "string"},
-        "EXPORT_TO": {"$ref": "#/definitions/ArrayOfStrings"}
+        "KEYS": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        },
+        "FIELDS": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        },
+        "INSTANCE": {
+          "$ref": "#/definitions/INSTANCE"
+        },
+        "SINGLETON": {
+          "$ref": "#/definitions/SINGLETON"
+        },
+        "RECIPE": {
+          "$ref": "#/definitions/RECIPE"
+        },
+        "UPDATE_RECIPE": {
+          "$ref": "#/definitions/RECIPE"
+        },
+        "IMPORT_FROM": {
+          "type": "string"
+        },
+        "INITIALIZE_FROM": {
+          "type": "string"
+        },
+        "EXPORT_TO": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        }
       },
-      "required": ["CLASS", "NAME", "TYPE"],
+      "required": [
+        "CLASS",
+        "NAME",
+        "TYPE",
+        "METADATA"
+      ],
       "oneOf": [
-        {"required": ["INSTANCE"]},
-        {"required": ["SINGLETON"]},
-        {"required": ["RECIPE"]},
-        {"required": ["IMPORT_FROM"]}
+        {
+          "required": [
+            "INSTANCE"
+          ]
+        },
+        {
+          "required": [
+            "SINGLETON"
+          ]
+        },
+        {
+          "required": [
+            "RECIPE"
+          ]
+        },
+        {
+          "required": [
+            "IMPORT_FROM"
+          ]
+        }
       ],
       "dependencies": {
-        "FIELDS": ["INSTANCE"],
-        "INSTANCE": ["SCHEMA"],
-        "INITIALIZE_FROM": ["UPDATE_RECIPE"]
+        "FIELDS": [
+          "INSTANCE"
+        ],
+        "INSTANCE": [
+          "SCHEMA"
+        ],
+        "INITIALIZE_FROM": [
+          "UPDATE_RECIPE"
+        ]
       },
       "additionalProperties": false
     }

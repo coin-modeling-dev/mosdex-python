@@ -109,6 +109,10 @@ def process_recipe(mosdex: dict, mod_name, tab_name, do_print=True):
     mosdex_db.query(create_string)
 
 
+def process_metadata(mosdex: dict, mod_name, tab_name, tab_type, metadata: dict, do_print=True):
+    mosdex_db = mosdex['db']
+
+
 def process_initialize(mosdex: dict, module_list=None, do_print=False):
     mosdex_db = mosdex["db"]
 
@@ -136,6 +140,25 @@ def process_initialize(mosdex: dict, module_list=None, do_print=False):
             c1 = m1["CLASS"]
             t1 = m1['TYPE']
             table_name = module_name + '_' + item
+            metadata = m1["METADATA"]
+            if type(metadata["item_name"]) is list:
+                for i in range(len(metadata["item_name"])):
+                    n = metadata["item_name"][i]
+                    t = metadata["item_type"][i]
+                    u = metadata["item_usage"][i]
+                    mosdex_db.query('INSERT INTO metadata_table (module_name, item_name, class_name,'
+                                    'name, type, usage)'
+                                    'VALUES(:mname, :iname, :cname, :nname, :tname, :uname)',
+                                    mname=module_name, iname=item, cname=c1,
+                                    nname=n, tname=t,
+                                    uname=u)
+            else:
+                mosdex_db.query('INSERT INTO metadata_table (module_name, item_name, class_name,'
+                                'name, type, usage)'
+                                'VALUES(:mname, :iname, :cname, :nname, :tname, :uname)',
+                                mname=module_name, iname=item, cname=c1,
+                                nname=metadata["item_name"], tname=metadata["item_type"],
+                                uname=metadata["item_usage"])
             if do_print:
                 print("\t\t{}.{}.{}:".format(c1, module_name, item))
             if "RECIPE" in m1:
@@ -213,6 +236,12 @@ def initialize_database(db_file: str, do_print=False):
     db.query('CREATE TABLE singletons_table ('
              'module_name text, item_name text, class_name text, singleton_name text, '
              's_value number, s_recipe text)')
+
+    # Create the metadata table
+    db.query('DROP TABLE IF EXISTS metadata_table')
+    db.query('CREATE TABLE metadata_table ('
+             'module_name text, item_name text, class_name text, '
+             'name text, type text, usage text )')
 
     return db
 
