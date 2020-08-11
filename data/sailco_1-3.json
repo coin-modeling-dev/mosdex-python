@@ -181,9 +181,9 @@
         ],
         "item_usage": [
           "FOREIGN_KEY",
-          "VALUE",
-          "VALUE",
-          "VALUE",
+          "VARIABLE_VALUE",
+          "VARIABLE_VALUE",
+          "VARIABLE_VALUE",
           "DUAL"
         ]
       },
@@ -261,10 +261,10 @@
         "item_usage": [
           "FOREIGN_KEY",
           "KEY",
-          "VALUE",
-          "VALUE",
-          "VALUE",
-          "VALUE"
+          "LOWER_BOUND",
+          "UPPER_BOUND",
+          "OBJECTIVE_COEFFICIENT",
+          "VARIABLE_VALUE"
         ]
       },
       "RECIPE": [
@@ -318,10 +318,10 @@
         "item_usage": [
           "FOREIGN_KEY",
           "KEY",
-          "VALUE",
-          "VALUE",
-          "VALUE",
-          "VALUE"
+          "LOWER_BOUND",
+          "UPPER_BOUND",
+          "OBJECTIVE_COEFFICIENT",
+          "VARIABLE_VALUE"
         ]
       },
       "RECIPE": [
@@ -375,10 +375,10 @@
         "item_usage": [
           "FOREIGN_KEY",
           "KEY",
-          "VALUE",
-          "VALUE",
-          "VALUE",
-          "VALUE"
+          "LOWER_BOUND",
+          "UPPER_BOUND",
+          "OBJECTIVE_COEFFICIENT",
+          "VARIABLE_VALUE"
         ]
       },
       "RECIPE": [
@@ -417,19 +417,22 @@
           "Periods",
           "Row",
           "Sense",
-          "RHS"
+          "RHS",
+          "Value"
         ],
         "item_type": [
           "INTEGER",
           "STRING",
           "STRING",
+          "DOUBLE",
           "DOUBLE"
         ],
         "item_usage": [
           "FOREIGN_KEY",
           "KEY",
           "SENSE",
-          "VALUE"
+          "RHS",
+          "CONSTRAINT_VALUE"
         ]
       },
       "RECIPE": [
@@ -466,19 +469,22 @@
           "Periods",
           "Row",
           "Sense",
-          "RHS"
+          "RHS",
+          "Value"
         ],
         "item_type": [
           "INTEGER",
           "STRING",
           "STRING",
+          "DOUBLE",
           "DOUBLE"
         ],
         "item_usage": [
           "FOREIGN_KEY",
           "KEY",
           "SENSE",
-          "VALUE"
+          "RHS",
+          "CONSTRAINT_VALUE"
         ]
       },
       "RECIPE": [
@@ -514,19 +520,22 @@
           "Periods",
           "Row",
           "Sense",
-          "RHS"
+          "RHS",
+          "Value"
         ],
         "item_type": [
           "INTEGER",
           "STRING",
           "STRING",
+          "DOUBLE",
           "DOUBLE"
         ],
         "item_usage": [
           "FOREIGN_KEY",
           "KEY",
           "SENSE",
-          "VALUE"
+          "RHS",
+          "CONSTRAINT_VALUE"
         ]
       },
       "RECIPE": [
@@ -609,7 +618,7 @@
         "item_usage": [
           "FOREIGN_KEY",
           "FOREIGN_KEY",
-          "VALUE"
+          "MATRIX_ENTRY"
         ]
       },
       "RECIPE": [
@@ -647,7 +656,7 @@
         "item_usage": [
           "FOREIGN_KEY",
           "FOREIGN_KEY",
-          "VALUE"
+          "MATRIX_ENTRY"
         ]
       },
       "RECIPE": [
@@ -685,7 +694,7 @@
         "item_usage": [
           "FOREIGN_KEY",
           "FOREIGN_KEY",
-          "VALUE"
+          "MATRIX_ENTRY"
         ]
       },
       "RECIPE": [
@@ -723,7 +732,7 @@
         "item_usage": [
           "FOREIGN_KEY",
           "FOREIGN_KEY",
-          "VALUE"
+          "MATRIX_ENTRY"
         ]
       },
       "RECIPE": [
@@ -761,7 +770,7 @@
         "item_usage": [
           "FOREIGN_KEY",
           "FOREIGN_KEY",
-          "VALUE"
+          "MATRIX_ENTRY"
         ]
       },
       "RECIPE": [

@@ -142,11 +142,14 @@
           "VALUE",
           "DUAL",
           "REDUCED_COST",
-          "LABEL",
           "SENSE",
-          "OBJECTIVE_VALUE",
-          "ROW_INDEX",
-          "COL_INDEX"
+          "LOWER_BOUND",
+          "UPPER_BOUND",
+          "VARIABLE_VALUE",
+          "CONSTRAINT_VALUE",
+          "MATRIX_ENTRY",
+          "OBJECTIVE_MULTIPLIER",
+          "OBJECTIVE_VALUE"
         ]
       }
     },
