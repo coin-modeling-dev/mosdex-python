@@ -260,7 +260,7 @@
         ],
         "item_usage": [
           "FOREIGN_KEY",
-          "COL_INDEX",
+          "KEY",
           "VALUE",
           "VALUE",
           "VALUE",
@@ -317,7 +317,7 @@
         ],
         "item_usage": [
           "FOREIGN_KEY",
-          "COL_INDEX",
+          "KEY",
           "VALUE",
           "VALUE",
           "VALUE",
@@ -374,7 +374,7 @@
         ],
         "item_usage": [
           "FOREIGN_KEY",
-          "COL_INDEX",
+          "KEY",
           "VALUE",
           "VALUE",
           "VALUE",
@@ -427,7 +427,7 @@
         ],
         "item_usage": [
           "FOREIGN_KEY",
-          "ROW_INDEX",
+          "KEY",
           "SENSE",
           "VALUE"
         ]
@@ -476,7 +476,7 @@
         ],
         "item_usage": [
           "FOREIGN_KEY",
-          "ROW_INDEX",
+          "KEY",
           "SENSE",
           "VALUE"
         ]
@@ -524,7 +524,7 @@
         ],
         "item_usage": [
           "FOREIGN_KEY",
-          "ROW_INDEX",
+          "KEY",
           "SENSE",
           "VALUE"
         ]
@@ -607,8 +607,8 @@
           "DOUBLE"
         ],
         "item_usage": [
-          "ROW_INDEX",
-          "COL_INDEX",
+          "FOREIGN_KEY",
+          "FOREIGN_KEY",
           "VALUE"
         ]
       },
@@ -645,8 +645,8 @@
           "DOUBLE"
         ],
         "item_usage": [
-          "ROW_INDEX",
-          "COL_INDEX",
+          "FOREIGN_KEY",
+          "FOREIGN_KEY",
           "VALUE"
         ]
       },
@@ -683,8 +683,8 @@
           "DOUBLE"
         ],
         "item_usage": [
-          "ROW_INDEX",
-          "COL_INDEX",
+          "FOREIGN_KEY",
+          "FOREIGN_KEY",
           "VALUE"
         ]
       },
@@ -721,8 +721,8 @@
           "DOUBLE"
         ],
         "item_usage": [
-          "ROW_INDEX",
-          "COL_INDEX",
+          "FOREIGN_KEY",
+          "FOREIGN_KEY",
           "VALUE"
         ]
       },
@@ -759,8 +759,8 @@
           "DOUBLE"
         ],
         "item_usage": [
-          "ROW_INDEX",
-          "COL_INDEX",
+          "FOREIGN_KEY",
+          "FOREIGN_KEY",
           "VALUE"
         ]
       },
