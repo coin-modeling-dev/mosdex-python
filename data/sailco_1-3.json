@@ -441,7 +441,7 @@
           "PREDICATE": [
             "period ",
             "'ctCapacity' || '_' ||  period AS Row",
-            "'<=' AS Sense",
+            "'LE' AS Sense",
             "sailco_parameters.value AS RHS"
           ]
         },
@@ -493,7 +493,7 @@
           "PREDICATE": [
             "period AS Period",
             "'ctBoat' || '_' ||  period AS Row",
-            "'==' AS Sense",
+            "'EQ' AS Sense",
             "demand AS RHS"
           ]
         },
@@ -542,22 +542,23 @@
         {
           "DIRECTIVE": "SELECT",
           "PREDICATE": [
-            "sailco_periods.period ",
+            "sailco_demands.period ",
             "'ctBoat_1' AS Row",
-            "'==' AS Sense",
+            "'EQ' AS Sense",
             "(sailco_demands.demand - sailco_parameters.value) AS RHS"
           ]
         },
         {
           "DIRECTIVE": "FROM",
           "PREDICATE": [
-            "sailco_periods", "sailco_parameters", "sailco_demands"
+            "sailco_parameters",
+            "sailco_demands"
           ]
         },
         {
           "DIRECTIVE": "WHERE",
           "PREDICATE": [
-            "sailco_periods.period == 1"
+            "sailco_demands.period == 1"
           ]
         },
         {

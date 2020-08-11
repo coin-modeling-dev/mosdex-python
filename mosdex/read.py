@@ -243,23 +243,6 @@ def initialize_database(db_file: str, do_print=False):
              'module_name text, item_name text, class_name text, '
              'name text, type text, usage text )')
 
-    # Create the columns table
-    db.query('DROP TABLE IF EXISTS columns_table')
-    db.query('CREATE TABLE columns_table ('
-             'module text, column_name text KEY, lower_bound double, '
-             'upper_bound double, value double, reduced_cost double )')
-
-    # Create the rows table
-    db.query('DROP TABLE IF EXISTS rows_table')
-    db.query('CREATE TABLE rows_table ('
-             'module text, row_name text KEY, lower_bound double, '
-             'upper_bound double, value double, dual double )')
-
-    # Create the matrix table
-    db.query('DROP TABLE IF EXISTS matrix_table')
-    db.query('CREATE TABLE matrix_table ('
-             'module text, row_name text FOREIGN_KEY, col_name text FOREIGN_KEY, entry double )')
-
     return db
 
 
