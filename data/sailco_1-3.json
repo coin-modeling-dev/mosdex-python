@@ -759,7 +759,7 @@
       "TYPE": "LINEAR",
       "METADATA": {
         "item_name": [
-          "CtBoat",
+          "Row",
           "Column",
           "Value"
         ],
@@ -778,7 +778,7 @@
         {
           "DIRECTIVE": "SELECT",
           "PREDICATE": [
-            "'ctBoat' || '_' ||  period AS CtBoat",
+            "'ctBoat' || '_' ||  period AS Row",
             "'inventory' || '_' ||  (period - 1) AS Column",
             "1.0 AS Coefficient"
           ]

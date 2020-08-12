@@ -2,7 +2,8 @@ import json
 import os
 from jsonschema import Draft7Validator
 import pprint
-import records
+
+from mosdex import records
 
 
 def mosdex_open_and_test(problem_file, schema_file, do_print=False):
@@ -263,7 +264,7 @@ if __name__ == "__main__":
     file_dir = "data"
     mosdex_problem_file = "sailco_1-3.json"
     mosdex_schema_file = "MOSDEXSchemaV1-3-ajk.json"
-    records_db = 'sqlite://'
+    records_db = 'sqlite://sailco.db'
 
     cs_json, is_valid = mosdex_open_and_test(os.path.join(file_dir, mosdex_problem_file),
                                              os.path.join(schema_dir, mosdex_schema_file),

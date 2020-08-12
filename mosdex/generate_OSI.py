@@ -1,4 +1,5 @@
 from mosdex.read import *
+import pandas as pd
 
 
 def initialize_tables(mosdex_problem: dict):
@@ -110,7 +111,62 @@ def populate_dependents(mosdex_problem: dict, do_print=False):
             db_.query('INSERT INTO dependent_variables (module, variable, '
                       'type, lower_bound, upper_bound) '
                       'VALUES(:m, :v, :t, :l , :u) ',
-                      m=m_, v="Objective", t="LINEAR", l="infinity", u="infinity")
+                      m=m_, v="OBJECTIVE", t="LINEAR", l="infinity", u="infinity")
+
+
+def populate_expressions(mosdex_problem: dict, do_print=False):
+    db_ = mosdex_problem["db"]
+
+    # Linear Expressions
+    linear_expressions = db_.query('SELECT module, variable FROM dependent_variables WHERE type == "LINEAR"')
+
+    if linear_expressions is not None:
+
+        # Drop the linear_expressions table
+        db_.query('DROP TABLE IF EXISTS linear_expressions')
+
+        # Load the TERMS tables into the terms_df dataframe
+        terms_tables = db_.query('SELECT module_name, table_name FROM modules_table WHERE class_name == "TERM"')
+        terms_df_list = []
+        for term in terms_tables:
+            entries = db_.query('SELECT * FROM ' + term.table_name)
+            module = term.module_name
+            df = entries.export('df')
+            module_df = pd.DataFrame([module] * df.shape[0], columns=["Module"])
+            df = pd.concat([module_df, df], axis=1)
+            if do_print:
+                print(df.columns)
+                print(df.shape)
+            terms_df_list.append(df)
+
+        terms_df = pd.concat(terms_df_list)
+
+        if do_print:
+            print("\nSize of TERMS dataframe {}".format(terms_df.shape))
+
+        # Append the linear_objective if any
+        if mosdex_problem["linear_objective"] is not None:
+            objective_df = pd.DataFrame(mosdex_problem["linear_objective"])
+            terms_df = pd.concat([terms_df, objective_df])
+
+            if do_print:
+                print("\nSize of TERMS dataframe {}".format(terms_df.shape))
+
+        # Now add the data to linear_expressions
+        if do_print:
+            print("\nLinear Expressions:")
+
+        for r in linear_expressions:
+            if do_print:
+                print("\t{} {} ".format(r.module, r.variable))
+
+            # Select the rows in terms_df for the module / dependent variable
+            mask_m = terms_df["Module"].values == r.module
+            mask_v = terms_df["Row"].values == r.variable
+            mask = [m and v for m, v in zip(mask_m, mask_v)]
+
+            # upload
+            terms_df[mask].to_sql("linear_expressions", con=db_.get_engine(), if_exists='append')
 
 
 if __name__ == "__main__":
@@ -133,14 +189,17 @@ if __name__ == "__main__":
     initialize_tables(mosdexProblem)
     populate_independents(mosdexProblem, do_print=True)
     populate_dependents(mosdexProblem, do_print=True)
+    populate_expressions(mosdexProblem, do_print=True)
 
     # List the tables
     print("\n***List the Tables***")
-    db = mosdexProblem['db']
     print("\n**{}**".format("Independent Variables"))
+    db = mosdexProblem['db']
     print(db.query('SELECT * FROM independent_variables').dataset)
     print("\n**{}**".format("Dependent Variables"))
     print(db.query('SELECT * FROM dependent_variables').dataset)
+    print("\n**{}**".format("Linear Expressions"))
+    print(db.query('SELECT * FROM linear_expressions').dataset)
     # for table in db.get_table_names():
     #     print("\n**{}**".format(table))
     #     print(db.query('SELECT * FROM ' + table).dataset)
