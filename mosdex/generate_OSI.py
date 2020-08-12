@@ -182,23 +182,27 @@ if __name__ == "__main__":
                      'problem_file': os.path.join(file_dir, mosdex_problem_file),
                      'schema_file': os.path.join(file_dir, mosdex_schema_file)}
 
-    initialize_mosdex(mosdexProblem, do_print=False)
+    initialize_mosdex(mosdexProblem, do_print=True)
     process_algorithm(mosdexProblem, do_print=False)
 
     # Commence generation of base structure
     initialize_tables(mosdexProblem)
-    populate_independents(mosdexProblem, do_print=True)
-    populate_dependents(mosdexProblem, do_print=True)
-    populate_expressions(mosdexProblem, do_print=True)
+    populate_independents(mosdexProblem, do_print=False)
+    populate_dependents(mosdexProblem, do_print=False)
+    populate_expressions(mosdexProblem, do_print=False)
 
     # List the tables
     print("\n***List the Tables***")
-    print("\n**{}**".format("Independent Variables"))
     db = mosdexProblem['db']
+    print("\n**{}**".format("Modules"))
+    print(db.query('SELECT * FROM modules_table').dataset)
+    print("\n**{}**".format("Metadata"))
+    print(db.query('SELECT * FROM metadata_table').dataset)
+    print("\n**{}**".format("Independent Variables"))
     print(db.query('SELECT * FROM independent_variables').dataset)
     print("\n**{}**".format("Dependent Variables"))
     print(db.query('SELECT * FROM dependent_variables').dataset)
-    print("\n**{}**".format("Linear Expressions"))
+    print("\n**{}**".format("Linear Expressions (Matrix Entries)"))
     print(db.query('SELECT * FROM linear_expressions').dataset)
     # for table in db.get_table_names():
     #     print("\n**{}**".format(table))

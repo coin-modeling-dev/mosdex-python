@@ -16,14 +16,14 @@ def mosdex_open_and_test(problem_file, schema_file, do_print=False):
     if do_print:
         if not valid:
             print("NO: Mosdex problem {} is not a valid instance of Mosdex schema {}".
-                  format(mosdex_problem_file, mosdex_schema_file))
+                  format(problem_file, schema_file))
             pp = pprint.PrettyPrinter(indent=4)
             for error in sorted(validator.iter_errors(problem_json), key=str):
                 print()
                 pp.pprint(error.message)
         else:
             print("YES: Mosdex problem {} is a valid instance of Mosdex schema {}".
-                  format(mosdex_problem_file, mosdex_schema_file))
+                  format(problem_file, schema_file))
 
         print()
     return problem_json, valid
