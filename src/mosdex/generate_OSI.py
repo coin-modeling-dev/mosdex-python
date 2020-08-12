@@ -166,7 +166,7 @@ def populate_expressions(mosdex_problem: dict, do_print=False):
             mask = [m and v for m, v in zip(mask_m, mask_v)]
 
             # upload
-            terms_df[mask].to_sql("linear_expressions", con=db_.get_engine(), if_exists='append')
+            terms_df[mask].to_sql("linear_expressions", con=db_.get_engine(), if_exists='append', index=False)
 
 
 if __name__ == "__main__":
@@ -198,9 +198,9 @@ if __name__ == "__main__":
     print(db.query('SELECT * FROM modules_table').dataset)
     print("\n**{}**".format("Metadata"))
     print(db.query('SELECT * FROM metadata_table').dataset)
-    print("\n**{}**".format("Independent Variables"))
+    print("\n**{}**".format("Independent Variables (Columns)"))
     print(db.query('SELECT * FROM independent_variables').dataset)
-    print("\n**{}**".format("Dependent Variables"))
+    print("\n**{}**".format("Dependent Variables (Rows)"))
     print(db.query('SELECT * FROM dependent_variables').dataset)
     print("\n**{}**".format("Linear Expressions (Matrix Entries)"))
     print(db.query('SELECT * FROM linear_expressions').dataset)
