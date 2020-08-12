@@ -7,3 +7,6 @@ Package is in `mosdex-python/mosdex`
 The experimental version of MOSDEX Schema and some example files are in `mosdex-python/data`
 
 PDFs of the output are in `mosdex-python/data`
+
+The package includes a copy of `records.py` from my fork of the (excellent) `records` package from `pypi`
+* https://pypi.org/project/records/
