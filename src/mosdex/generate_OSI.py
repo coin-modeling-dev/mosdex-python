@@ -207,3 +207,17 @@ if __name__ == "__main__":
     # for table in db.get_table_names():
     #     print("\n**{}**".format(table))
     #     print(db.query('SELECT * FROM ' + table).dataset)
+
+    # Look at KEYS
+    print("\n**{}**".format("KEYS"))
+    keys = db.query('SELECT module_name, item_name, name FROM metadata_table WHERE usage == "KEY"')
+    for key in keys:
+        key_string = "_".join([key['module_name'], key['item_name'], key['name']])
+        print("\tKEY: \t{}".format(key_string))
+        where_clause = ' WHERE usage = "FOREIGN_KEY" AND name == "' + key['name'] + '"' + \
+                       ' AND NOT module_name == "' + key['module_name '] + '"' + ' AND NOT item_name == "' + key
+        foreign_keys = db.query('SELECT module_name, item_name, name FROM metadata_table ' + where_clause)
+        print("\tDEPENDENCIES: \t{}".format(key_string))
+        for fkey in foreign_keys:
+            fkey_string = "_".join([fkey['module_name'], fkey['item_name'], fkey['name']])
+            print("\t              \t{}".format(fkey_string))

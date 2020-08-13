@@ -47,33 +47,6 @@
         "}"
       ]
     },
-    "periods": {
-      "CLASS": "DATA",
-      "TYPE": "INPUT",
-      "METADATA": {
-        "item_name": "Periods",
-        "item_type": "INTEGER",
-        "item_usage": "KEY"
-      },
-      "SCHEMA": {
-        "period": "INTEGER"
-      },
-      "INSTANCE": [
-        [
-          1
-        ],
-        [
-          2
-        ],
-        [
-          3
-        ],
-        [
-          4
-        ]
-      ],
-      "NAME": "periods"
-    },
     "demands": {
       "CLASS": "DATA",
       "TYPE": "INPUT",
@@ -91,7 +64,7 @@
           "DOUBLE"
         ],
         "item_usage": [
-          "FOREIGN_KEY",
+          "KEY",
           "VALUE"
         ]
       },
@@ -191,7 +164,7 @@
         {
           "DIRECTIVE": "SELECT",
           "PREDICATE": [
-            "sailco_periods.period ",
+            "sailco_demands.period ",
             "regular.Value AS Regular",
             "extra.Value AS Extra",
             "inventory.Value AS Inventory",
@@ -201,7 +174,7 @@
         {
           "DIRECTIVE": "FROM",
           "PREDICATE": [
-            "sailco_periods.periods"
+            "sailco_demands.periods"
           ]
         },
         {
@@ -282,7 +255,7 @@
         {
           "DIRECTIVE": "FROM",
           "PREDICATE": [
-            "sailco_periods",
+            "sailco_demands",
             "sailco_parameters"
           ]
         },
@@ -339,7 +312,7 @@
         {
           "DIRECTIVE": "FROM",
           "PREDICATE": [
-            "sailco_periods",
+            "sailco_demands",
             "sailco_parameters"
           ]
         },
@@ -396,7 +369,7 @@
         {
           "DIRECTIVE": "FROM",
           "PREDICATE": [
-            "sailco_periods",
+            "sailco_demands",
             "sailco_parameters"
           ]
         },
@@ -448,7 +421,7 @@
         {
           "DIRECTIVE": "FROM",
           "PREDICATE": [
-            "sailco_periods",
+            "sailco_demands",
             "sailco_parameters"
           ]
         },
@@ -634,7 +607,7 @@
         {
           "DIRECTIVE": "FROM",
           "PREDICATE": [
-            "sailco_periods"
+            "sailco_demands"
           ]
         }
       ],
@@ -672,7 +645,7 @@
         {
           "DIRECTIVE": "FROM",
           "PREDICATE": [
-            "sailco_periods"
+            "sailco_demands"
           ]
         }
       ],
@@ -710,7 +683,7 @@
         {
           "DIRECTIVE": "FROM",
           "PREDICATE": [
-            "sailco_periods"
+            "sailco_demands"
           ]
         }
       ],
@@ -748,7 +721,7 @@
         {
           "DIRECTIVE": "FROM",
           "PREDICATE": [
-            "sailco_periods"
+            "sailco_demands"
           ]
         }
       ],
@@ -786,13 +759,13 @@
         {
           "DIRECTIVE": "FROM",
           "PREDICATE": [
-            "sailco_periods"
+            "sailco_demands"
           ]
         },
         {
           "DIRECTIVE": "WHERE",
           "PREDICATE": [
-            "sailco_periods.period > 1"
+            "sailco_demands.period > 1"
           ]
         }
       ],
