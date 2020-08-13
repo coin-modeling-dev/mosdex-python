@@ -4,7 +4,7 @@ import pprint
 
 from jsonschema import Draft7Validator
 
-from mosdex import records
+from mosdex import records, read
 
 
 def mosdex_open_and_test(problem_file, schema_file, do_print=False):

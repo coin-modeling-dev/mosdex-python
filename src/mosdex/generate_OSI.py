@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 
-from mosdex import initialize_mosdex, process_algorithm
+from src.mosdex.read_MOSDEX import process_algorithm, initialize_mosdex
 
 
 def initialize_tables(mosdex_problem: dict):
@@ -25,7 +25,7 @@ def populate_independents(mosdex_problem: dict, do_print=False):
 
     # Get list of independent variables
     sql = 'SELECT module_name, item_name, class_name, type_name, table_name ' \
-          'FROM modules_table WHERE class_name == "VARIABLE"'
+          'FROM modules_table WHERE class_name is "VARIABLE"'
 
     independent_variables = db_.query(sql)
 
@@ -69,7 +69,7 @@ def populate_dependents(mosdex_problem: dict, do_print=False):
 
     # Get list of dependent variables
     sql = 'SELECT module_name, item_name, class_name, type_name, table_name ' \
-          'FROM modules_table WHERE class_name == "CONSTRAINT"'
+          'FROM modules_table WHERE class_name is "CONSTRAINT"'
 
     dependent_variables = db_.query(sql)
 
@@ -120,7 +120,7 @@ def populate_expressions(mosdex_problem: dict, do_print=False):
     db_ = mosdex_problem["db"]
 
     # Linear Expressions
-    linear_expressions = db_.query('SELECT module, variable FROM dependent_variables WHERE type == "LINEAR"')
+    linear_expressions = db_.query('SELECT module, variable FROM dependent_variables WHERE type is "LINEAR"')
 
     if linear_expressions is not None:
 
@@ -128,7 +128,7 @@ def populate_expressions(mosdex_problem: dict, do_print=False):
         db_.query('DROP TABLE IF EXISTS linear_expressions')
 
         # Load the TERMS tables into the terms_df dataframe
-        terms_tables = db_.query('SELECT module_name, table_name FROM modules_table WHERE class_name == "TERM"')
+        terms_tables = db_.query('SELECT module_name, table_name FROM modules_table WHERE class_name is "TERM"')
         terms_df_list = []
         for term in terms_tables:
             entries = db_.query('SELECT * FROM ' + term.table_name)
