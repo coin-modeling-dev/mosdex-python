@@ -137,9 +137,7 @@
       "type": "array",
       "items": {
         "enum": [
-          "KEY",
-          "FOREIGN_KEY",
-          "VALUE",
+          "PARAMETER",
           "DUAL",
           "REDUCED_COST",
           "SENSE",
@@ -150,6 +148,18 @@
           "MATRIX_ENTRY",
           "OBJECTIVE_MULTIPLIER",
           "OBJECTIVE_VALUE"
+        ]
+      }
+    },
+    "KeyArray": {
+      "title": "KeyArray",
+      "type": "array",
+      "items": {
+        "enum": [
+          "KEY",
+          "FOREIGN_KEY",
+          "ROW_INDEX",
+          "COL_INDEX"
         ]
       }
     },
@@ -165,6 +175,12 @@
         },
         "item_usage": {
           "$ref": "#/definitions/ItemUsageArray"
+        },
+        "item_key": {
+          "$ref": "#/definitions/KeyArray"
+        },
+        "item_source": {
+          "$ref": "#/definitions/ArrayOfStrings"
         }
       }
     },

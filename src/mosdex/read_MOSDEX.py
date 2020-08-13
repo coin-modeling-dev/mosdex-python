@@ -3,7 +3,8 @@ import os
 import pprint
 
 from jsonschema import Draft7Validator
-from records import Database
+
+from mosdex import records, read
 
 
 def mosdex_open_and_test(problem_file, schema_file, do_print=False):
@@ -110,10 +111,6 @@ def process_recipe(mosdex: dict, mod_name, tab_name, do_print=True):
     mosdex_db.query(create_string)
 
 
-def process_metadata(mosdex: dict, mod_name, tab_name, tab_type, metadata: dict, do_print=True):
-    mosdex_db = mosdex['db']
-
-
 def process_initialize(mosdex: dict, module_list=None, do_print=False):
     mosdex_db = mosdex["db"]
 
@@ -147,19 +144,21 @@ def process_initialize(mosdex: dict, module_list=None, do_print=False):
                     n = metadata["item_name"][i]
                     t = metadata["item_type"][i]
                     u = metadata["item_usage"][i]
+                    k = metadata["item_key"][i]
+                    s = metadata["item_source"][i]
                     mosdex_db.query('INSERT INTO metadata_table (module_name, item_name, class_name,'
-                                    'name, type, usage)'
-                                    'VALUES(:mname, :iname, :cname, :nname, :tname, :uname)',
+                                    'name, type, usage, key_type, source)'
+                                    'VALUES(:mname, :iname, :cname, :nname, :tname, :uname,:kname, :sname)',
                                     mname=module_name, iname=item, cname=c1,
                                     nname=n, tname=t,
-                                    uname=u)
+                                    uname=u, kname=k, sname=s)
             else:
                 mosdex_db.query('INSERT INTO metadata_table (module_name, item_name, class_name,'
-                                'name, type, usage)'
-                                'VALUES(:mname, :iname, :cname, :nname, :tname, :uname)',
+                                'name, type, usage, key_type, source)'
+                                'VALUES(:mname, :iname, :cname, :nname, :tname, :uname, :kname, :sname)',
                                 mname=module_name, iname=item, cname=c1,
                                 nname=metadata["item_name"], tname=metadata["item_type"],
-                                uname=metadata["item_usage"])
+                                uname=metadata["item_usage"], kname=metadata["item_key"], sname=metadata["item_source"])
             if do_print:
                 print("\t\t{}.{}.{}:".format(c1, module_name, item))
             if "RECIPE" in m1:
@@ -225,7 +224,7 @@ def process_initialize(mosdex: dict, module_list=None, do_print=False):
 
 def initialize_database(db_file: str, do_print=False):
     # Initialize database
-    db = Database(db_file)
+    db = records.Database(db_file)
 
     # Create modules table
     db.query('DROP TABLE IF EXISTS modules_table')
@@ -236,13 +235,13 @@ def initialize_database(db_file: str, do_print=False):
     db.query('DROP TABLE IF EXISTS singletons_table')
     db.query('CREATE TABLE singletons_table ('
              'module_name text, item_name text, class_name text, singleton_name text, '
-             's_value number, s_recipe text)')
+             's_value numeric, s_recipe text)')
 
     # Create the metadata table
     db.query('DROP TABLE IF EXISTS metadata_table')
     db.query('CREATE TABLE metadata_table ('
              'module_name text, item_name text, class_name text, '
-             'name text, type text, usage text )')
+             'name text, type text, usage text, key_type text, source text )')
 
     return db
 
