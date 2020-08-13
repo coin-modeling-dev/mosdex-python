@@ -1,5 +1,7 @@
-from mosdex.read import *
 import pandas as pd
+import os
+
+from mosdex import initialize_mosdex, process_algorithm
 
 
 def initialize_tables(mosdex_problem: dict):

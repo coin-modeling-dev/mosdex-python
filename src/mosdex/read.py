@@ -3,7 +3,8 @@ import os
 import pprint
 
 from jsonschema import Draft7Validator
-from records import Database
+
+from mosdex import records
 
 
 def mosdex_open_and_test(problem_file, schema_file, do_print=False):
@@ -223,7 +224,7 @@ def process_initialize(mosdex: dict, module_list=None, do_print=False):
 
 def initialize_database(db_file: str, do_print=False):
     # Initialize database
-    db = Database(db_file)
+    db = records.Database(db_file)
 
     # Create modules table
     db.query('DROP TABLE IF EXISTS modules_table')
