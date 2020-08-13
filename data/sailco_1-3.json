@@ -64,8 +64,16 @@
           "DOUBLE"
         ],
         "item_usage": [
-          "KEY",
+          null,
           "VALUE"
+        ],
+        "item_key": [
+          "KEY",
+          null
+        ],
+        "item_source": [
+          null,
+          null
         ]
       },
       "INSTANCE": [
@@ -93,12 +101,12 @@
       "CLASS": "DATA",
       "TYPE": "INPUT",
       "SCHEMA": {
-        "name": "STRING",
+        "Parameter": "STRING",
         "value": "DOUBLE"
       },
       "METADATA": {
         "item_name": [
-          "Name",
+          "Parameter",
           "Value"
         ],
         "item_type": [
@@ -106,8 +114,16 @@
           "DOUBLE"
         ],
         "item_usage": [
-          "KEY",
+          null,
           "VALUE"
+        ],
+        "item_key": [
+          "KEY",
+          null
+        ],
+        "item_source": [
+          null,
+          null
         ]
       },
       "INSTANCE": [
@@ -153,11 +169,25 @@
           "DOUBLE"
         ],
         "item_usage": [
-          "FOREIGN_KEY",
+          null,
           "VARIABLE_VALUE",
           "VARIABLE_VALUE",
           "VARIABLE_VALUE",
           "DUAL"
+        ],
+        "item_key": [
+          "FOREIGN_KEY",
+          null,
+          null,
+          null,
+          null
+        ],
+        "item_source": [
+          "sailco_demands_Periods",
+          null,
+          null,
+          null,
+          null
         ]
       },
       "RECIPE": [
@@ -217,7 +247,7 @@
       "METADATA": {
         "item_name": [
           "Periods",
-          "Column",
+          "Name",
           "LowerBound",
           "UpperBound",
           "Objective",
@@ -232,12 +262,28 @@
           "DOUBLE"
         ],
         "item_usage": [
-          "FOREIGN_KEY",
-          "KEY",
+          null,
+          null,
           "LOWER_BOUND",
           "UPPER_BOUND",
           "OBJECTIVE_COEFFICIENT",
           "VARIABLE_VALUE"
+        ],
+        "item_key": [
+          "FOREIGN_KEY",
+          "COL_INDEX",
+          null,
+          null,
+          "FOREIGN_KEY",
+          null
+        ],
+        "item_source": [
+          "sailco_demands_Periods",
+          null,
+          null,
+          null,
+          "sailco_parameters_Parameter",
+          null
         ]
       },
       "RECIPE": [
@@ -245,7 +291,7 @@
           "DIRECTIVE": "SELECT",
           "PREDICATE": [
             "period ",
-            "'regular' ||'_' || period AS Column",
+            "'regular' ||'_' || period AS Name",
             "0.0 AS LowerBound",
             "'infinity' AS UpperBound",
             "sailco_parameters.value AS Objective",
@@ -262,7 +308,7 @@
         {
           "DIRECTIVE": "WHERE",
           "PREDICATE": [
-            "sailco_parameters.name == 'regularCost'"
+            "sailco_parameters.Parameter == 'regularCost'"
           ]
         }
       ],
@@ -274,7 +320,7 @@
       "METADATA": {
         "item_name": [
           "Periods",
-          "Column",
+          "Name",
           "LowerBound",
           "UpperBound",
           "Objective",
@@ -289,12 +335,28 @@
           "DOUBLE"
         ],
         "item_usage": [
-          "FOREIGN_KEY",
-          "KEY",
+          null,
+          null,
           "LOWER_BOUND",
           "UPPER_BOUND",
           "OBJECTIVE_COEFFICIENT",
           "VARIABLE_VALUE"
+        ],
+        "item_key": [
+          "FOREIGN_KEY",
+          "COL_INDEX",
+          null,
+          null,
+          "FOREIGN_KEY",
+          null
+        ],
+        "item_source": [
+          "sailco_demands_Periods",
+          null,
+          null,
+          null,
+          "sailco_parameters.Parameter",
+          null
         ]
       },
       "RECIPE": [
@@ -302,7 +364,7 @@
           "DIRECTIVE": "SELECT",
           "PREDICATE": [
             "period",
-            "'extra' || '_' || period AS Column",
+            "'extra' || '_' || period AS Name",
             "0.0 AS LowerBound",
             "'infinity' AS UpperBound",
             "sailco_parameters.value AS Objective",
@@ -319,7 +381,7 @@
         {
           "DIRECTIVE": "WHERE",
           "PREDICATE": [
-            "sailco_parameters.name == 'extraCost'"
+            "sailco_parameters.Parameter == 'extraCost'"
           ]
         }
       ],
@@ -331,7 +393,7 @@
       "METADATA": {
         "item_name": [
           "Periods",
-          "Column",
+          "Name",
           "Inventory",
           "UpperBound",
           "Objective",
@@ -346,12 +408,28 @@
           "DOUBLE"
         ],
         "item_usage": [
-          "FOREIGN_KEY",
-          "KEY",
+          null,
+          null,
           "LOWER_BOUND",
           "UPPER_BOUND",
           "OBJECTIVE_COEFFICIENT",
           "VARIABLE_VALUE"
+        ],
+        "item_key": [
+          "FOREIGN_KEY",
+          "COL_INDEX",
+          null,
+          null,
+          "FOREIGN_KEY",
+          null
+        ],
+        "item_source": [
+          "sailco_demands_Periods",
+          null,
+          null,
+          null,
+          "sailco_parameters_Parameter",
+          null
         ]
       },
       "RECIPE": [
@@ -359,7 +437,7 @@
           "DIRECTIVE": "SELECT",
           "PREDICATE": [
             "period",
-            "'inventory' || '_' || period AS Column",
+            "'inventory' || '_' || period AS Name",
             "0.0 AS LowerBound",
             "'infinity' AS UpperBound",
             "sailco_parameters.value AS Objective",
@@ -376,7 +454,7 @@
         {
           "DIRECTIVE": "WHERE",
           "PREDICATE": [
-            "sailco_parameters.name == 'extraCost'"
+            "sailco_parameters.Parameter == 'extraCost'"
           ]
         }
       ],
@@ -388,7 +466,7 @@
       "METADATA": {
         "item_name": [
           "Periods",
-          "Row",
+          "Name",
           "Sense",
           "RHS",
           "Value"
@@ -401,11 +479,25 @@
           "DOUBLE"
         ],
         "item_usage": [
-          "FOREIGN_KEY",
-          "KEY",
+          null,
+          null,
           "SENSE",
           "RHS",
           "CONSTRAINT_VALUE"
+        ],
+        "item_key": [
+          "FOREIGN_KEY",
+          "COL_INDEX",
+          null,
+          "FOREIGN_KEY",
+          null
+        ],
+        "item_source": [
+          "sailco_demands_Periods",
+          null,
+          null,
+          "sailco_parameters_Parameter",
+          null
         ]
       },
       "RECIPE": [
@@ -413,7 +505,7 @@
           "DIRECTIVE": "SELECT",
           "PREDICATE": [
             "period ",
-            "'ctCapacity' || '_' ||  period AS Row",
+            "'ctCapacity' || '_' ||  period AS Name",
             "'LE' AS Sense",
             "sailco_parameters.value AS RHS"
           ]
@@ -428,7 +520,7 @@
         {
           "DIRECTIVE": "WHERE",
           "PREDICATE": [
-            "sailco_parameters.name == 'capacity'"
+            "sailco_parameters.Parameter == 'capacity'"
           ]
         }
       ],
@@ -440,7 +532,7 @@
       "METADATA": {
         "item_name": [
           "Periods",
-          "Row",
+          "Name",
           "Sense",
           "RHS",
           "Value"
@@ -453,11 +545,25 @@
           "DOUBLE"
         ],
         "item_usage": [
-          "FOREIGN_KEY",
-          "KEY",
+          null,
+          null,
           "SENSE",
           "RHS",
           "CONSTRAINT_VALUE"
+        ],
+        "item_key": [
+          "FOREIGN_KEY",
+          "ROW_INDEX",
+          null,
+          "FOREIGN_KEY",
+          null
+        ],
+        "item_source": [
+          "sailco_demands_Periods",
+          null,
+          null,
+          "sailco_parameters_Parameter",
+          null
         ]
       },
       "RECIPE": [
@@ -465,7 +571,7 @@
           "DIRECTIVE": "SELECT",
           "PREDICATE": [
             "period AS Period",
-            "'ctBoat' || '_' ||  period AS Row",
+            "'ctBoat' || '_' ||  period AS Name",
             "'EQ' AS Sense",
             "demand AS RHS"
           ]
@@ -491,7 +597,7 @@
       "METADATA": {
         "item_name": [
           "Periods",
-          "Row",
+          "Name",
           "Sense",
           "RHS",
           "Value"
@@ -504,11 +610,25 @@
           "DOUBLE"
         ],
         "item_usage": [
-          "FOREIGN_KEY",
-          "KEY",
+          null,
+          null,
           "SENSE",
           "RHS",
           "CONSTRAINT_VALUE"
+        ],
+        "item_key": [
+          "FOREIGN_KEY",
+          "ROW_INDEX",
+          null,
+          "FOREIGN_KEY",
+          null
+        ],
+        "item_source": [
+          "sailco_demands_Periods",
+          null,
+          null,
+          "sailco_parameters_Parameter",
+          null
         ]
       },
       "RECIPE": [
@@ -516,7 +636,7 @@
           "DIRECTIVE": "SELECT",
           "PREDICATE": [
             "sailco_demands.period ",
-            "'ctBoat_1' AS Row",
+            "'ctBoat_1' AS Name",
             "'EQ' AS Sense",
             "(sailco_demands.demand - sailco_parameters.value) AS RHS"
           ]
@@ -537,7 +657,7 @@
         {
           "DIRECTIVE": "AND",
           "PREDICATE": [
-            "sailco_parameters.name == 'initialInventory'"
+            "sailco_parameters.Parameter == 'initialInventory'"
           ]
         }
       ],
@@ -555,6 +675,12 @@
         ],
         "item_usage": [
           "OBJECTIVE_VALUE"
+        ],
+        "item_key": [
+          null
+        ],
+        "item_source": [
+          null
         ]
       },
       "RECIPE": [
@@ -580,8 +706,8 @@
       "TYPE": "LINEAR",
       "METADATA": {
         "item_name": [
-          "Row",
-          "Column",
+          "Name",
+          "Name",
           "Value"
         ],
         "item_type": [
@@ -590,17 +716,27 @@
           "DOUBLE"
         ],
         "item_usage": [
-          "FOREIGN_KEY",
-          "FOREIGN_KEY",
+          null,
+          null,
           "MATRIX_ENTRY"
+        ],
+        "item_key": [
+          "ROW_INDEX",
+          "COL_INDEX",
+          null
+        ],
+        "item_source": [
+          null,
+          null,
+          null
         ]
       },
       "RECIPE": [
         {
           "DIRECTIVE": "SELECT",
           "PREDICATE": [
-            "'ctCapacity' || '_' ||  period AS Row",
-            "'regular' || '_' ||  period AS Column",
+            "'ctCapacity' || '_' ||  period AS Name",
+            "'regular' || '_' ||  period AS Name",
             "1.0 AS Coefficient"
           ]
         },
@@ -618,8 +754,8 @@
       "TYPE": "LINEAR",
       "METADATA": {
         "item_name": [
-          "Row",
-          "Column",
+          "Name",
+          "Name",
           "Value"
         ],
         "item_type": [
@@ -628,17 +764,27 @@
           "DOUBLE"
         ],
         "item_usage": [
-          "FOREIGN_KEY",
-          "FOREIGN_KEY",
+          null,
+          null,
           "MATRIX_ENTRY"
+        ],
+        "item_key": [
+          "ROW_INDEX",
+          "COL_INDEX",
+          null
+        ],
+        "item_source": [
+          null,
+          null,
+          null
         ]
       },
       "RECIPE": [
         {
           "DIRECTIVE": "SELECT",
           "PREDICATE": [
-            "'ctBoat' || '_' ||  period AS Row",
-            "'regular' || '_' ||  period AS Column",
+            "'ctBoat' || '_' ||  period AS Name",
+            "'regular' || '_' ||  period AS Name",
             "1.0 AS Coefficient"
           ]
         },
@@ -656,8 +802,8 @@
       "TYPE": "LINEAR",
       "METADATA": {
         "item_name": [
-          "Row",
-          "Column",
+          "Name",
+          "Name",
           "Value"
         ],
         "item_type": [
@@ -666,17 +812,27 @@
           "DOUBLE"
         ],
         "item_usage": [
-          "FOREIGN_KEY",
-          "FOREIGN_KEY",
+          null,
+          null,
           "MATRIX_ENTRY"
+        ],
+        "item_key": [
+          "ROW_INDEX",
+          "COL_INDEX",
+          null
+        ],
+        "item_source": [
+          null,
+          null,
+          null
         ]
       },
       "RECIPE": [
         {
           "DIRECTIVE": "SELECT",
           "PREDICATE": [
-            "'ctBoat' || '_' ||  period AS Row",
-            "'extra' || '_' ||  period AS Column",
+            "'ctBoat' || '_' ||  period AS Name",
+            "'extra' || '_' ||  period AS Name",
             "1.0 AS Coefficient"
           ]
         },
@@ -694,8 +850,8 @@
       "TYPE": "LINEAR",
       "METADATA": {
         "item_name": [
-          "Row",
-          "Column",
+          "Name",
+          "Name",
           "Value"
         ],
         "item_type": [
@@ -704,17 +860,27 @@
           "DOUBLE"
         ],
         "item_usage": [
-          "FOREIGN_KEY",
-          "FOREIGN_KEY",
+          null,
+          null,
           "MATRIX_ENTRY"
+        ],
+        "item_key": [
+          "ROW_INDEX",
+          "COL_INDEX",
+          null
+        ],
+        "item_source": [
+          null,
+          null,
+          null
         ]
       },
       "RECIPE": [
         {
           "DIRECTIVE": "SELECT",
           "PREDICATE": [
-            "'ctBoat' || '_' ||  period AS Row",
-            "'inventory' || '_' ||  period AS Column",
+            "'ctBoat' || '_' ||  period AS Name",
+            "'inventory' || '_' ||  period AS Name",
             "-1.0 AS Coefficient"
           ]
         },
@@ -732,8 +898,8 @@
       "TYPE": "LINEAR",
       "METADATA": {
         "item_name": [
-          "Row",
-          "Column",
+          "Name",
+          "Name",
           "Value"
         ],
         "item_type": [
@@ -742,17 +908,27 @@
           "DOUBLE"
         ],
         "item_usage": [
-          "FOREIGN_KEY",
-          "FOREIGN_KEY",
+          null,
+          null,
           "MATRIX_ENTRY"
+        ],
+        "item_key": [
+          "ROW_INDEX",
+          "COL_INDEX",
+          null
+        ],
+        "item_source": [
+          null,
+          null,
+          null
         ]
       },
       "RECIPE": [
         {
           "DIRECTIVE": "SELECT",
           "PREDICATE": [
-            "'ctBoat' || '_' ||  period AS Row",
-            "'inventory' || '_' ||  (period - 1) AS Column",
+            "'ctBoat' || '_' ||  period AS Name",
+            "'inventory' || '_' ||  (period - 1) AS Name",
             "1.0 AS Coefficient"
           ]
         },

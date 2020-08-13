@@ -39,25 +39,25 @@ def populate_independents(mosdex_problem: dict, do_print=False):
         variable = r.item_name
         table_ = r.table_name
         variable_type = r.type_name
-        sql = 'SELECT Column, LowerBound, UpperBound, Objective FROM ' + table_
+        sql = 'SELECT Name, LowerBound, UpperBound, Objective FROM ' + table_
         variable_definitions = db_.query(sql)
 
         if do_print:
             name = module + "_" + variable
             print("Variable: {}".format(name))
             for r1 in variable_definitions:
-                print("\t{} {} {} {}".format(r1.Column, r1.LowerBound, r1.UpperBound, r1.Objective))
+                print("\t{} {} {} {}".format(r1.Name, r1.LowerBound, r1.UpperBound, r1.Objective))
 
         for r1 in variable_definitions:
             db_.query('INSERT INTO independent_variables (module, variable, '
                       'type, lower_bound, upper_bound) '
                       'VALUES(:m, :v, :t, :l , :u) ',
-                      m=module, v=r1.Column, t=variable_type, l=r1.LowerBound,
+                      m=module, v=r1.Name, t=variable_type, l=r1.LowerBound,
                       u=r1.UpperBound)
 
             if r1.Objective is not None:
-                lin_obj.append({"Module": module, "Row": "OBJECTIVE",
-                                "Column": r1.Column, "Coefficient": r1.Objective})
+                lin_obj.append({"Module": module, "Name": "OBJECTIVE",
+                                "Name": r1.Name, "Coefficient": r1.Objective})
 
     mosdex_problem["linear_objective"] = lin_obj
 
@@ -99,7 +99,7 @@ def populate_dependents(mosdex_problem: dict, do_print=False):
             db_.query('INSERT INTO dependent_variables (module, variable, '
                       'type, lower_bound, upper_bound) '
                       'VALUES(:m, :v, :t, :l , :u) ',
-                      m=module, v=r1.Row, t=variable_type, l=lower_bound,
+                      m=module, v=r1.Name, t=variable_type, l=lower_bound,
                       u=upper_bound)
 
     if mosdex_problem["linear_objective"] is not None:
@@ -162,7 +162,7 @@ def populate_expressions(mosdex_problem: dict, do_print=False):
 
             # Select the rows in terms_df for the module / dependent variable
             mask_m = terms_df["Module"].values == r.module
-            mask_v = terms_df["Row"].values == r.variable
+            mask_v = terms_df["Name"].values == r.variable
             mask = [m and v for m, v in zip(mask_m, mask_v)]
 
             # upload
@@ -210,14 +210,13 @@ if __name__ == "__main__":
 
     # Look at KEYS
     print("\n**{}**".format("KEYS"))
-    keys = db.query('SELECT module_name, item_name, name FROM metadata_table WHERE usage == "KEY"')
+    keys = db.query('SELECT module_name, item_name, name FROM metadata_table WHERE key_type == "KEY"')
     for key in keys:
         key_string = "_".join([key['module_name'], key['item_name'], key['name']])
-        print("\tKEY: \t{}".format(key_string))
-        where_clause = ' WHERE usage = "FOREIGN_KEY" AND name == "' + key['name'] + '"' + \
-                       ' AND NOT module_name == "' + key['module_name '] + '"' + ' AND NOT item_name == "' + key
-        foreign_keys = db.query('SELECT module_name, item_name, name FROM metadata_table ' + where_clause)
-        print("\tDEPENDENCIES: \t{}".format(key_string))
+        print("\n\t{:15s} {}".format("KEY:", key_string))
+        print("\t{:15s}".format("DEPENDENCIES:"))
+        where_clause = ' WHERE key_type == "FOREIGN_KEY" AND source == "' + key_string + '"'
+        foreign_keys = db.query('SELECT module_name, item_name, class_name FROM metadata_table ' + where_clause)
         for fkey in foreign_keys:
-            fkey_string = "_".join([fkey['module_name'], fkey['item_name'], fkey['name']])
-            print("\t              \t{}".format(fkey_string))
+            fkey_string = "_".join([fkey['module_name'], fkey['item_name']])
+            print("\t{:15s} {:15s} \t({})".format(" ", fkey_string, fkey["class_name"]))
