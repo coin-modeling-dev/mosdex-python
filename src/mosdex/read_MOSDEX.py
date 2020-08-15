@@ -261,7 +261,7 @@ if __name__ == "__main__":
     # Provide the file and schema locations
     schema_dir = "data"
     file_dir = "data"
-    mosdex_problem_file = "sailco_1-3.json"
+    mosdex_problem_file = "sailco_1.3-ajk.json"
     mosdex_schema_file = "MOSDEXSchemaV1-3-ajk.json"
     records_db = 'sqlite://sailco.db'
 

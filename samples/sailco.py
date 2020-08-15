@@ -6,7 +6,7 @@ import os
 # Provide the file and schema locations
 schema_dir = "../data"
 file_dir = "../data"
-mosdex_problem_file = "sailco_1-3.json"
+mosdex_problem_file = "sailco_1.3-ajk.json"
 mosdex_schema_file = "MOSDEXSchemaV1-3-ajk.json"
 records_db = 'sqlite://'
 
@@ -15,10 +15,11 @@ mosdexProblem = {'db_file': records_db,
                  'problem_file': os.path.join(file_dir, mosdex_problem_file),
                  'schema_file': os.path.join(file_dir, mosdex_schema_file)}
 
+# Parse the MOSDEX file
 read.initialize_mosdex(mosdexProblem, do_print=True)
 read.process_algorithm(mosdexProblem, do_print=False)
 
-# Commence generation of base structure
+# Generate base structures
 osi.initialize_tables(mosdexProblem)
 osi.populate_independents(mosdexProblem, do_print=False)
 osi.populate_dependents(mosdexProblem, do_print=False)
