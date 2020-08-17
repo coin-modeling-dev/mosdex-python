@@ -1,5 +1,0 @@
-pandas
-pprint
-jsonlib
-jsonschema
-records

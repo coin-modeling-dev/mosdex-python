@@ -1,7 +1,0 @@
-README.md
-setup.py
-mosdex_python.egg-info/PKG-INFO
-mosdex_python.egg-info/SOURCES.txt
-mosdex_python.egg-info/dependency_links.txt
-mosdex_python.egg-info/requires.txt
-mosdex_python.egg-info/top_level.txt
