@@ -5,11 +5,11 @@ with open("README.md", "r") as fh:
 
 setup(
     name='mosdex-python',
-    version='2020.1-dev.1',
+    version='2020.1.dev2',
     packages=find_packages(exclude="tests"),
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url='https://github.com/coin-modeling-dev/mosdex-python/archive/v2020.1-dev.1.tar.gz',
+    url='https://github.com/coin-modeling-dev/mosdex-python/archive/2020.1.dev1.zip',
     author='Alan King',
     author_email='kingaj@us.ibm.com',
     description='Package for running demo of MOSDEX modular optimization problem data standard',
