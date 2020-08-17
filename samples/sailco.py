@@ -1,33 +1,30 @@
-import src.mosdex.read_MOSDEX as read
-import src.mosdex.generate_OSI as osi
 from records import Database
 import os
+from src.mosdex.mosdex import Mosdex
 
 # Provide the file and schema locations
 schema_dir = "../data"
 file_dir = "../data"
-mosdex_problem_file = "sailco_1.3-ajk.json"
-mosdex_schema_file = "MOSDEXSchemaV1-3-ajk.json"
+problem_file = os.path.join(file_dir,"sailco_1.3-ajk.json")
+schema_file = os.path.join(schema_dir,"MOSDEXSchemaV1-3-ajk.json")
 records_db = 'sqlite://'
 
 # Initialize mosdex problem
-mosdexProblem = {'db_file': records_db,
-                 'problem_file': os.path.join(file_dir, mosdex_problem_file),
-                 'schema_file': os.path.join(file_dir, mosdex_schema_file)}
+mosdex = Mosdex(schema_file, problem_file, records_db)
 
 # Parse the MOSDEX file
-read.initialize_mosdex(mosdexProblem, do_print=True)
-read.process_algorithm(mosdexProblem, do_print=False)
+mosdex.initialize_mosdex(do_print=True)
+mosdex.process_algorithm()
 
 # Generate base structures
-osi.initialize_tables(mosdexProblem)
-osi.populate_independents(mosdexProblem, do_print=False)
-osi.populate_dependents(mosdexProblem, do_print=False)
-osi.populate_expressions(mosdexProblem, do_print=False)
+mosdex.initialize_tables()
+mosdex.populate_independents()
+mosdex.populate_dependents()
+mosdex.populate_expressions()
 
 # List the tables
 print("\n***List the Tables***")
-db: Database = mosdexProblem['db']
+db: Database = mosdex.db
 print("\n**{}**".format("Modules"))
 print(db.query('SELECT * FROM modules_table').dataset)
 print("\n**{}**".format("Metadata"))
