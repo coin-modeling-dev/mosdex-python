@@ -431,7 +431,7 @@ class Mosdex:
                 mask = [m and v for m, v in zip(mask_m, mask_v)]
 
                 # upload
-                terms_df[mask].to_sql("linear_expressions", con=db_.get_engine(), if_exists='append', index=False)
+                self.upload_dataframe(terms_df[mask], "linear_expressions")
 
     def get_table_names(self):
         return self.db.get_table_names()
@@ -456,6 +456,9 @@ class Mosdex:
         sql = "SELECT * FROM " + table_name
         rows = self.db.query(sql)
         print(rows.dataset)
+
+    def upload_dataframe(self, df, to_table):
+        df.to_sql(to_table, con=self.db.get_engine(), if_exists='append', index=False)
 
 
 if __name__ == "__main__":
