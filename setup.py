@@ -19,5 +19,5 @@ setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
-    install_requires=['pandas', 'pprint', 'jsonschema', 'records']
+    install_requires=['pandas', 'pprint', 'jsonlib', 'jsonschema', 'records']
 )
