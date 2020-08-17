@@ -433,6 +433,30 @@ class Mosdex:
                 # upload
                 terms_df[mask].to_sql("linear_expressions", con=db_.get_engine(), if_exists='append', index=False)
 
+    def get_table_names(self):
+        return self.db.get_table_names()
+
+    def export_table(self, table_name, format_type: str):
+        """
+        Mosdex export table in desired format.
+        - csv: comma-separated value
+        - yaml: yet another modeling language
+        - json: Java simple object notation
+        - df: Pandas dataframe
+        :param table_name:
+        :param format_type: one of 'csv', 'yaml', 'json', 'df'
+        :return: In case of csv, yaml, or json: string
+                 In case of df: a dataframe object
+        """
+        sql = "SELECT * FROM " + table_name
+        rows_ = self.db.query(sql)
+        return rows_.export(format_type)
+
+    def print_table(self, table_name: str):
+        sql = "SELECT * FROM " + table_name
+        rows = self.db.query(sql)
+        print(rows.dataset)
+
 
 if __name__ == "__main__":
 
@@ -459,21 +483,21 @@ if __name__ == "__main__":
 
     # List the tables
     print("\n***List the Tables***")
-    db = mosdexProblem.db
-    print("\n**{}**".format("Modules"))
-    print(db.query('SELECT * FROM modules_table').dataset)
-    print("\n**{}**".format("Metadata"))
-    print(db.query('SELECT * FROM metadata_table').dataset)
-    print("\n**{}**".format("Independent Variables (Columns)"))
-    print(db.query('SELECT * FROM independent_variables').dataset)
-    print("\n**{}**".format("Dependent Variables (Rows)"))
-    print(db.query('SELECT * FROM dependent_variables').dataset)
-    print("\n**{}**".format("Linear Expressions (Matrix Entries)"))
-    print(db.query('SELECT * FROM linear_expressions').dataset)
-    # for table in db.get_table_names():
-    #     print("\n**{}**".format(table))
-    #     print(db.query('SELECT * FROM ' + table).dataset)
+    print(mosdexProblem.get_table_names())
 
+    # Print the metadata_table
+    print("\n***Print the Metadata table***")
+    mosdexProblem.print_table("metadata_table")
+
+    # Get dataframes for the variables and expressions
+    df_independent_variables = mosdexProblem.export_table("independent_variables", 'df')
+    df_dependent_variables = mosdexProblem.export_table("dependent_variables", 'df')
+    df_linear_expressions = mosdexProblem.export_table("linear_expressions", 'df')
+
+    # Get the metadata dataframe
+    df_metadata = mosdexProblem.export_table("metadata_table", 'df')
+
+    """
     # Look at KEYS
     print("\n**{}**".format("KEYS"))
     keys = db.query('SELECT module_name, item_name, name FROM metadata_table WHERE key_type == "KEY"')
@@ -486,3 +510,5 @@ if __name__ == "__main__":
         for fkey in foreign_keys:
             fkey_string = "_".join([fkey['module_name'], fkey['item_name']])
             print("\t{:15s} {:15s} \t({})".format(" ", fkey_string, fkey["class_name"]))
+            
+    """
