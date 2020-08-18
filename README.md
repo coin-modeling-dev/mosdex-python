@@ -11,7 +11,7 @@ Wish list:
 * Syntax to describe functional relationships between independent and dependent variables
 * Syntax to describe sequence operators: `next` and `previous`
 * Interfaces to some modeling languages
-* Interfaces to COIN-OR/OSI libraries
+* Interfaces to COIN-OR/OSI libraries for integer, nonlinear, and stochastic dynamic optimization
 * Implementations of decomposition algorithms
 * Implementation of decomposition using distributed Cloud services
 
