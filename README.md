@@ -1,6 +1,6 @@
 # mosdex-python
 
-A Python demonstration of the MOSDEX standard for large-scale modular optimization problems.  It is based on an experimental version of the MOSDEX Schema, which is still being refined.  An example file using this version are in `mosdex-python/data`.
+A Python demonstration of the MOSDEX standard for large-scale modular optimization problems.  It is based on an experimental version of the MOSDEX Schema, which is still being refined.  The schema file and an example file using this version are in `mosdex-python/data`.
 * To install the mosdex-python package and dependencies: `pip install mosdex-python`
 * Example code is in the `samples` directory. To run sailco: `cd samples; python -m sailco`
 * PDFs of some sample output are in `mosdex-python/data`
