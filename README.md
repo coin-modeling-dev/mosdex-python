@@ -12,7 +12,8 @@ Wish list:
 * Syntax to describe sequence operators: `next` and `previous`
 * Interfaces to some modeling languages
 
-Acknowledgements: This effort was initiated during workshops hosted by the Institute for Mathematics and its Applications at the Unversity of Minnesota https://www.ima.umn.edu/ and organized by the COIN-OR Foundation https://www.coin-or.org/
+Acknowledgements: This effort was initiated during workshops in 2018 and 2019 organized by the COIN-OR Foundation https://www.coin-or.org/.  These workshops were hosted by the Institute for Mathematics and its Applications at the Unversity of Minnesota https://www.ima.umn.edu/, whose generous support is gratefully acknowledged.  
 
 Team: Jeremy Bloom <jeremybloomca@gmail.com>, Alan King <kingaj@us.ibm.com>, Matt Saltman <mjs@clemson.edu>, Brad Bell <bradbell@seanet.com>
+
 Slack channel: coin-or.slack.com/#ima-modeling-sprint
