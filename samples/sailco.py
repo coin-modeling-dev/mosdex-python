@@ -1,6 +1,5 @@
-from records import Database
 import os
-from src.mosdex.mosdex import Mosdex
+from mosdex import Mosdex
 
 # Provide the file and schema locations
 schema_dir = "../data"
