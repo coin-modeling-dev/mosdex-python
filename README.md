@@ -2,7 +2,7 @@
 
 A Python demonstration of the MOSDEX standard for large-scale modular optimization problems.  It is based on an experimental version of the MOSDEX Schema (version 1.3-ajk), which is still being refined.  The MOSDEX standard is documented in the repository https://github.com/coin-modeling-dev/MOSDEX-Examples.
 
-This demonstration uses a development JSON schema which is included in the `data` directory, along with a `sailco` file that tests it.
+The JSON schema is included in the `data` directory, along with a `sailco` file that tests it.
 * To install the mosdex-python package and dependencies: `pip install mosdex-python`
 * Example code is in the `samples` directory. To run sailco: `cd samples; python -m sailco`
 * PDFs of some sample output are in `mosdex-python/data`
