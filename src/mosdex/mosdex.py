@@ -135,7 +135,7 @@ class Mosdex:
 
         if module_list is None:
             module_list = [k_ for k_ in self.json if k_ in self.json.keys()
-                           and self.json[k_]['CLASS'] is 'MODULE']
+                           and self.json[k_]['CLASS'] == 'MODULE']
 
         for module_name in module_list:
             module = self.json[module_name]
