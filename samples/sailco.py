@@ -1,6 +1,5 @@
 import os
-from mosdex import Mosdex
-import pandas
+from src.mosdex.mosdex import Mosdex
 
 # Provide the file and schema locations
 schema_dir = "../data"
