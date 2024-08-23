@@ -1,0 +1,312 @@
+{
+  "SYNTAX": "MOSDEX/MOSDEX v2-0/MOSDEXSchemaV2-0.json",
+  "MODULES": [
+    {
+      "NAME": "sailco",
+      "CLASS": "MODULE",
+      "KIND": "MODEL",
+      "HEADING": {
+        "DESCRIPTION": [
+          "Inventory problem with lagged decision variables"
+        ],
+        "VERSION": [ "2-0" ],
+        "REFERENCE": [
+          "https://www.ibm.com/support/knowledgecenter/SSSA5P_12.7.1/ilog.odms.ide.help/OPL_Studio/opllanguser/topics/opl_languser_app_areas_pwl_inventory.html"
+        ],
+        "AUTHOR": [
+          "Jeremy A. Bloom (jeremyblmca@gmail.com)"
+        ],
+        "NOTICES": [
+          "Copyright 2019 Jeremy A. Bloom"
+        ],
+        "MATH": [
+          "minimize",
+          "sum( t in Periods ) ( RegularCost * Regular[t] ) +",
+          "sum( t in Periods ) ( ExtraCost * Extra[t] ) +",
+          "sum( t in Periods ) ( InventoryCost * Inventory[t] );",
+          "subject to {",
+          "forall( t in Periods )",
+          "ctCapacity[t]: Regular[t] <= Capacity;",
+          "forall( t in Periods )",
+          "ctBoat[t]:",
+          "if (t>1)",
+          "Regular[t] + Extra[t] + Inventory[t-1] - Inventory[t] == Demand[t];",
+          "else //t=1",
+          "Regular[t] + Extra[t] - Inventory[t] == Demand[t] - InitialInventory;",
+          "}"
+        ]
+      },
+      "TABLES": [
+        {
+          "NAME": "demands",
+          "CLASS": "DATA",
+          "KIND": "INPUT",
+          "SCHEMA": {
+            "NAME": [ "period",   "demand" ],
+            "KIND": [  "INTEGER",  "DOUBLE" ],
+            "KEYS": [ "KEY",      "VALUE"]
+          },
+          "INSTANCE": [
+            [           1,          40.0 ],
+            [           2,          60.0 ],
+            [           3,          75.0 ],
+            [           4,          25.0 ]
+          ]
+        },
+        {
+          "NAME": "parameters",
+          "CLASS": "DATA",
+          "KIND": "INPUT",
+          "SCHEMA": {
+            "NAME": [ "regularCost", "extraCost", "capacity", "initialInventory", "inventoryCost" ],
+            "KIND": [  "DOUBLE",      "DOUBLE",    "DOUBLE",   "DOUBLE",           "DOUBLE" ],
+            "KEYS": [  "VALUE",      "VALUE",    "VALUE",   "VALUE",           "VALUE" ]
+          },
+          "INSTANCE": [
+            [           400.0,         450.0,       40.0,       10.0,               20.0 ]
+          ]
+        },
+        {
+          "NAME": "regular",
+          "CLASS": "VARIABLE",
+          "KIND": "CONTINUOUS",
+          "QUERY": {
+            "SELECT": [
+              "'regular' AS Name                        -- STRING",
+              "demands.period AS period                 -- INTEGER",
+              "CONCAT('regular','_', demands.period) AS Column  -- STRING",
+              "CAST(0.0 AS DOUBLE) AS LowerBound        -- DOUBLE",
+              "CAST('Infinity' AS DOUBLE) AS UpperBound -- DOUBLE",
+              "'PrimalValue(Column)' AS value           -- DOUBLE_FUNCTION"
+            ],
+            "FROM": [ "demands" ]
+          }
+        },
+        {
+          "NAME": "extra",
+          "CLASS": "VARIABLE",
+          "KIND": "CONTINUOUS",
+          "QUERY": {
+            "SELECT": [
+              "'extra' AS Name                          -- STRING",
+              "demands.period AS period                 -- INTEGER",
+              "CONCAT('extra','_', demands.period) AS Column    -- STRING",
+              "CAST(0.0 AS DOUBLE) AS LowerBound        -- DOUBLE",
+              "CAST('Infinity' AS DOUBLE) AS UpperBound -- DOUBLE",
+              "'PrimalValue(Column)' AS value           -- DOUBLE_FUNCTION"
+            ],
+            "FROM": [ "demands" ]
+          }
+        },
+        {
+          "NAME": "inventory",
+          "CLASS": "VARIABLE",
+          "KIND": "CONTINUOUS",
+          "QUERY": {
+            "SELECT": [
+              "'inventory' AS Name                        -- STRING",
+              "demands.period AS period                   -- INTEGER",
+              "CONCAT('inventory','_', demands.period) AS Column  -- STRING",
+              "CAST(0.0 AS DOUBLE) AS LowerBound          -- DOUBLE",
+              "CAST('Infinity' AS DOUBLE) AS UpperBound   -- DOUBLE",
+              "'PrimalValue(Column)' AS value             -- DOUBLE_FUNCTION"
+            ],
+            "FROM": [ "demands" ]
+          }
+        },
+        {
+          "NAME": "ctCapacity",
+          "CLASS": "CONSTRAINT",
+          "KIND": "LINEAR",
+          "QUERY": {
+            "SELECT": [
+              "'ctCapacity' AS Name                     -- STRING",
+              "demands.period AS period                  -- INTEGER",
+              "CONCAT('ctCapacity','_', demands.period) AS Row  -- STRING",
+              "'<=' AS Sense                            -- STRING",
+              "parameters.capacity AS RHS               -- DOUBLE",
+              "'DualValue(Row)' AS dual                -- DOUBLE_FUNCTION"
+            ],
+            "FROM": [ "demands", "parameters"]
+          }
+        },
+        {
+          "NAME": "ctBoat",
+          "CLASS": "CONSTRAINT",
+          "KIND": "LINEAR",
+          "QUERY": {
+            "SELECT": [
+              "'ctBoat' AS Name                             -- STRING",
+              "demands.period AS period                     -- INTEGER",
+              "CONCAT('ctBoat','_', demands.period) AS Row  -- STRING",
+              "'==' AS Sense                                -- STRING",
+              "demands.demand AS RHS                        -- DOUBLE",
+              "'DualValue(Row)' AS dual                    -- DOUBLE_FUNCTION"
+            ],
+            "FROM": [ "demands" ],
+            "WHERE": [ "demands.period >1" ]
+          }
+        },
+        {
+          "NAME": "ctBoat_1",
+          "CLASS": "CONSTRAINT",
+          "KIND": "LINEAR",
+          "QUERY": {
+            "SELECT": [
+              "'ctBoat_1' AS Name                                     -- STRING",
+              "demands.period AS period                               -- INTEGER",
+              "'ctBoat_1' AS Row                                      -- STRING",
+              "'==' AS Sense                                          -- STRING",
+              "(demands.demand - parameters.initialInventory) AS RHS  -- DOUBLE",
+              "'DualValue(Row)' AS dual                               -- DOUBLE_FUNCTION"
+            ],
+            "FROM": [ "demands", "parameters"],
+            "WHERE": [ "demands.period ==1" ]
+          }
+        },
+        {
+          "NAME": "totalCost",
+          "CLASS": "OBJECTIVE",
+          "KIND": "LINEAR",
+          "SCHEMA": {
+            "NAME": [ "Name",       "Row",      "Constant", "Sense",    "Value" ],
+            "KIND": [  "STRING",     "STRING",   "DOUBLE",   "STRING",   "DOUBLE_FUNCTION" ],
+            "KEYS": [ "VALUE", "VALUE", "VALUE", "VALUE", "VALUE"]
+          },
+          "INSTANCE": [
+            [           "totalCost", "totalCost",  0.0,       "MINIMIZE", "ObjectiveValue(Row)" ]
+          ]
+        },
+        {
+          "NAME": "ctCapacity_regular",
+          "CLASS": "TERM",
+          "KIND": "LINEAR",
+          "QUERY": {
+            "SELECT": [
+              "CONCAT('ctCapacity','_', demands.period) AS Row  -- STRING",
+              "CONCAT('regular','_', demands.period) AS Column  -- STRING",
+              "CAST(1.0 AS DOUBLE) AS Coefficient       -- DOUBLE"
+            ],
+            "FROM": [ "demands" ]
+          }
+        },
+        {
+          "NAME": "ctBoat_regular",
+          "CLASS": "TERM",
+          "KIND": "LINEAR",
+          "QUERY": {
+            "SELECT": [
+              "CONCAT('ctBoat','_', demands.period) AS Row      -- STRING",
+              "CONCAT('regular','_', demands.period) AS Column  -- STRING",
+              "CAST(1.0 AS DOUBLE) AS Coefficient       -- DOUBLE"
+            ],
+            "FROM": [ "demands" ]
+          }
+        },
+        {
+          "NAME": "ctBoat_extra",
+          "CLASS": "TERM",
+          "KIND": "LINEAR",
+          "QUERY": {
+            "SELECT": [
+              "CONCAT('ctBoat','_', demands.period) AS Row    -- STRING",
+              "CONCAT('extra','_', demands.period) AS Column  -- STRING",
+              "CAST(1.0 AS DOUBLE) AS Coefficient     -- DOUBLE"
+            ],
+            "FROM": [ "periods" ]
+          }
+        },
+        {
+          "NAME": "ctBoat_inventory",
+          "CLASS": "TERM",
+          "KIND": "LINEAR",
+          "QUERY": {
+            "SELECT": [
+              "CONCAT('ctBoat','_', demands.period) AS Row        -- STRING",
+              "CONCAT('inventory','_', demands.period) AS Column  -- STRING",
+              "CAST(-1.0 AS DOUBLE) AS Coefficient        -- DOUBLE"
+            ],
+            "FROM": [ "demands" ]
+          }
+        },
+        {
+          "NAME": "ctBoat_lagged_inventory",
+          "CLASS": "TERM",
+          "KIND": "LINEAR",
+          "QUERY": {
+            "SELECT": [
+              "CONCAT('ctBoat','_', demands.period) AS Row            -- STRING",
+              "CONCAT('inventory','_', (demands.period-1)) AS Column  -- STRING",
+              "CAST(1.0 AS DOUBLE) AS Coefficient             -- DOUBLE"
+            ],
+            "FROM": [ "demands" ],
+            "WHERE": [ "demands.period > 1" ]
+          }
+        },
+        {
+          "NAME": "totalCost_regular",
+          "CLASS": "TERM",
+          "KIND": "LINEAR",
+          "QUERY": {
+            "SELECT": [
+              "CONCAT('totalCost') AS Row               -- STRING",
+              "CONCAT('regular','_', demands.period) AS Column  -- STRING",
+              "parameters.regularCost AS Coefficient    -- DOUBLE"
+            ],
+            "FROM": [ "demands", "parameters" ]
+          }
+        },
+        {
+          "NAME": "totalCost_extra",
+          "CLASS": "TERM",
+          "KIND": "LINEAR",
+          "QUERY": {
+            "SELECT": [
+              "CONCAT('totalCost') AS Row               -- STRING",
+              "CONCAT('extra','_', demands.period) AS Column  -- STRING",
+              "parameters.extraCost AS Coefficient    -- DOUBLE"
+            ],
+            "FROM": [ "demands", "parameters" ]
+          }
+        },
+        {
+          "NAME": "totalCost_inventory",
+          "CLASS": "TERM",
+          "KIND": "LINEAR",
+          "QUERY": {
+            "SELECT": [
+              "CONCAT('totalCost') AS Row               -- STRING",
+              "CONCAT('inventory','_', demands.period) AS Column  -- STRING",
+              "parameters.inventoryCost AS Coefficient    -- DOUBLE"
+            ],
+            "FROM": [ "demands", "parameters" ]
+          }
+        },
+        {
+          "NAME": "production",
+          "CLASS": "DATA",
+          "KIND": "OUTPUT",
+          "SCHEMA": {
+            "NAME": [ "period", "regular", "extra", "inventory", "marginalCapacityValue" ],
+            "KIND": [ "INTEGER", "DOUBLE", "DOUBLE", "DOUBLE", "DOUBLE" ],
+            "KEYS":[ "KEY",   "VALUE",  "VALUE",  "VALUE",  "VALUE"]
+          },
+          "QUERY": {
+            "SELECT": [
+              "demands.period AS period",
+              "regular.Value AS regular",
+              "extra.Value AS extra",
+              "inventory.Value AS inventory",
+              "ctCapacity.dual AS marginalCapacityValue"
+            ],
+            "FROM": [ "demands" ],
+            "JOIN": [ "regular" ], "USING": [ "(period)" ],
+            "JOIN#2": [ "extra" ], "USING#2": [ "(period)" ],
+            "JOIN#3": [ "inventory" ], "USING#3": [ "(period)" ],
+            "JOIN#4": [ "ctCapacity" ], "USING#4": [ "(period)" ]
+          }
+        }
+      ]
+    }
+  ]
+}
