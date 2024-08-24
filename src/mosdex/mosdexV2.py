@@ -1,53 +1,49 @@
-import json
-import pprint
-
-from jsonschema.validators import Draft7Validator
-
-
-from src.mosdex.exceptions import MosdexInvalidFileError
+from src.mosdex.mosdex_base import MosdexObject
+from src.mosdex.mosdex_classes import MosdexModules, mosdex_new_object
 from src.mosdex.mosdex_database import MosdexDatabase
-from src.mosdex.mosdex_data import MosdexData
 
 
-class MosdexV2:
+class MosdexV2(dict):
+    """
+    Instance of MosdexV2 created by MosdexV2Factory.
+    """
 
-    database: MosdexDatabase
+    mosdex_db: MosdexDatabase
+    module_list: list[MosdexObject] = []
+    modules: MosdexModules
+    syntax: str
 
-    def __init__(self, schema_file: str, database: MosdexDatabase):
+    def __init__(self, mosdex_json: dict, mosdex_db: MosdexDatabase):
         """
-        Initializes a new instance of the MosdexV2 class.
-        :param schema_file: path to Mosdex schema file.
+        Constructor for instance of MosdexV2:
+        - Processes the top-level objects in parameter mosdex_json.
+        - Binds instance of MosdexDatabase to MosdexV2 instance.
+
+        :param mosdex_json: A validated instance of MosdexV2 schema.
+        :param mosdex_db: An instance of MosdexDatabase.
         """
-        with open(schema_file) as f:
-            schema_json = json.load(f)
-        self.validator = Draft7Validator(schema_json)
-        self.database = database
+        super().__init__(mosdex_json)
+        self.mosdex_db = mosdex_db
 
-    def from_file(self, mosdex_file: str):
-        """
-        Create a new instance of a MosdexModel from a Mosdex file.
-        :param mosdex_file: Path to Mosdex file.
-        :return: MosdexModel: MosdexModel instance.
-        """
+        mosdex_db.initialize_database()
 
-        problem_json = {}
-        if mosdex_file is not None:
-            with open(mosdex_file, 'r') as f:
-                problem_json = json.load(f)
+        # Process top-level items
+        for top_item in self.keys():
+            if top_item == "SYNTAX":
+                self.syntax = self["SYNTAX"]
 
-        try:
-            if not self.validator.is_valid(problem_json):
-                raise MosdexInvalidFileError('Invalid Mosdex file',
-                                         filename=mosdex_file,
-                                         invalid_items=self.validator.iter_errors(problem_json))
+            if top_item == "MODULES":
+                for item in self["MODULES"]:
+                    type_tuple = (item["CLASS"], item["KIND"])
+                    module_object = mosdex_new_object(type_tuple, item)
+                    self.module_list.append(module_object)
 
-            return MosdexData(problem_json, self.database)
+        self.modules = MosdexModules(self.module_list)
 
-        except MosdexInvalidFileError as e:
-            print(f"File {e.filename} is not a valid Mosdex file.")
-            pp = pprint.PrettyPrinter(indent=4)
-            for error in sorted(e.invalid_items, key=str):
-                print()
-                pp.pprint(error.message)
+    def get_syntax(self):
+        return self.syntax
 
- 
+    def get_modules(self):
+        return self.modules
+
+

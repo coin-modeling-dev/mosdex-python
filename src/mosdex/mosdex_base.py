@@ -23,7 +23,7 @@ class MosdexArray(list[MosdexObject]):
     def get(self, name: str) -> MosdexObject:
         return self.array_dict.get(name)
 
-    def print_members_metadata(self, prefix="\t"):
+    def print_members_metadata(self, prefix="\t\t"):
         for member in self:
             member.print_metadata(prefix=prefix)
 

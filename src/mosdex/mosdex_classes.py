@@ -1,5 +1,28 @@
-from src.mosdex.mosdex_base import MosdexArray, MosdexObject
 import pandas as pd
+
+from src.mosdex.mosdex_base import MosdexArray, MosdexObject
+
+
+def mosdex_new_object(class_dir: tuple[str, str], mosdex_json: dict) -> MosdexObject:
+    """
+    Method to generate a new MosdexObject derived class from a (CLASS, KIND) pair.
+
+    :param class_dir: tuple pair consisting of CLASS value and a KIND value.
+    :param mosdex_json: input to the derived class.
+    :return: MosdexObject derived class.
+    """
+
+    mosdex_instance: dict[[str, str], MosdexObject] = \
+        {
+            ("MODULE", "MODEL"): MosdexModel(mosdex_json),
+            ("DATA", "INPUT"): MosdexData(mosdex_json),
+            ("DATA", "OUTPUT"): MosdexData(mosdex_json),
+            ("VARIABLE", "CONTINUOUS"): MosdexVariable(mosdex_json),
+            ("CONSTRAINT", "LINEAR"): MosdexConstraint(mosdex_json),
+            ("TERM", "LINEAR"): MosdexTerm(mosdex_json)
+        }
+
+    return mosdex_instance[class_dir]
 
 
 class MosdexModules(MosdexArray):
@@ -40,6 +63,8 @@ class MosdexSchema(MosdexArray):
             members.print_metadata("\t\t")
 
 
+class MosdexData(MosdexObject):
+    pass
 
 class MosdexField(MosdexObject):
     pass
@@ -76,3 +101,12 @@ class MosdexModel(MosdexObject):
 
     def get_tables(self):
         return self.mosdex_tables
+
+class MosdexTerm(MosdexObject):
+    pass
+
+class MosdexVariable(MosdexObject):
+    pass
+
+class MosdexConstraint(MosdexObject):
+    pass
