@@ -1,19 +1,26 @@
-import os
-
 from src.mosdex.mosdexV2Factory import MosdexV2Factory
-from src.mosdex.mosdex_database import MosdexDatabase
+from src.mosdex.mosdex_database import MosdexFile
+from sqlalchemy import select
+from pathlib import Path
 
-# Mosdex schema and data locations
-DATA_DIR = "../data"
+# Mosdex schema and data file
+SCHEMA_FILE = "../data/MOSDEXSchemaV2-0.json"
+SAILCO_FILE = "../data/sailco_2-0.json"
+
+# Database
+DATABASE = 'sqlite://'  # in-memory sqlite
 
 # Initialize MosdexV2
-schema_file = os.path.join(DATA_DIR, "MOSDEXSchemaV2-0.json")
-db_endpoint = 'sqlite://'
-mosdexV2 = MosdexV2Factory(schema_file, MosdexDatabase(db_endpoint))
+mosdexV2 = MosdexV2Factory(Path(SCHEMA_FILE), DATABASE)
 
 # Create sailco data
-sailco_file = os.path.join(DATA_DIR, "sailco_2-0.json")
-sailcoV2 = mosdexV2.from_file(sailco_file)
+sailcoV2 = mosdexV2.from_file(Path(SAILCO_FILE), tag="test")
+
+# Check the file data in the database
+with mosdexV2.Session() as session:
+    stmt = select(MosdexFile).where(MosdexFile.tag == "test")
+    for item in session.scalars(stmt):
+        print(item)
 
 # Print syntax
 print(sailcoV2.get_syntax())

@@ -1,33 +1,27 @@
-from records import Database
+# from records import Database
 
-class MosdexDatabase(Database):
-
-    def __init__(self, file_or_url: str):
-        super().__init__(file_or_url)
-
-    def initialize_mosdex_table(self):
-        """
-        Initializes mosdex table in database.
-        :return:
-        """
-        self.query('DROP TABLE IF EXISTS mosdex')
-        self.query('CREATE TABLE mosdex ( module_name text, item_name text, '
-                   'class_name text, type_name text, table_name text PRIMARY KEY) ')
+from sqlalchemy import func, DateTime
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
 
 
-    def initialize_database(self, do_print=False):
+class MosdexBase(DeclarativeBase):
+    pass
 
-        # Create modules table
+class MosdexFile(MosdexBase):
+    __tablename__: str = "mosdex_files"
 
-        # Create the singletons table
-        self.query('DROP TABLE IF EXISTS singletons_table')
-        self.query('CREATE TABLE singletons_table ('
-                 'module_name text, item_name text, class_name text, singleton_name text, '
-                 's_value numeric, s_recipe text)')
+    id: Mapped[int] = mapped_column(primary_key=True)
+    syntax: Mapped[str]
+    file: Mapped[str]
+    date = mapped_column(DateTime, server_default=func.now())
+    tag: Mapped[str]
 
-        # Create the metadata table
-        self.query('DROP TABLE IF EXISTS metadata_table')
-        self.query('CREATE TABLE metadata_table ('
-                 'module_name text, item_name text, class_name text, '
-                 'name text, type text, usage text, key_type text, source text )')
-
+    def __repr__(self) -> str:
+        return (f"MosdexFile(id={self.id!r}, "
+                f"schema={self.syntax!r}, "
+                f"file={self.file!r}, "
+                f"time={self.date!r}, "
+                f"tag={self.tag!r})"
+                )
