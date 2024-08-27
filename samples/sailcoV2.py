@@ -1,6 +1,8 @@
+from sqlalchemy.orm import Session
+
 from src.mosdex.mosdexV2Factory import MosdexV2Factory
-from src.mosdex.mosdex_database import MosdexFile
-from sqlalchemy import select
+from src.mosdex.mosdex_db import MosdexFile, MosdexModule
+from sqlalchemy import select, desc
 from pathlib import Path
 
 # Mosdex schema and data file
@@ -10,23 +12,42 @@ SAILCO_FILE = "../data/sailco_2-0.json"
 # Database
 DATABASE = 'sqlite://'  # in-memory sqlite
 
-# Initialize MosdexV2
-mosdexV2 = MosdexV2Factory(Path(SCHEMA_FILE), DATABASE)
+# Initialize MosdexV2Factory
+mosdexV2factory = MosdexV2Factory(schema_file=Path(SCHEMA_FILE),
+                                  db_endpoint= DATABASE,
+                                  echo=True,  # If True, engine logs SQL to stdout
+                                  drop_all=True  # If True, database drops all tables
+                                  )
+
+# Get MosdexDB
+mosdex_db = mosdexV2factory.mosdex_db
 
 # Create sailco data
-sailcoV2 = mosdexV2.from_file(Path(SAILCO_FILE), tag="test")
+sailcoV2 = mosdexV2factory.from_file(Path(SAILCO_FILE), tag="test")
 
-# Check the file data in the database
-with mosdexV2.Session() as session:
-    stmt = select(MosdexFile).where(MosdexFile.tag == "test")
-    for item in session.scalars(stmt):
-        print(item)
+# print file record just written to MosdexFile table and get file_id
+with Session(mosdex_db.engine) as session:
+    stmt = select(MosdexFile).where(MosdexFile.tag.is_("test")).order_by(desc(MosdexFile.id))
+    row = session.execute(stmt).all()[0]
+    print(row)
+    file_id = row.id
 
-# Print syntax
-print(sailcoV2.get_syntax())
+# print module records for this file
+with Session(mosdex_db.engine) as session:
+    stmt = select(MosdexModule).where(MosdexModule.id.is_(file_id))
+    for row in session.scalars(stmt):
+        print(row)
 
-# Get modules
+
+# Get modules and print the rows
 sailco_modules = sailcoV2.get_modules()
+for module in sailco_modules:
+    with Session(mosdex_db.engine) as session:
+        stmt = select(MosdexModule).where(MosdexModule.parent_id.is_(module.parent_id))
+        for row in session.scalars(stmt):
+            print(row)
+
+#
 
 # Get the sailco model and print metadata
 sailco_model = sailco_modules.get('sailco')

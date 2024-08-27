@@ -1,22 +1,20 @@
 import json
 import pprint
-from datetime import datetime
-
 from pathlib import Path
 
 from jsonschema.validators import Draft7Validator
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session
 
 from src.mosdex.exceptions import MosdexInvalidFileError
 from src.mosdex.mosdexV2 import MosdexV2
-from src.mosdex.mosdex_database import MosdexBase
-from src.mosdex.mosdex_database import MosdexFile
+from src.mosdex.mosdex_db import MosdexDB
+from src.mosdex.mosdex_db import MosdexFile
 
 
 class MosdexV2Factory:
     schema_file: Path
     db_endpoint: str
+    mosdex_db: MosdexDB
 
 
     def __init__(self, schema_file: Path, db_endpoint: str, echo: bool=False, drop_all: bool=False):
@@ -39,15 +37,7 @@ class MosdexV2Factory:
             schema_json = json.load(f)
         self.validator = Draft7Validator(schema_json)
 
-        # Create engine and initialize MosdexBase
-        self.engine = create_engine(self.db_endpoint, echo=echo)
-
-        if drop_all:
-            MosdexBase.metadata.drop_all(self.engine)
-        MosdexBase.metadata.create_all(self.engine)
-
-        # Create Session factory
-        self.Session = sessionmaker(bind=self.engine)
+        self.mosdex_db = MosdexDB(db_endpoint, echo=echo, drop_all=drop_all)
 
     def from_file(self, mosdex_file: Path, tag: str = "no_tag"):
         """
@@ -78,11 +68,13 @@ class MosdexV2Factory:
                 print()
                 pp.pprint(error.message)
 
-        with self.Session.begin() as session:
+        with Session(self.mosdex_db.engine) as session, session.begin():
             mosdex_file = MosdexFile(syntax=self.schema_file.name,
                                      file=mosdex_file.name,
                                      tag=tag )
             session.add(mosdex_file)
+            session.flush()
+            file_id = mosdex_file.id
 
 
-        return MosdexV2(problem_json)
+        return MosdexV2(problem_json, file_id=file_id, mosdex_db=self.mosdex_db)

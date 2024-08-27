@@ -1,17 +1,17 @@
-from src.mosdex.mosdex_base import MosdexObject
-from src.mosdex.mosdex_classes import MosdexModules, mosdex_new_object
-
+from src.mosdex.mosdex_base import MosdexObjectBase
+from src.mosdex.mosdex_classes import MosdexModules, mosdex_object
+from src.mosdex.mosdex_db import MosdexDB
 
 
 class MosdexV2(dict):
     """
     Instance of MosdexV2 created by MosdexV2Factory.
     """
-    module_list: list[MosdexObject] = []
+    module_list: list[MosdexObjectBase] = []
     modules: MosdexModules
     syntax: str
 
-    def __init__(self, mosdex_json: dict):
+    def __init__(self, mosdex_json: dict, file_id: int, mosdex_db: MosdexDB):
         """
         Constructor for instance of MosdexV2:
         - Processes the top-level objects in parameter mosdex_json.
@@ -22,16 +22,15 @@ class MosdexV2(dict):
         """
         super().__init__(mosdex_json)
 
+        self.file_id = file_id if isinstance(file_id, int) else int(file_id)
+        self.mosdex_db = mosdex_db
 
-        # Process top-level items
+        # Process MODULES
         for top_item in self.keys():
-            if top_item == "SYNTAX":
-                self.syntax = self["SYNTAX"]
-
             if top_item == "MODULES":
                 for item in self["MODULES"]:
                     type_tuple = (item["CLASS"], item["KIND"])
-                    module_object = mosdex_new_object(type_tuple, item)
+                    module_object = mosdex_object(type_tuple, item, file_id, mosdex_db)
                     self.module_list.append(module_object)
 
         self.modules = MosdexModules(self.module_list)

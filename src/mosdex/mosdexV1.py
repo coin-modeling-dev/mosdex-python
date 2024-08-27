@@ -166,14 +166,14 @@ class Mosdex:
                         k = metadata["item_key"][i]
                         s = metadata["item_source"][i]
                         mosdex_db.query('INSERT INTO metadata_table (module_name, item_name, class_name,'
-                                        'name, type, usage, key_type, source)'
+                                        'name, mosdex_type, usage, key_type, source)'
                                         'VALUES(:mname, :iname, :cname, :nname, :tname, :uname,:kname, :sname)',
                                         mname=module_name, iname=item, cname=c1,
                                         nname=n, tname=t,
                                         uname=u, kname=k, sname=s)
                 else:
                     mosdex_db.query('INSERT INTO metadata_table (module_name, item_name, class_name,'
-                                    'name, type, usage, key_type, source)'
+                                    'name, mosdex_type, usage, key_type, source)'
                                     'VALUES(:mname, :iname, :cname, :nname, :tname, :uname, :kname, :sname)',
                                     mname=module_name, iname=item, cname=c1,
                                     nname=metadata["item_name"], tname=metadata["item_type"],
@@ -259,7 +259,7 @@ class Mosdex:
         db.query('DROP TABLE IF EXISTS metadata_table')
         db.query('CREATE TABLE metadata_table ('
                  'module_name text, item_name text, class_name text, '
-                 'name text, type text, usage text, key_type text, source text )')
+                 'name text, mosdex_type text, usage text, key_type text, source text )')
 
 
 
@@ -277,13 +277,13 @@ class Mosdex:
         # Create independent variables table
         db_.query('DROP TABLE IF EXISTS independent_variables')
         db_.query('CREATE TABLE independent_variables ( module text, variable text KEY, '
-                  'type text,'
+                  'mosdex_type text,'
                   'lower_bound numeric, upper_bound numeric, value numeric, dual numeric) ')
 
         # Create dependent variables table
         db_.query('DROP TABLE IF EXISTS dependent_variables')
         db_.query('CREATE TABLE dependent_variables ( module text, variable text KEY, '
-                  'type text,'
+                  'mosdex_type text,'
                   'lower_bound numeric, upper_bound numeric, value numeric, dual numeric) ')
 
     def populate_independents(self, do_print=False):
@@ -317,7 +317,7 @@ class Mosdex:
 
             for r1 in variable_definitions:
                 db_.query('INSERT INTO independent_variables (module, variable, '
-                          'type, lower_bound, upper_bound) '
+                          'mosdex_type, lower_bound, upper_bound) '
                           'VALUES(:m, :v, :t, :l , :u) ',
                           m=module, v=r1.Name, t=variable_type, l=r1.LowerBound,
                           u=r1.UpperBound)
@@ -362,7 +362,7 @@ class Mosdex:
                     upper_bound = r1.UpperBound
 
                 db_.query('INSERT INTO dependent_variables (module, variable, '
-                          'type, lower_bound, upper_bound) '
+                          'mosdex_type, lower_bound, upper_bound) '
                           'VALUES(:m, :v, :t, :l , :u) ',
                           m=module, v=r1.Name, t=variable_type, l=lower_bound,
                           u=upper_bound)
@@ -374,7 +374,7 @@ class Mosdex:
                 modules.append(coeff["Module"])
             for m_ in set(modules):
                 db_.query('INSERT INTO dependent_variables (module, variable, '
-                          'type, lower_bound, upper_bound) '
+                          'mosdex_type, lower_bound, upper_bound) '
                           'VALUES(:m, :v, :t, :l , :u) ',
                           m=m_, v="OBJECTIVE", t="LINEAR", l="infinity", u="infinity")
 
@@ -383,7 +383,7 @@ class Mosdex:
         db_ = self.db
 
         # Linear Expressions
-        linear_expressions = db_.query('SELECT module, variable FROM dependent_variables WHERE type is "LINEAR"')
+        linear_expressions = db_.query('SELECT module, variable FROM dependent_variables WHERE mosdex_type is "LINEAR"')
 
         if linear_expressions is not None:
 
