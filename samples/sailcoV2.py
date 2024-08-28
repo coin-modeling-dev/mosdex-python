@@ -43,7 +43,7 @@ with Session(mosdex_db.engine) as session:
 sailco_modules = sailcoV2.get_modules()
 for module in sailco_modules:
     with Session(mosdex_db.engine) as session:
-        stmt = select(MosdexModule).where(MosdexModule.parent_id.is_(module.parent_id))
+        stmt = select(MosdexModule).where(MosdexModule.parent_id.is_(file_id))
         for row in session.scalars(stmt):
             print(row)
 

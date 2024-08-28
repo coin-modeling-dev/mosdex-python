@@ -30,7 +30,7 @@ class MosdexV2(dict):
             if top_item == "MODULES":
                 for item in self["MODULES"]:
                     type_tuple = (item["CLASS"], item["KIND"])
-                    module_object = mosdex_object(type_tuple, item, file_id, mosdex_db)
+                    module_object = mosdex_object(type_tuple, item, parent_id=file_id, mosdex_db=mosdex_db)
                     self.module_list.append(module_object)
 
         self.modules = MosdexModules(self.module_list)

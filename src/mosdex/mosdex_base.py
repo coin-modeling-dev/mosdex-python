@@ -28,7 +28,7 @@ class MosdexArrayBase(list[MosdexObjectBase]):
         super().__init__(mosdex_array)
         self.array_dict = {}
         for member in mosdex_array:
-            self.array_dict[member.get('NAME')] = member
+            self.array_dict[member['NAME']] = member
 
     def get(self, name: str) -> MosdexObjectBase:
         return self.array_dict.get(name)
