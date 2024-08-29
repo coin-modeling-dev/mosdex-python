@@ -12,34 +12,12 @@ class MosdexDB:
     def __init__(self, db_endpoint: str, echo: bool = False, drop_all: bool = False):
         # Create engine
         self.engine = create_engine(db_endpoint, echo=echo)
+        self.metadata = MosdexBase.metadata
 
         # Initialize MosdexBase
         if drop_all:
-            MosdexBase.metadata.drop_all(self.engine)
-        MosdexBase.metadata.create_all(self.engine)
-
-    def create_Table(self, table_name, schema_dict: dict) -> None:
-        metadata = MosdexBase.metadata
-
-        # Create a new table with only the id column
-        new_table = Table(
-            table_name,
-            metadata,
-            Column('id', Integer, primary_key=True),
-        )
-
-        # Generate a dataframe with the arrays as columns
-        schema_df = pd.DataFrame.from_dict(schema_dict, orient='columns')
-
-        # Each row of the dataframe has the column definitions
-        for row in range(schema_df.shape[0]):
-            field_dict = dict(schema_df.iloc[row])
-            if field_dict['KEYS'] is "KEY":
-                new_table.append_column(Column(field_dict['name'], Integer, primary_key=True))
-            elif field_dict['KEYS'] is "VALUE" and field_dict['KIND'] is "DOUBLE":
-                new_table.append_column(Column(field_dict['name'], Double))
-
-
+            self.metadata.drop_all(self.engine)
+        self.metadata.create_all(self.engine)
 
 
 class MosdexBase(DeclarativeBase):
