@@ -1,4 +1,6 @@
-from src.mosdex.mosdex_db import MosdexDB
+from sqlalchemy.orm import Session
+
+from src.mosdex.mosdex_db import MosdexDB, MosdexTable, MosdexModule
 
 
 class MosdexObjectBase(dict):
@@ -19,6 +21,54 @@ class MosdexObjectBase(dict):
 
     def set_object_id(self, object_id: int) -> None:
         self.object_id = object_id
+
+
+class MosdexModuleBase(MosdexObjectBase):
+
+    def __init__(self, mosdex_json: dict, mosdex_db: MosdexDB, parent_id: int):
+        super().__init__(mosdex_json, mosdex_db=mosdex_db, parent_id=parent_id)
+
+        # Record in MosdexModule table
+        with Session(mosdex_db.engine) as session, session.begin():
+            row = MosdexModule(parent_id=parent_id,
+                               module_name=mosdex_json["NAME"],
+                               module_class=mosdex_json["CLASS"],
+                               module_kind=mosdex_json["KIND"],
+                               data=mosdex_json["HEADING"]
+                               )
+            session.add(row)
+            session.flush()
+            self.object_id = row.id
+
+
+class MosdexTableBase(MosdexObjectBase):
+    schema_table_name: str
+    data_table_name: str
+
+    def __init__(self, mosdex_json: dict, mosdex_db:MosdexDB, parent_id: int) -> None:
+        super().__init__(mosdex_json, mosdex_db, parent_id)
+
+        with Session(mosdex_db.engine) as session, session.begin():
+            row = MosdexTable(module_id=parent_id,
+                              table_name=mosdex_json["NAME"],
+                              table_class=mosdex_json["CLASS"],
+                              table_kind=mosdex_json["KIND"],
+                              schema=mosdex_json["NAME"] + "_schema",
+                              data=mosdex_json["NAME"] + "_data",
+                              )
+            session.add(row)
+            session.flush()
+            self.object_id = row.id
+
+        self.data_table_name = mosdex_json["NAME"] + "_data"
+        self.schema_table_name = mosdex_json["NAME"] + "_schema"
+
+    def get_data_table_name(self) -> str:
+        return self.data_table_name
+
+    def get_schema_table_name(self) -> str:
+        return self.schema_table_name
+
 
 class MosdexArrayBase(list[MosdexObjectBase]):
     # dictionary to index list[MosdexObjectBase] by NAME

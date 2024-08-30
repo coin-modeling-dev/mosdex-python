@@ -166,7 +166,7 @@
         },
         {
           "NAME": "totalCost",
-          "CLASS": "OBJECTIVE",
+          "CLASS": "CONSTRAINT",
           "KIND": "LINEAR",
           "SCHEMA": {
             "NAME": [ "Name",       "Row",      "Constant", "Sense",    "Value" ],

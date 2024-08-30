@@ -1,5 +1,5 @@
 from src.mosdex.mosdex_base import MosdexObjectBase
-from src.mosdex.mosdex_classes import MosdexModules, mosdex_object
+from src.mosdex.mosdex_classes import MosdexModules, create_mosdex_object
 from src.mosdex.mosdex_db import MosdexDB
 
 
@@ -30,7 +30,7 @@ class MosdexV2(dict):
             if top_item == "MODULES":
                 for item in self["MODULES"]:
                     type_tuple = (item["CLASS"], item["KIND"])
-                    module_object = mosdex_object(type_tuple, item, parent_id=file_id, mosdex_db=mosdex_db)
+                    module_object = create_mosdex_object(type_tuple, item, parent_id=file_id, mosdex_db=mosdex_db)
                     self.module_list.append(module_object)
 
         self.modules = MosdexModules(self.module_list)

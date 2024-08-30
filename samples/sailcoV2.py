@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 
 from src.mosdex.mosdexV2Factory import MosdexV2Factory
 from src.mosdex.mosdex_db import MosdexFile, MosdexModule
-from sqlalchemy import select, desc
+from sqlalchemy import select, desc, Table
 from pathlib import Path
 
 # Mosdex schema and data file
@@ -28,9 +28,10 @@ sailcoV2 = mosdexV2factory.from_file(Path(SAILCO_FILE), tag="test")
 # print file record just written to MosdexFile table and get file_id
 with Session(mosdex_db.engine) as session:
     stmt = select(MosdexFile).where(MosdexFile.tag.is_("test")).order_by(desc(MosdexFile.id))
-    row = session.execute(stmt).all()[0]
-    print(row)
-    file_id = row.id
+    rows = session.scalars(statement=stmt)
+    for row in rows:
+        print(row)
+        file_id = row.id
 
 # print module records for this file
 with Session(mosdex_db.engine) as session:
@@ -63,3 +64,7 @@ for table in sailco_tables:
         print()
 
 
+# Print the demands table
+with Session(mosdex_db.engine) as session:
+    table = Table('demands', mosdex_db.metadata, autoload=True, autoload_with=mosdex_db.engine)
+    print(select(table))

@@ -1,6 +1,6 @@
 # from records import Database
-import pandas as pd
-from sqlalchemy import func, DateTime, create_engine, Engine, ForeignKey, JSON, Table, Column, Integer, Double
+from sqlalchemy import func, DateTime, create_engine, Engine, ForeignKey, JSON
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
@@ -65,7 +65,8 @@ class MosdexTable(MosdexBase):
     table_name: Mapped[str]
     table_class: Mapped[str]
     table_kind: Mapped[str]
-    data = mapped_column(JSON)
+    schema: Mapped[str]
+    data: Mapped[str]
 
     def __repr__(self) -> str:
         return (f"MosdexTable(id={self.id!r}, "

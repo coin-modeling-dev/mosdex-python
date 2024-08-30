@@ -1,32 +1,40 @@
-from typing import Dict, Any
-
+import numpy as np
 import pandas as pd
-from pandas.io.sas.sas_constants import col_count_p1_multiplier
-from sqlalchemy import Table, Column, Integer, Double
+from sqlalchemy import Column, Integer, Double
 from sqlalchemy.orm import Session
 
-from src.mosdex.exceptions import MosdexInvalidClassKindPairError, MosdexInvalidTableKindPairError, \
-    MosdexTableSchemaNotFoundError
-from src.mosdex.mosdex_base import MosdexArrayBase, MosdexObjectBase
-from src.mosdex.mosdex_db import MosdexDB, MosdexModule, MosdexTable
+from src.mosdex.exceptions import MosdexInvalidType, MosdexInvalidTableKindPairError, \
+    MosdexDataSchemaNotFoundError
+from src.mosdex.mosdex_base import MosdexArrayBase, MosdexObjectBase, MosdexTableBase, MosdexModuleBase
+from src.mosdex.mosdex_db import MosdexDB
 
-MODULE_KINDS = {
-    "MODULE": ["MODEL"]
-}
+MODULE_TYPES = [
+    # Module Class-Kind pairs
+    ("MODULE", "MODEL"),
+]
 
-TABLE_KINDS = {
-    "DATA": ["INPUT", "OUTPUT"],
-    "VARIABLE": ["CONTINUOUS"],
-    "CONSTRAINT": ["LINEAR"],
-    "TERM": ["LINEAR"],
-}
+TABLE_TYPES = [
+    # Table Class-Kind pairs
+    ("DATA", "INPUT"),
+    ("DATA", "OUTPUT"),
+    ("VARIABLE", "CONTINUOUS"),
+    ("CONSTRAINT", "LINEAR"),
+    ("OBJECTIVE", "LINEAR"),
+    ("TERM", "LINEAR")
+]
+SCHEMA_TYPES = [
+    # Schema Kind-Keys pairs
+    ("DOUBLE", "VALUE"),
+    ("INTEGER", "VALUE"),
+    ("INTEGER", "KEY"),
+    ("STRING", "KEY"),
+]
 
-COLUMN_KINDS = {
-    "VALUE": ["INTEGER", "DOUBLE"],
-    "KEY": ["INTEGER"],
-}
+MOSDEX_TYPES = MODULE_TYPES + TABLE_TYPES + SCHEMA_TYPES
 
-def mosdex_object(mosdex_type: tuple[str, str], mosdex_json: dict, parent_id: int, mosdex_db: MosdexDB) -> MosdexObjectBase:
+
+def create_mosdex_object(mosdex_type: tuple[str, str], mosdex_json: dict, parent_id: int=0,
+                         mosdex_db: MosdexDB=None) -> MosdexObjectBase:
     """
     Method to generate a new MosdexObjectBase derived class from a (CLASS, KIND) pair.
 
@@ -35,107 +43,62 @@ def mosdex_object(mosdex_type: tuple[str, str], mosdex_json: dict, parent_id: in
     :param mosdex_db: MosdexDB object from the MosdexV2Factory.
     :param parent_id: Key in the mosdex_files table for the parent object of the current object.
 
-    :return: MosdexObjectBase derived class.
+    :return: instance of MOSDEX_TYPE.
     """
+
+    mosdex_instance = {}
+
     try:
-        if (mosdex_type[0] in MODULE_KINDS.keys()
-                and mosdex_type[1] in MODULE_KINDS[mosdex_type[0]]):
+        if mosdex_type not in MOSDEX_TYPES:
+            raise MosdexInvalidType(name=mosdex_json["NAME"],
+                                    invalid_type=mosdex_type
+                                    )
 
-            module_instance: dict[[str, str], MosdexObjectBase] = \
-            {
-                ("MODULE", "MODEL"):
-                    MosdexModel(mosdex_json, parent_id=parent_id, mosdex_db=mosdex_db),
-            }
-            with Session(mosdex_db.engine) as session, session.begin():
-                row = MosdexModule(parent_id=parent_id,
-                                   module_name=mosdex_json["NAME"],
-                                   module_class=mosdex_json["CLASS"],
-                                   module_kind=mosdex_json["KIND"],
-                                   data=mosdex_json["HEADING"]
-                                   )
-                session.add(row)
-                session.flush()
-                module_instance[mosdex_type].set_object_id(row.id)
+        if mosdex_type == ("MODULE", "MODEL"):
+            mosdex_instance = MosdexModel(mosdex_json, parent_id=parent_id, mosdex_db=mosdex_db)
 
-            return module_instance[mosdex_type]
+        if mosdex_type == ("DATA", "INPUT"):
+            mosdex_instance = MosdexData(mosdex_json, parent_id=parent_id, mosdex_db=mosdex_db)
 
-        elif (mosdex_type[0] in TABLE_KINDS.keys()
-              and mosdex_type[1] in TABLE_KINDS[mosdex_type[0]]):
+        if mosdex_type == ("DATA", "OUTPUT"):
+            mosdex_instance = MosdexData(mosdex_json, parent_id=parent_id, mosdex_db=mosdex_db)
 
-            table_instance: dict[[str, str], MosdexTableBase] = {
-                ("DATA", "INPUT"):
-                    MosdexData(mosdex_json, parent_id=parent_id, mosdex_db=mosdex_db),
-                ("DATA", "OUTPUT"):
-                    MosdexData(mosdex_json, parent_id=parent_id, mosdex_db=mosdex_db),
-                ("VARIABLE", "CONTINUOUS"):
-                    MosdexVariable(mosdex_json, parent_id=parent_id, mosdex_db=mosdex_db),
-                ("CONSTRAINT", "LINEAR"):
-                    MosdexConstraint(mosdex_json, parent_id=parent_id, mosdex_db=mosdex_db),
-                ("OBJECTIVE", "LINEAR"):
-                    MosdexConstraint(mosdex_json, parent_id=parent_id,mosdex_db=mosdex_db),
-                ("TERM", "LINEAR"):
-                    MosdexTerm(mosdex_json, parent_id=parent_id, mosdex_db=mosdex_db),
-            }
-            with Session(mosdex_db.engine) as session, session.begin():
-                row = MosdexTable(module_id=parent_id,
-                                   table_name=mosdex_json["NAME"],
-                                   table_class=mosdex_json["CLASS"],
-                                   table_kind=mosdex_json["KIND"],
-                                   data=mosdex_json
-                                   )
-                session.add(row)
-                session.flush()
-                table_instance[mosdex_type].set_object_id(row.id)
+        if mosdex_type == ("VARIABLE", "CONTINUOUS"):
+            mosdex_instance = MosdexVariable(mosdex_json, parent_id=parent_id, mosdex_db=mosdex_db)
 
-            return table_instance[mosdex_type]
+        if mosdex_type == ("CONSTRAINT", "LINEAR"):
+            mosdex_instance = MosdexConstraint(mosdex_json, parent_id=parent_id, mosdex_db=mosdex_db)
 
-        else:
-            raise MosdexInvalidClassKindPairError(name=mosdex_json["NAME"],
-                                          invalid_class=mosdex_type[0],
-                                          kind=mosdex_type[1])
-    except MosdexInvalidClassKindPairError as e:
-        print(f"Object name: {e.name} has invalid class-kind pair: ({e.invalid_class}, {e.kind})")
+        if mosdex_type == ("TERM", "LINEAR"):
+            mosdex_instance = MosdexTerm(mosdex_json, parent_id=parent_id, mosdex_db=mosdex_db)
+
+        if mosdex_type == SCHEMA_TYPES:
+            mosdex_instance = mosdex_json
+
+        return mosdex_instance
+
+    except MosdexInvalidType as e:
+        print(f"Object name: {e.name} has invalid mosdex type: {e.invalid_type}")
+        raise
 
 
-class MosdexModel(MosdexObjectBase):
+class MosdexModel(MosdexModuleBase):
+    mosdex_tables: list[MosdexObjectBase] = []
 
     def __init__(self, mosdex_json: dict, mosdex_db: MosdexDB, parent_id: int):
         super().__init__(mosdex_json, mosdex_db=mosdex_db, parent_id=parent_id)
 
-        tables = []
+        # Process TABLES
         for table in mosdex_json.get('TABLES'):
             table_class = table.get('CLASS')
             table_kind = table.get('KIND')
-            table_object = mosdex_object( (table_class, table_kind), table,
-                                          parent_id=self.object_id,
-                                          mosdex_db=mosdex_db)
-            tables.append(table_object)
-
-        self.mosdex_tables = MosdexTables(tables)
+            table_object = create_mosdex_object((table_class, table_kind), table,
+                                                parent_id=self.object_id,
+                                                mosdex_db=mosdex_db)
+            self.mosdex_tables.append(table_object)
 
     def get_tables(self):
         return self.mosdex_tables
-
-
-
-class MosdexTableBase(MosdexObjectBase):
-
-    new_table: Table
-    table_name: str
-    col_names: list[str]
-
-    def __init__(self, mosdex_json: dict, mosdex_db: MosdexDB, parent_id: int):
-        super().__init__(mosdex_json, mosdex_db, parent_id)
-
-        # Create a new sqlalchemy table with the id column
-        self.table_name = mosdex_json["NAME"]
-        self.new_table = Table(
-            self.table_name,
-            mosdex_db.metadata,
-            Column('id', Integer, primary_key=True)
-        )
-        self.col_names = []
-
 
 
 class MosdexData(MosdexTableBase):
@@ -144,58 +107,49 @@ class MosdexData(MosdexTableBase):
 
         super().__init__(mosdex_json, mosdex_db, parent_id)
 
+        # Data will be loaded into a dataframe
+        # then pushed to table using df.to_sql()
+        col_dtype = {}
+
         try:
             if "SCHEMA" in mosdex_json:
 
-                # Generate a dataframe with the arrays as columns
-                schema_dict = mosdex_json["SCHEMA"]
-                schema_df = pd.DataFrame.from_dict(schema_dict, orient='columns')
-                self.col_names = schema_df.columns
-
-                # Each row of the dataframe has the column definitions
-                for row in range(schema_df.shape[0]):
-                    col: dict[str, str] = dict(schema_df.iloc[row])
-                    col_name = col['NAME']
-                    col_kind = col['KIND']
-                    col_keys = col['KEYS']
-
-                    k = (col_keys, col_kind)
-                    if k[0] in COLUMN_KINDS.keys() and k[1] in COLUMN_KINDS[k[0]]:
-                        if col_keys is "KEY":
-                            self.new_table.append_column(Column(col_name, Integer, primary_key=True))
-                        elif col_keys is "VALUE" and col_kind is "DOUBLE":
-                            self.new_table.append_column(Column(col_name, Double))
-                        elif col_keys is "VALUE" and col_kind is "INTEGER":
-                            self.new_table.append_column(Column(col_name, Integer))
-
-                        else:
-                            raise MosdexInvalidTableKindPairError(name=col_name, kind=col_kind, keys=col_keys)
-            else:
-                raise MosdexTableSchemaNotFoundError(name=mosdex_json["NAME"])
+                # Create dataframe with schema arrays as rows
+                schema_df = pd.DataFrame.from_dict(mosdex_json["SCHEMA"], orient='columns')
+                print(schema_df)
 
             if "INSTANCE" in mosdex_json:
-                with Session(mosdex_db.engine) as session, session.begin():
-                    # Add the rows
-                    for values in mosdex_json["INSTANCE"]:
-                        row = MosdexTable(values)
-                        session.add(row)
 
+                # Create the dataframe from the INSTANCE arrays
+                data_df = pd.DataFrame(np.vstack(mosdex_json['INSTANCE']), columns=list(col_dtype.keys()))
+
+                # Push the dataframe to the table
+                with Session(mosdex_db.engine) as session, session.begin():
+                    data_df.to_sql(name=self.table_name, con=session.connection(), if_exists='append',
+                                   index=False, dtype=col_dtype)
+                    session.flush()
+                    stmt = self.new_table.select()
+                    for row in session.scalars(stmt):
+                        print(row)
 
         except MosdexInvalidTableKindPairError as e:
-          print(e)
+            print(e)
 
-        except MosdexTableSchemaNotFoundError as e:
+        except MosdexDataSchemaNotFoundError as e:
             print(e)
 
 
 class MosdexField(MosdexObjectBase):
     pass
 
+
 class MosdexTerm(MosdexObjectBase):
     pass
 
+
 class MosdexVariable(MosdexTableBase):
     pass
+
 
 class MosdexConstraint(MosdexTableBase):
     pass
@@ -204,8 +158,10 @@ class MosdexConstraint(MosdexTableBase):
 class MosdexModules(MosdexArrayBase):
     pass
 
+
 class MosdexTables(MosdexArrayBase):
     pass
+
 
 class MosdexFields(MosdexArrayBase):
     pass
