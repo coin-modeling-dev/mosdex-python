@@ -94,8 +94,9 @@
       "type": "object",
       "properties": {
         "NAME": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
-        "KIND": {"type":  "array", "items": {"type": "string"}},
-        "KEYS": {"type": "array", "items": {"type":  "string"}}
+        "KIND": {"type": "array", "items": {"type": "string"}},
+        "KEYS": {"type": "array", "items": {"type":  "string"}},
+        "FKEY": {"type": "array", "items": {"type":  "string"}}
       },
       "required": ["NAME", "KIND", "KEYS"],
       "additionalProperties": {"$ref": "#/definitions/ArrayOfStrings"}

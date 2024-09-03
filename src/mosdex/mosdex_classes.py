@@ -1,7 +1,9 @@
 import numpy as np
 import pandas as pd
-from sqlalchemy import Column, Integer, Double
+from pip._internal.utils.misc import tabulate
+from sqlalchemy import String, text, Integer, Double
 from sqlalchemy.orm import Session
+from tabulate import tabulate
 
 from src.mosdex.exceptions import MosdexInvalidType, MosdexInvalidTableKindPairError, \
     MosdexDataSchemaNotFoundError
@@ -29,6 +31,12 @@ SCHEMA_TYPES = [
     ("INTEGER", "KEY"),
     ("STRING", "KEY"),
 ]
+
+MOSDEX_TO_SQLALCHEMY_TYPES = {
+    "INTEGER": Integer,
+    "DOUBLE": Double,
+    "STRING": String
+}
 
 MOSDEX_TYPES = MODULE_TYPES + TABLE_TYPES + SCHEMA_TYPES
 
@@ -107,30 +115,35 @@ class MosdexData(MosdexTableBase):
 
         super().__init__(mosdex_json, mosdex_db, parent_id)
 
-        # Data will be loaded into a dataframe
-        # then pushed to table using df.to_sql()
         col_dtype = {}
+        col_keys  = {}
 
         try:
-            if "SCHEMA" in mosdex_json:
-
-                # Create dataframe with schema arrays as rows
-                schema_df = pd.DataFrame.from_dict(mosdex_json["SCHEMA"], orient='columns')
-                print(schema_df)
-
             if "INSTANCE" in mosdex_json:
 
+                # map column types
+                schema = mosdex_json.get("SCHEMA")
+                for name, kind, keys in zip(schema.get("NAME"),
+                                            schema.get("KIND"),
+                                            schema.get("KEYS")):
+
+                    col_dtype[name] = MOSDEX_TO_SQLALCHEMY_TYPES[kind]
+                    col_keys[name] = keys
+
                 # Create the dataframe from the INSTANCE arrays
-                data_df = pd.DataFrame(np.vstack(mosdex_json['INSTANCE']), columns=list(col_dtype.keys()))
+                data_df = pd.DataFrame(np.vstack(mosdex_json['INSTANCE']),
+                                       columns=schema.get("NAME"))
+
+                print(data_df.head())
 
                 # Push the dataframe to the table
                 with Session(mosdex_db.engine) as session, session.begin():
-                    data_df.to_sql(name=self.table_name, con=session.connection(), if_exists='append',
-                                   index=False, dtype=col_dtype)
+                    data_df.to_sql(name=self.table_name, con=session.connection(),
+                                   if_exists='replace',
+                                   dtype=col_dtype)
                     session.flush()
-                    stmt = self.new_table.select()
-                    for row in session.scalars(stmt):
-                        print(row)
+                    stmt = "select * from " + self.table_name
+                    print(session.execute(text(stmt)).fetchall())
 
         except MosdexInvalidTableKindPairError as e:
             print(e)

@@ -42,8 +42,7 @@ class MosdexModuleBase(MosdexObjectBase):
 
 
 class MosdexTableBase(MosdexObjectBase):
-    schema_table_name: str
-    data_table_name: str
+    table_name: str
 
     def __init__(self, mosdex_json: dict, mosdex_db:MosdexDB, parent_id: int) -> None:
         super().__init__(mosdex_json, mosdex_db, parent_id)
@@ -60,8 +59,7 @@ class MosdexTableBase(MosdexObjectBase):
             session.flush()
             self.object_id = row.id
 
-        self.data_table_name = mosdex_json["NAME"] + "_data"
-        self.schema_table_name = mosdex_json["NAME"] + "_schema"
+        self.table_name = mosdex_json["NAME"]
 
     def get_data_table_name(self) -> str:
         return self.data_table_name
