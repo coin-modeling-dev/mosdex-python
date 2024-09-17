@@ -117,11 +117,11 @@
           "SCHEMA": {
             "NAME": [
               "Name",
-              "period",
-              "Column",
+              "Period",
+              "ColumnName",
               "LowerBound",
               "UpperBound",
-              "value"
+              "Value"
             ],
             "KIND": [
               "STRING",
@@ -132,8 +132,7 @@
               "DOUBLE"
             ],
             "KEYS": [
-              "Name",
-              "period"
+              "ColumnName"
             ],
             "FOREIGN_KEYS": [
               {
@@ -143,12 +142,12 @@
           },
           "QUERY": {
             "SELECT": [
-              "'regular' AS Name                        -- STRING",
-              "demands.period AS period                 -- INTEGER",
-              "CONCAT('regular','_', demands.period) AS Column  -- STRING",
-              "CAST(0.0 AS DOUBLE) AS LowerBound        -- DOUBLE",
-              "CAST('Infinity' AS DOUBLE) AS UpperBound -- DOUBLE",
-              "'PrimalValue(Column)' AS value           -- DOUBLE_FUNCTION"
+              "'regular', ",
+              "period, ",
+              "CONCAT('regular','_', period), ",
+              "0.0, ",
+              "'Infinity', ",
+              "NULL "
             ],
             "FROM": [
               "demands"
@@ -177,8 +176,7 @@
               "DOUBLE"
             ],
             "KEYS": [
-              "Name",
-              "period"
+              "Column"
             ],
             "FOREIGN_KEYS": [
               {
@@ -222,8 +220,7 @@
               "DOUBLE"
             ],
             "KEYS": [
-              "Name",
-              "period"
+              "Column"
             ],
             "FOREIGN_KEYS": [
               {
@@ -277,8 +274,7 @@
               "DOUBLE"
             ],
             "KEYS": [
-              "Name",
-              "period"
+              "Column"
             ],
             "FOREIGN_KEYS": [
               {
@@ -322,8 +318,7 @@
               "DOUBLE"
             ],
             "KEYS": [
-              "Name",
-              "period"
+              "Column"
             ],
             "FOREIGN_KEYS": [
               {
@@ -353,7 +348,7 @@
           "CLASS": "CONSTRAINT",
           "KIND": "LINEAR",
           "SCHEMA": {
-            "NAMES": [
+            "NAME": [
               "Name",
               "period",
               "Row",
@@ -370,17 +365,11 @@
               "DOUBLE"
             ],
             "KEYS": [
-              "Name",
-              "period"
+              "Row"
             ],
             "FOREIGN_KEYS": [
               {
                 "period": "demands.period"
-              }
-            ],
-            "RELATIONSHIP": [
-              {
-                "RHS": "parameters.capacity"
               }
             ]
           },
@@ -405,7 +394,7 @@
           "CLASS": "CONSTRAINT",
           "KIND": "LINEAR",
           "SCHEMA": {
-            "NAMES": [
+            "NAME": [
               "Name",
               "period",
               "Row",
@@ -422,17 +411,11 @@
               "DOUBLE"
             ],
             "KEYS": [
-              "Name",
-              "period"
+              "Row"
             ],
             "FOREIGN_KEYS": [
               {
                 "period": "demands.period"
-              }
-            ],
-            "RELATIONSHIPS": [
-              {
-                "RHS": "demands.demand"
               }
             ]
           },
@@ -478,23 +461,11 @@
               "DOUBLE_FUNCTION"
             ],
             "KEYS": [
-              "Name",
-              "period"
+              "Row"
             ],
             "FOREIGN_KEYS": [
               {
                 "period": "demand.period"
-              }
-            ],
-            "RELATIONSHIPS": [
-              {
-                "regular_coeff": "parameters.regularCost"
-              },
-              {
-                "extra_coeff": "parameters.extraCost"
-              },
-              {
-                "inventory_coeff": "parameters.inventoryCost"
               }
             ]
           },
@@ -536,26 +507,9 @@
               "DOUBLE",
               "DOUBLE"
             ],
-            "KEYS": [
-              "period"
-            ],
             "FOREIGN_KEYS": [
               {
                 "period": "demands.period"
-              }
-            ],
-            "RELATIONSHIPS": [
-              {
-                "regular": "regular.value"
-              },
-              {
-                "extra": "extra.value"
-              },
-              {
-                "inventory": "inventory.value"
-              },
-              {
-                "marginalCapacityValue": "ctCapacity.dual"
               }
             ]
           },
