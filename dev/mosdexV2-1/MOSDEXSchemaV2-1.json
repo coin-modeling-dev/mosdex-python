@@ -1,0 +1,290 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$id": "https://github.com/JeremyBloom/Optimization-Data-Exchange/blob/master/MOSDEX-2.0/MOSDEXSchemaV2-0.json",
+  "definitions": {
+    "Module": {
+      "title": "Module",
+      "description": "The syntax of a MOSDEX Module",
+      "type": "object",
+      "properties": {
+        "NAME": {
+          "type": "string"
+        },
+        "CLASS": {
+          "type": "string"
+        },
+        "KIND": {
+          "type": "string"
+        },
+        "STAGE": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "HEADING": {
+          "$ref": "#/definitions/Heading"
+        },
+        "SOLVER_PARAMETERS": {
+          "$ref": "#/definitions/SolverParameters"
+        },
+        "PATHS": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/ArrayOfStrings"
+          }
+        },
+        "FOR_EACH": {
+          "$ref": "#/definitions/ForEach"
+        },
+        "TABLES": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Table"
+          },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": true,
+      "required": [
+        "NAME",
+        "CLASS",
+        "HEADING",
+        "TABLES"
+      ]
+    },
+    "ArrayOfStrings": {
+      "title": "ArrayOfStrings",
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "Heading": {
+      "title": "Heading",
+      "type": "object",
+      "properties": {
+        "DESCRIPTION": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        },
+        "VERSION": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        },
+        "REFERENCE": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        },
+        "AUTHOR": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        },
+        "NOTICES": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        },
+        "MATH": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        }
+      },
+      "required": [
+        "DESCRIPTION"
+      ],
+      "additionalProperties": {
+        "$ref": "#/definitions/ArrayOfStrings"
+      }
+    },
+    "SolverParameters": {
+      "title": "SolverParameters",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object"
+      }
+    },
+    "ForEach": {
+      "title": "ForEach",
+      "description": "For each record with field name in table",
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "Table": {
+      "title": "Table",
+      "description": "The syntax of a MOSDEX general table object",
+      "type": "object",
+      "properties": {
+        "NAME": {
+          "type": "string"
+        },
+        "CLASS": {
+          "type": "string"
+        },
+        "KIND": {
+          "type": "string"
+        },
+        "HEADING": {
+          "$ref": "#/definitions/Heading"
+        },
+        "SCHEMA": {
+          "$ref": "#/definitions/Schema"
+        },
+        "INSTANCE": {
+          "$ref": "#/definitions/Instance"
+        },
+        "QUERY": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        },
+        "INITIALIZE": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        },
+        "APPEND": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        },
+        "REVISE": {
+          "$ref": "#/definitions/ArrayOfStrings"
+        }
+      },
+      "required": [
+        "NAME",
+        "CLASS",
+        "KIND",
+        "SCHEMA"
+      ],
+      "oneOf": [
+        {
+          "required": [
+            "INSTANCE"
+          ]
+        },
+        {
+          "required": [
+            "QUERY"
+          ]
+        },
+        {
+          "required": [
+            "INITIALIZE",
+            "APPEND"
+          ]
+        },
+        {
+          "required": [
+            "INITIALIZE",
+            "REVISE"
+          ]
+        }
+      ],
+      "additionalProperties": {
+        "$ref": "#/definitions/ArrayOfStrings"
+      }
+    },
+    "Schema": {
+      "title": "Schema",
+      "type": "object",
+      "properties": {
+        "NAME": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "KIND": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "KEYS": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "FOREIGN_KEYS": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ForeignKey"
+          },
+          "uniqueItems": true
+        },
+        "RELATIONSHIP": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Relationship"
+          }
+        }
+      },
+      "required": [
+        "NAME",
+        "KIND"
+      ],
+      "additionalProperties": {
+        "$ref": "#/definitions/ArrayOfStrings"
+      }
+    },
+    "ForeignKey": {
+      "title": "Foreign Key",
+      "type": "object",
+      "description": "A dictionary, with keys corresponding to columns in table and values corresponding to references to keys in foreign tables",
+      "properties": {
+        "string": {
+          "type": "string"
+        }
+      }
+    },
+    "Relationship": {
+      "title": "Relationship",
+      "type": "object",
+      "description": "A dictionary, with keys corresponding to columns in table and values corresponding to references to column values in foreign tables",
+      "properties": {
+        "string": {
+          "type": "string"
+        }
+      }
+    },
+    "Instance": {
+      "title": "Instance",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Record"
+      }
+    },
+    "Record": {
+      "title": "Record",
+      "type": "array",
+      "items": {
+        "type": [
+          "string",
+          "number",
+          "null"
+        ]
+      }
+    }
+  },
+
+  "title": "MOSDEXFile",
+  "description": "The syntax of MOSDEX: Mathematical Optimization Solver Data EXchange, v 2-0. Copyright © 2022 Jeremy A. Bloom",
+  "type": "object",
+  "properties": {
+    "SYNTAX": {
+      "type": "string",
+      "format": "uri"
+    },
+    "MODULES": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Module"
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "SYNTAX",
+    "MODULES"
+  ],
+  "additionalProperties": true
+}
