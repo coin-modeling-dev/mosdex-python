@@ -85,8 +85,7 @@
           "CLASS": "DATA",
           "KIND": "INPUT",
           "SCHEMA": {
-            "NAME": [
-              "regularCost",
+            "NAME": [ "regularCost",
               "extraCost",
               "capacity",
               "initialInventory",
@@ -101,6 +100,7 @@
             ]
           },
           "INSTANCE": [
+
             [
               400.0,
               450.0,
@@ -116,12 +116,12 @@
           "KIND": "CONTINUOUS",
           "SCHEMA": {
             "NAME": [
-              "Name",
-              "Period",
-              "ColumnName",
-              "LowerBound",
-              "UpperBound",
-              "Value"
+              "name",
+              "period",
+              "colName",
+              "lowerBound",
+              "upperBound",
+              "primalValue"
             ],
             "KIND": [
               "STRING",
@@ -132,7 +132,7 @@
               "DOUBLE"
             ],
             "KEYS": [
-              "ColumnName"
+              "colName"
             ],
             "FOREIGN_KEYS": [
               {
@@ -140,32 +140,31 @@
               }
             ]
           },
-          "QUERY": {
-            "SELECT": [
-              "'regular', ",
-              "period, ",
-              "CONCAT('regular','_', period), ",
-              "0.0, ",
-              "'Infinity', ",
-              "NULL "
-            ],
-            "FROM": [
-              "demands"
-            ]
-          }
+          "QUERY": [
+            "INSERT INTO regular (name, period, colName, lowerBound, upperBound, primalValue) ",
+            "SELECT ",
+            "'regular', ",
+            "period, ",
+            "CONCAT('regular','_', period), ",
+            "0.0, ",
+            "CAST('Infinity' AS DOUBLE), ",
+            "NULL",
+            "FROM demands"
+          ]
         },
+
         {
           "NAME": "extra",
           "CLASS": "VARIABLE",
           "KIND": "CONTINUOUS",
           "SCHEMA": {
             "NAME": [
-              "Name",
+              "name",
               "period",
-              "Column",
-              "LowerBound",
-              "UpperBound",
-              "value"
+              "colName",
+              "lowerBound",
+              "upperBound",
+              "primalValue"
             ],
             "KIND": [
               "STRING",
@@ -176,7 +175,7 @@
               "DOUBLE"
             ],
             "KEYS": [
-              "Column"
+              "colName"
             ],
             "FOREIGN_KEYS": [
               {
@@ -184,19 +183,17 @@
               }
             ]
           },
-          "QUERY": {
-            "SELECT": [
-              "'extra' AS Name                          -- STRING",
-              "demands.period AS period                 -- INTEGER",
-              "CONCAT('extra','_', demands.period) AS Column    -- STRING",
-              "CAST(0.0 AS DOUBLE) AS LowerBound        -- DOUBLE",
-              "CAST('Infinity' AS DOUBLE) AS UpperBound -- DOUBLE",
-              "'PrimalValue(Column)' AS value           -- DOUBLE_FUNCTION"
-            ],
-            "FROM": [
-              "demands"
-            ]
-          }
+          "QUERY": [
+            "INSERT INTO extra (name, period, colName, lowerBound, upperBound, primalValue) ",
+            "SELECT ",
+            "'extra', ",
+            "period, ",
+            "CONCAT('extra','_', period), ",
+            "0.0, ",
+            "CAST('Infinity' AS DOUBLE), ",
+            "NULL",
+            "FROM demands"
+          ]
         },
         {
           "NAME": "inventory",
@@ -204,12 +201,12 @@
           "KIND": "CONTINUOUS",
           "SCHEMA": {
             "NAME": [
-              "Name",
+              "name",
               "period",
-              "Column",
-              "LowerBound",
-              "UpperBound",
-              "value"
+              "colName",
+              "lowerBound",
+              "upperBound",
+              "primalValue"
             ],
             "KIND": [
               "STRING",
@@ -220,7 +217,7 @@
               "DOUBLE"
             ],
             "KEYS": [
-              "Column"
+              "colName"
             ],
             "FOREIGN_KEYS": [
               {
@@ -228,29 +225,17 @@
               }
             ]
           },
-          "QUERY": {
-            "SELECT": [
-              "'inventory' AS Name                        -- STRING",
-              "demands.period AS period                   -- INTEGER",
-              "CONCAT('inventory','_', demands.period) AS Column  -- STRING",
-              "CAST(0.0 AS DOUBLE) AS LowerBound          -- DOUBLE",
-              "CAST('Infinity' AS DOUBLE) AS UpperBound   -- DOUBLE",
-              "'PrimalValue(Column)' AS value             -- DOUBLE_FUNCTION"
-            ],
-            "FROM": [
-              "demands"
-            ],
-            "INSERT": [
-              "(",
-              "'inventory',",
-              " 0,",
-              " CONCAT('inventory', '_', 0),",
-              " parameters.initialInventory,",
-              " parameters.initialInventory,",
-              " parameters.initialInventory",
-              ")"
-            ]
-          }
+          "QUERY": [
+            "INSERT INTO inventory (name, period, colName, lowerBound, upperBound, primalValue) ",
+            "SELECT ",
+            "'inventory', ",
+            "period, ",
+            "CONCAT('inventory','_', period), ",
+            "0.0, ",
+            "CAST('Infinity' AS DOUBLE), ",
+            "NULL",
+            "FROM demands"
+          ]
         },
         {
           "NAME": "cost",
@@ -258,12 +243,12 @@
           "KIND": "CONTINUOUS",
           "SCHEMA": {
             "NAME": [
-              "Name",
+              "name",
               "period",
-              "Column",
-              "LowerBound",
-              "UpperBound",
-              "value"
+              "colName",
+              "lowerBound",
+              "upperBound",
+              "primalValue"
             ],
             "KIND": [
               "STRING",
@@ -274,7 +259,7 @@
               "DOUBLE"
             ],
             "KEYS": [
-              "Column"
+              "colName"
             ],
             "FOREIGN_KEYS": [
               {
@@ -282,19 +267,17 @@
               }
             ]
           },
-          "QUERY": {
-            "SELECT": [
-              "'cost' AS Name                          -- STRING",
-              "demands.period AS period                 -- INTEGER",
-              "CONCAT('cost','_', demands.period) AS Column    -- STRING",
-              "CAST(0.0 AS DOUBLE) AS LowerBound        -- DOUBLE",
-              "CAST('Infinity' AS DOUBLE) AS UpperBound -- DOUBLE",
-              "'PrimalValue(Column)' AS value           -- DOUBLE_FUNCTION"
-            ],
-            "FROM": [
-              "demands"
-            ]
-          }
+          "QUERY": [
+            "INSERT INTO cost (name, period, colName, lowerBound, upperBound, primalValue) ",
+            "SELECT ",
+            "'cost', ",
+            "period, ",
+            "CONCAT('cost','_', period), ",
+            "0.0, ",
+            "CAST('Infinity' AS DOUBLE), ",
+            "NULL",
+            "FROM demands"
+          ]
         },
         {
           "NAME": "totalCost",
@@ -302,46 +285,29 @@
           "KIND": "CONTINUOUS",
           "SCHEMA": {
             "NAME": [
-              "Name",
-              "period",
-              "Column",
-              "LowerBound",
-              "UpperBound",
-              "value"
+              "colName",
+              "lowerBound",
+              "upperBound",
+              "primalValue"
             ],
             "KIND": [
-              "STRING",
-              "INTEGER",
               "STRING",
               "DOUBLE",
               "DOUBLE",
               "DOUBLE"
             ],
             "KEYS": [
-              "Column"
-            ],
-            "FOREIGN_KEYS": [
-              {
-                "period": "demands.period"
-              }
+              "colName"
             ]
           },
-          "QUERY": {
-            "SELECT": [
-              "'total_cost' AS Name                          -- STRING",
-              "period  AS period                           -- INTEGER",
-              "CONCAT('total_cost','_', demands.period) AS Column    -- STRING",
-              "CAST(0.0 AS DOUBLE) AS LowerBound        -- DOUBLE",
-              "CAST('Infinity' AS DOUBLE) AS UpperBound -- DOUBLE",
-              "'PrimalValue(Column)' AS value           -- DOUBLE_FUNCTION"
-            ],
-            "FROM": [
-              "demands"
-            ],
-            "WHERE": [
-              "period = (SELECT MAX(period) FROM demands)"
-            ]
-          }
+          "QUERY": [
+            "INSERT INTO totalCost (colName, lowerBound, upperBound, primalValue) ",
+            "SELECT ",
+            "'totalCost', ",
+            "0.0, ",
+            "CAST('Infinity' AS DOUBLE), ",
+            "NULL"
+          ]
         },
         {
           "NAME": "ctCapacity",
@@ -349,23 +315,23 @@
           "KIND": "LINEAR",
           "SCHEMA": {
             "NAME": [
-              "Name",
+              "name",
               "period",
-              "Row",
-              "Sense",
-              "RHS",
-              "dual"
+              "rowName",
+              "lowerBound",
+              "upperBound",
+              "dualValue"
             ],
             "KIND": [
               "STRING",
               "INTEGER",
               "STRING",
-              "STRING",
+              "DOUBLE",
               "DOUBLE",
               "DOUBLE"
             ],
             "KEYS": [
-              "Row"
+              "rowName"
             ],
             "FOREIGN_KEYS": [
               {
@@ -373,34 +339,31 @@
               }
             ]
           },
-          "QUERY": {
-            "SELECT": [
-              "'ctCapacity' AS Name                     -- STRING",
-              "demands.period AS period                  -- INTEGER",
-              "CONCAT('ctCapacity','_', demands.period) AS Row  -- STRING",
-              "'<=' AS Sense                            -- STRING",
-              "parameters.capacity AS RHS               -- DOUBLE",
-              "'DualValue(Row)' AS dual                -- DOUBLE_FUNCTION",
-              "CAST(1.0 AS DOUBLE) AS regular_coeff          -- DOUBLE "
-            ],
-            "FROM": [
-              "demands",
-              "parameters"
-            ]
-          }
+          "QUERY": [
+            "INSERT INTO ctCapacity (name, period, rowName, lowerBound, upperBound, dualValue) ",
+            "SELECT ",
+            "'ctCapacity', ",
+            "period, ",
+            "CONCAT('ctCapacity','_', period), ",
+            "0.0, ",
+            "CAST('Infinity' AS DOUBLE), ",
+            "NULL",
+            "FROM demands"
+          ]
         },
+
         {
           "NAME": "ctBoat",
           "CLASS": "CONSTRAINT",
           "KIND": "LINEAR",
           "SCHEMA": {
             "NAME": [
-              "Name",
+              "name",
               "period",
-              "Row",
-              "Sense",
+              "rowName",
+              "sense",
               "RHS",
-              "dual"
+              "dualValue"
             ],
             "KIND": [
               "STRING",
@@ -411,7 +374,7 @@
               "DOUBLE"
             ],
             "KEYS": [
-              "Row"
+              "rowName"
             ],
             "FOREIGN_KEYS": [
               {
@@ -419,25 +382,91 @@
               }
             ]
           },
-          "QUERY": {
-            "SELECT": [
-              "'ctBoat' AS Name                             -- STRING",
-              "demands.period AS period                     -- INTEGER",
-              "CONCAT('ctBoat','_', demands.period) AS Row  -- STRING",
-              "'==' AS Sense                                -- STRING",
-              "demands.demand - inventory.ancestor AS RHS   -- DOUBLE",
-              "'DualValue(Row)' AS dual                    -- DOUBLE_FUNCTION",
-              "CAST(1.0 AS DOUBLE) AS regular_coeff        -- DOUBLE",
-              "CAST(1.0 AS DOUBLE) AS extra_coeff          -- DOUBLE ",
-              "CAST(1.0 AS DOUBLE) AS inventory_coeff      -- DOUBLE "
-            ],
-            "FROM": [
-              "demands"
-            ],
-            "WHERE": [
-              "ancestor = SELECT( ancestor from demands USING (period))"
+          "QUERY":
+            ["INSERT INTO ctBoat (name, period, rowName, sense, RHS, dualValue )",
+                "SELECT ",
+                "'ctBoat', ",
+                "period, ",
+                "CONCAT('ctBoat','_', period), ",
+                "'==' ,",
+                "CASE ",
+                "WHEN period > 1 THEN 0 ",
+                "WHEN period ==1 THEN initialInventory ",
+                "END, ",
+                "NULL ",
+                "FROM demands, parameters"
             ]
-          }
+        },
+        {
+          "NAME": "ctBoatMatrix",
+          "CLASS": "MATRIX",
+          "KIND": "LINEAR",
+          "SCHEMA": {
+            "NAME": [
+              "period",
+              "rowName",
+              "regularName",
+              "regularCoefficient",
+              "extraName",
+              "extraCoefficient",
+              "inventoryName",
+              "inventoryCoefficient",
+              "laggedInventoryName",
+              "laggedInventoryCoefficient"
+            ],
+            "KIND": [
+              "INTEGER",
+              "STRING",
+              "STRING",
+              "DOUBLE",
+              "STRING",
+              "DOUBLE",
+              "STRING",
+              "DOUBLE",
+              "STRING",
+              "DOUBLE"
+            ],
+            "KEYS": [
+              "rowName"
+            ],
+            "FOREIGN_KEYS": [
+              {
+                "period": "demands.period",
+                "regularName": "regular.colName",
+                "extraName": "extra.colName",
+                "inventoryName": "inventory.colName",
+                "laggedInventoryName": "inventory.colName"
+              }
+            ]
+          },
+          "QUERY":
+            [
+              "INSERT INTO ctBoatMatrix (period, rowName,",
+              " regularName, regularCoefficient, ",
+              " extraName, extraCoefficient, ",
+              " inventoryName, inventoryCoefficient, ",
+              " laggedInventoryName, laggedInventoryCoefficient ) ",
+              "SELECT ",
+                "period AS Period, ",
+                "CONCAT('ctBoat', '_', period) AS RowName, ",
+                "CONCAT('regular','_', period) AS RegularName, ",
+                "1.0 AS RegularCoefficient, ",
+
+                "CONCAT('extra','_', period) AS ExtraName, ",
+                "1.0 AS ExtraCoefficient, ",
+
+                "CONCAT('inventory','_', period) AS InventoryName, ",
+                "-1.0 AS InventoryCoefficient, ",
+
+                "CASE ",
+                "WHEN period > 1 THEN CONCAT('inventory','_', ancestor) ",
+                "ELSE NULL END AS LaggedInventoryName, ",
+                "CASE ",
+                "WHEN period > 1 THEN 1.0 ",
+                "ELSE NULL END AS LaggedInventoryCoefficient ",
+
+                "FROM demands"
+            ]
         },
         {
           "NAME": "ctCost",
@@ -445,48 +474,122 @@
           "KIND": "LINEAR",
           "SCHEMA": {
             "NAME": [
-              "Name",
+              "name",
               "period",
-              "Row",
-              "Constant",
-              "Sense",
-              "Value"
+              "rowName",
+              "sense",
+              "RHS",
+              "dualValue"
             ],
             "KIND": [
               "STRING",
               "INTEGER",
               "STRING",
-              "DOUBLE",
               "STRING",
-              "DOUBLE_FUNCTION"
+              "DOUBLE",
+              "DOUBLE"
             ],
             "KEYS": [
-              "Row"
+              "rowName"
             ],
             "FOREIGN_KEYS": [
               {
-                "period": "demand.period"
+                "period": "demands.period"
               }
             ]
           },
-          "QUERY": {
-            "SELECT": [
-              "'ctCost' AS Name                     -- STRING",
-              "demands.period AS period                  -- INTEGER",
-              "CONCAT('ctCost','_', demands.period) AS Row  -- STRING",
-              "'==' AS Sense                            -- STRING",
-              "CAST(0.0 AS DOUBLE)  AS RHS               -- DOUBLE",
-              "'DualValue(Row)' AS dual                -- DOUBLE_FUNCTION",
-              "CAST(1.0 AS DOUBLE) AS cost_coeff          -- DOUBLE ",
-              "parameters.regularCost AS regular_coeff    -- DOUBLE",
-              "parameters.extraCost AS extra_coeff    -- DOUBLE",
-              "parameters.inventoryCost AS inventory_coeff    -- DOUBLE"
-            ],
-            "FROM": [
-              "demands",
-              "parameters"
+          "QUERY":
+            ["INSERT INTO ctCost (name, period, rowName, sense, RHS, dualValue )",
+                "SELECT ",
+                "'ctCost', ",
+                "period, ",
+                "CONCAT('ctCost','_', period), ",
+                "'==' ,",
+                "0.0",
+                "NULL ",
+                "FROM demands"
             ]
-          }
+        },
+        {
+          "NAME": "ctCostMatrix",
+          "CLASS": "MATRIX",
+          "KIND": "LINEAR",
+          "SCHEMA": {
+            "NAME": [
+              "period",
+              "rowName",
+              "regularName",
+              "regularCoefficient",
+              "extraName",
+              "extraCoefficient",
+              "inventoryName",
+              "inventoryCoefficient",
+              "costName",
+              "costCoefficient",
+              "laggedCostName",
+              "laggedCostCoefficient"
+            ],
+            "KIND": [
+              "INTEGER",
+              "STRING",
+              "STRING",
+              "DOUBLE",
+              "STRING",
+              "DOUBLE",
+              "STRING",
+              "DOUBLE",
+              "STRING",
+              "DOUBLE",
+              "STRING",
+              "DOUBLE"
+            ],
+            "KEYS": [
+              "rowName"
+            ],
+            "FOREIGN_KEYS": [
+              {
+                "period": "demands.period",
+                "regularName": "regular.colName",
+                "extraName": "extra.colName",
+                "inventoryName": "inventory.colName",
+                "costName": "cost.colName",
+                "laggedCostName": "cost.colName"
+              }
+            ]
+          },
+          "QUERY":
+            [
+              "INSERT INTO ctCostMatrix (period, rowName,",
+              " regularName, regularCoefficient, ",
+              " extraName, extraCoefficient, ",
+              " inventoryName, inventoryCoefficient, ",
+              " costName, costCoefficient, ",
+              " laggedCostName, laggedCostCoefficient )",
+              "SELECT ",
+                "period, ",
+                "CONCAT('ctBoat', '_', period), ",
+                "CONCAT('regular','_', period), ",
+                "regularCost, ",
+
+                "CONCAT('extra','_', period), ",
+                "extraCost, ",
+
+                "CONCAT('inventory','_', period), ",
+                "inventoryCost, ",
+
+              "CONCAT('cost', '_', period), ",
+              "-1.0, ",
+
+              "CASE ",
+                "WHEN period > 1 THEN CONCAT('cost','_', ancestor) ",
+                "ELSE NULL END , ",
+                "CASE ",
+                "WHEN period > 1 THEN 1.0 ",
+                "ELSE NULL END ",
+
+
+                "FROM demands, parameters"
+            ]
         },
         {
           "NAME": "production",
@@ -513,42 +616,21 @@
               }
             ]
           },
-          "QUERY": {
-            "SELECT": [
+          "QUERY": [
+            "SELECT",
               "demands.period AS period",
               "regular.Value AS regular",
               "extra.Value AS extra",
               "inventory.Value AS inventory",
-              "ctCapacity.dual AS marginalCapacityValue"
-            ],
-            "FROM": [
-              "demands"
-            ],
-            "JOIN": [
-              "regular"
-            ],
-            "USING": [
-              "(period)"
-            ],
-            "JOIN#2": [
-              "extra"
-            ],
-            "USING#2": [
-              "(period)"
-            ],
-            "JOIN#3": [
-              "inventory"
-            ],
-            "USING#3": [
-              "(period)"
-            ],
-            "JOIN#4": [
-              "ctCapacity"
-            ],
-            "USING#4": [
-              "(period)"
+              "ctCapacity.dual AS marginalCapacityValue",
+
+            "FROM demands",
+            "JOIN regular USING (period)",
+            "JOIN#2  extra USING#2 (period)",
+            "JOIN#3 inventory USING#3 (period)",
+            "JOIN#4 ctCapacity USING#4(period)"
             ]
-          }
+
         }
       ]
     }

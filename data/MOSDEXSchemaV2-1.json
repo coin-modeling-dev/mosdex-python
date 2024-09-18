@@ -134,16 +134,16 @@
           "$ref": "#/definitions/Instance"
         },
         "QUERY": {
-          "$ref": "#/definitions/Query"
+          "$ref": "#/definitions/ArrayOfStrings"
         },
         "INITIALIZE": {
-          "$ref": "#/definitions/Query"
+          "$ref": "#/definitions/ArrayOfStrings"
         },
         "APPEND": {
-          "$ref": "#/definitions/Query"
+          "$ref": "#/definitions/ArrayOfStrings"
         },
         "REVISE": {
-          "$ref": "#/definitions/Query"
+          "$ref": "#/definitions/ArrayOfStrings"
         }
       },
       "required": [
@@ -263,26 +263,9 @@
           "null"
         ]
       }
-    },
-    "Query": {
-      "title": "Query",
-      "type": "object",
-      "additionalProperties": {
-        "$ref": "#/definitions/Predicate"
-      }
-    },
-    "Predicate": {
-      "title": "Predicate",
-      "oneOf": [
-        {
-          "$ref": "#/definitions/ArrayOfStrings"
-        },
-        {
-          "$ref": "#/definitions/Query"
-        }
-      ]
     }
   },
+
   "title": "MOSDEXFile",
   "description": "The syntax of MOSDEX: Mathematical Optimization Solver Data EXchange, v 2-0. Copyright © 2022 Jeremy A. Bloom",
   "type": "object",
