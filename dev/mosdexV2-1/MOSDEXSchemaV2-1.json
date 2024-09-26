@@ -255,6 +255,13 @@
     },
     "Query": {
       "title": "Query",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Statement"
+      }
+    },
+    "Statement": {
+      "title": "Statement",
       "type": "object",
       "additionalProperties": {"$ref": "#/definitions/Predicate"}
     },
@@ -263,7 +270,7 @@
       "title": "Predicate",
       "oneOf": [
         {"$ref": "#/definitions/ArrayOfStrings"},
-        {"$ref": "#/definitions/Query"}
+        {"$ref": "#/definitions/Statement"}
       ]
     },
     "Record": {
