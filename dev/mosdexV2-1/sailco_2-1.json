@@ -45,7 +45,7 @@
           "SCHEMA": {
             "NAME": [
               "state",
-              "ancestor",
+              "parent",
               "period"
             ],
             "KIND": [
@@ -440,7 +440,7 @@
                 "regular ON regular.state = states.state",
                 "extra ON extra.state = states.state",
                 "inventory i1 ON i1.state = states.state",
-                "inventory i2 ON i2.state = states.ancestor"
+                "inventory i2 ON i2.state = states.parent"
               ],
               "WHERE": [
                 "states.state > 1"
@@ -588,7 +588,7 @@
                 "extra ON extra.state = states.state",
                 "inventory ON inventory.state = states.state",
                 "cost c1 ON c1.state = states.state",
-                "cost c2 ON c2.state = states.ancestor"
+                "cost c2 ON c2.state = states.parent"
               ],
               "WHERE": [
                 "states.state > 1"
