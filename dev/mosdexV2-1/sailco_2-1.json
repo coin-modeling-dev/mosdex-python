@@ -344,9 +344,8 @@
                 "parameters.initialInventory AS RHS",
                 " NULL AS dualValue"
               ],
-              "FROM": ["states"],
-              "JOIN": ["parameters"],
-              "WHERE": ["states.state == 1"]
+              "FROM": ["states", "parameters"],
+              "WHERE": ["states.state = 1"]
             },
             {
               "SELECT":
@@ -356,8 +355,7 @@
                 "'==' AS sense",
                 "0.0 AS RHS",
                 " NULL AS dualValue"],
-              "FROM": ["states"],
-              "JOIN": ["parameters"],
+              "FROM": ["states", "parameters"],
               "WHERE": ["states.state > 1"]
             }
           ]
@@ -416,7 +414,7 @@
                 "inventory i1 ON i1.state = states.state"
               ],
               "WHERE": [
-                "states.state == 1"
+                "states.state = 1"
               ]
             },
             {
@@ -556,7 +554,7 @@
                 "cost c1 ON c1.state = states.state"
               ],
               "WHERE": [
-                "states.state == 1"
+                "states.state = 1"
               ]
             },
             {

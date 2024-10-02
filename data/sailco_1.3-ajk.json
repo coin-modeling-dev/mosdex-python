@@ -651,13 +651,13 @@
         {
           "DIRECTIVE": "WHERE",
           "PREDICATE": [
-            "sailco_demands.period == 1"
+            "sailco_demands.period = 1"
           ]
         },
         {
           "DIRECTIVE": "AND",
           "PREDICATE": [
-            "sailco_parameters.Parameter == 'initialInventory'"
+            "sailco_parameters.Parameter = 'initialInventory'"
           ]
         }
       ],
