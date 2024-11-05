@@ -7,13 +7,13 @@
       "KIND": "MODEL",
       "HEADING": {
         "DESCRIPTION": [
-          "inv problem with Lag decision variables"
+          "Inventory problem with lagged decision variables"
         ],
         "VERSION": [
           "2-0"
         ],
         "REFERENCE": [
-          "https://www.ibm.com/support/knowledgecenter/SSSA5P_12.7.1/ilog.odms.ide.help/OPL_Studio/opllanguser/topics/opl_languser_app_areas_pwl_inv.html"
+          "https://www.ibm.com/support/knowledgecenter/SSSA5P_12.7.1/ilog.odms.ide.help/OPL_Studio/opllanguser/topics/opl_languser_app_areas_pwl_inventory.html"
         ],
         "AUTHOR": [
           "Jeremy A. Bloom (jeremyblmca@gmail.com)"
@@ -25,19 +25,50 @@
           "minimize TotalCost",
           "subject to {",
           "forall( t in Periods )",
-          "ctCapacity[t]: RP[t] <= Capacity;",
+          "ctCapacity[t]: Regular[t] <= Capacity;",
           "forall( t in Periods )",
           "ctBoat[t]:",
-          "inv[t]  + RP[t] + EP[t] == inv[t-1] - Demand[t];",
+          "Inventory[t]  + Regular[t] + Extra[t] == Inventory[t-1] - Demand[t];",
           "forall( t in Periods)",
           "ctCost[t]:",
-          "Cost[t] - RPCost * RP[t] - EPCost * EP[t] - invCost * inv[t] == 0.0 ",
+          "Cost[t] - RegularCost * Regular[t] - ExtraCost * Extra[t] - InventoryCost * Inventory[t] == 0.0 ",
           "ctTotalCost:",
           "TotalCost - sum ( t in Periods) Cost[t] == 0.0",
           "}"
         ]
       },
       "TABLES": [
+        {
+          "NAME": "states",
+          "CLASS": "TREE",
+          "KIND": "INPUT",
+          "SCHEMA": {
+            "NAME": [
+              "state",
+              "ancestor",
+              "period"
+            ],
+            "KIND": [
+              "INTEGER",
+              "INTEGER",
+              "INTEGER"
+            ],
+            "KEYS": [
+              "state"
+            ],
+            "FOREIGN_KEYS": [
+              {
+                "period": "demands.period"
+              }
+            ]
+          },
+          "INSTANCE": [
+            [1, 0, 1],
+            [2, 1, 2],
+            [3, 2, 3],
+            [4, 3, 4]
+          ]
+        },
         {
           "NAME": "demands",
           "CLASS": "DATA",
@@ -80,11 +111,11 @@
           "KIND": "INPUT",
           "SCHEMA": {
             "NAME": [
-              "RPCost",
-              "EPCost",
+              "regularCost",
+              "extraCost",
               "capacity",
-              "initialinv",
-              "invCost"
+              "initialInventory",
+              "inventoryCost"
             ],
             "KIND": [
               "DOUBLE",
@@ -106,13 +137,13 @@
           ]
         },
         {
-          "NAME": "RP",
+          "NAME": "regular",
           "CLASS": "VARIABLE",
           "KIND": "CONTINUOUS",
           "SCHEMA": {
             "NAME": [
-              "period",
-              "Col",
+              "state",
+              "colName",
               "lowerBound",
               "upperBound",
               "primalValue"
@@ -125,11 +156,11 @@
               "DOUBLE"
             ],
             "KEYS": [
-              "Col"
+              "colName"
             ],
             "FOREIGN_KEYS": [
               {
-                "period": "demands.period"
+                "state": "states.state"
               }
             ]
           },
@@ -137,24 +168,24 @@
             {
               "SELECT":
               [
-                "demands.period AS period",
-                "CONCAT('RP', '_', period) AS Col",
+                "states.state AS state",
+                "CONCAT('regular', '_', state) AS colName",
                 "0.0 AS lowerBound",
                 "parameters.capacity AS upperBound",
                 "NULL AS primalValue"
               ],
-              "FROM": [ "demands", "parameters" ]
+              "FROM": [ "states", "parameters" ]
             }
           ]
         },
         {
-          "NAME": "EP",
+          "NAME": "extra",
           "CLASS": "VARIABLE",
           "KIND": "CONTINUOUS",
           "SCHEMA": {
             "NAME": [
-              "period",
-              "Col",
+              "state",
+              "colName",
               "lowerBound",
               "upperBound",
               "primalValue"
@@ -167,11 +198,11 @@
               "DOUBLE"
             ],
             "KEYS": [
-              "Col"
+              "colName"
             ],
             "FOREIGN_KEYS": [
               {
-                "period": "demands.period"
+                "state": "states.state"
               }
             ]
           },
@@ -179,24 +210,24 @@
               {
               "SELECT":
               [
-                "period AS period",
-                "CONCAT('EP', '_', period) AS Col",
+                "state AS state",
+                "CONCAT('extra', '_', state) AS colName",
                 "0.0 AS lowerBound",
                 "'Infinity' AS upperBound",
                 "NULL as primalValue"
               ],
-              "FROM": [ "demands" ]
+              "FROM": [ "states" ]
             }
           ]
         },
         {
-          "NAME": "inv",
+          "NAME": "inventory",
           "CLASS": "VARIABLE",
           "KIND": "CONTINUOUS",
           "SCHEMA": {
             "NAME": [
-              "period",
-              "Col",
+              "state",
+              "colName",
               "lowerBound",
               "upperBound",
               "primalValue"
@@ -209,11 +240,11 @@
               "DOUBLE"
             ],
             "KEYS": [
-              "Col"
+              "colName"
             ],
             "FOREIGN_KEYS": [
               {
-                "period": "demands.period"
+                "state": "states.state"
               }
             ]
           },
@@ -221,13 +252,13 @@
               {
               "SELECT":
               [
-                "demands.period AS period",
-                "CONCAT('inv', '_', period) AS Col",
+                "state AS state",
+                "CONCAT('inventory', '_', state) AS colName",
                 "0.0 AS lowerBound",
                 "'Infinity' AS upperBound",
                 "NULL AS primalValue"
               ],
-              "FROM": [ "demands" ]
+              "FROM": [ "states" ]
             }
           ]
         },
@@ -237,8 +268,8 @@
           "KIND": "CONTINUOUS",
           "SCHEMA": {
             "NAME": [
-              "period",
-              "Col",
+              "state",
+              "colName",
               "lowerBound",
               "upperBound",
               "primalValue"
@@ -251,38 +282,38 @@
               "DOUBLE"
             ],
             "KEYS": [
-              "Col"
+              "colName"
             ],
             "FOREIGN_KEYS": [
               {
-                "period": "demands.period"
+                "state": "states.state"
               }
             ]
           },
           "QUERY": [
             {
               "SELECT": [
-                "demands.period AS period",
-                "CONCAT('cost', '_', period) AS Col",
+                "state AS state",
+                "CONCAT('cost', '_', state) AS colName",
                 "0.0 as lowerBound",
                 "'Infinity' AS upperBound",
                 "NULL AS primalValue"
               ],
               "FROM": [
-                "demands"
+                "states"
               ]
             }
           ]
         },
 
         {
-          "NAME": "ctinv",
+          "NAME": "ctInventory",
           "CLASS": "CONSTRAINT",
           "KIND": "LINEAR",
           "SCHEMA": {
             "NAME": [
-              "period",
-              "row",
+              "state",
+              "rowName",
               "sense",
               "RHS",
               "dualValue"
@@ -295,11 +326,11 @@
               "DOUBLE"
             ],
             "KEYS": [
-              "row"
+              "rowName"
             ],
             "FOREIGN_KEYS": [
               {
-                "period": "demands.period"
+                "state": "states.state"
               }
             ]
           },
@@ -307,46 +338,46 @@
             {
               "SELECT":
               [
-                "demands.period AS period",
-                "CONCAT('ctinv','_',period) AS row",
+                "state AS state",
+                "CONCAT('ctInventory','_',state) AS rowName",
                 "'==' AS sense",
-                "demands.demand - parameters.initialinv AS RHS",
+                "parameters.initialInventory AS RHS",
                 " NULL AS dualValue"
               ],
-              "FROM": ["demands"],
+              "FROM": ["states"],
               "JOIN": ["parameters"],
-              "WHERE": ["demands.period == 1"]
+              "WHERE": ["states.state == 1"]
             },
             {
               "SELECT":
               [
-                "demands.period AS period",
-                "CONCAT('ctinv','_',period) AS row",
+                "state AS state",
+                "CONCAT('ctInventory','_',state) AS rowName",
                 "'==' AS sense",
-                "demands.demand AS RHS",
+                "0.0 AS RHS",
                 " NULL AS dualValue"],
-              "FROM": ["demands"],
+              "FROM": ["states"],
               "JOIN": ["parameters"],
-              "WHERE": ["demands.period > 1"]
+              "WHERE": ["states.state > 1"]
             }
           ]
         },
         {
-          "NAME": "ctinvMat",
+          "NAME": "ctInventoryMatrix",
           "CLASS": "MATRIX",
           "KIND": "LINEAR",
           "SCHEMA": {
             "NAME": [
-              "period",
-              "row",
-              "RPCol",
-              "RPCoeff",
-              "EPCol",
-              "EPCoeff",
-              "invCol",
-              "invCoeff",
-              "LaginvCol",
-              "LaginvCoeff"
+              "state",
+              "rowName",
+              "regularName",
+              "regularCoefficient",
+              "extraName",
+              "extraCoefficient",
+              "inventoryName",
+              "inventoryCoefficient",
+              "laggedInventoryName",
+              "laggedInventoryCoefficient"
             ],
             "KIND": [
               "INTEGER",
@@ -364,55 +395,55 @@
           "QUERY": [
             {
               "SELECT": [
-                "demands.period AS period",
-                "ctinv.row AS row",
-                "RP.Col AS RPCol",
-                "1.0 AS RPCoeff",
-                "EP.Col AS EPCol",
-                "1.0 AS EPCoeff",
-                "i1.Col AS invCol",
-                "-1.0 AS invCoeff",
-                "NULL AS LaginvCol",
-                "NULL AS LaginvCoeff "
+                "states.state AS state",
+                "ctInventory.rowName AS RowName",
+                "regular.colName AS RegularName",
+                "1.0 AS RegularCoefficient",
+                "extra.colName AS ExtraName",
+                "1.0 AS ExtraCoefficient",
+                "i1.colName AS InventoryName",
+                "-1.0 AS InventoryCoefficient",
+                "NULL AS LaggedInventoryName",
+                "NULL AS LaggedInventoryCoefficient "
               ],
               "FROM": [
-                "demands"
+                "states"
               ],
               "JOIN": [
-                "ctinv ON ctinv.period = demands.period",
-                "RP ON RP.period = demands.period",
-                "EP ON EP.period = demands.period",
-                "inv i1 ON i1.period = demands.period"
+                "ctInventory ON ctInventory.state = states.state",
+                "regular ON regular.state = states.state",
+                "extra ON extra.state = states.state",
+                "inventory i1 ON i1.state = states.state"
               ],
               "WHERE": [
-                "demands.period == 1"
+                "states.state == 1"
               ]
             },
             {
               "SELECT": [
-                "demands.period AS period",
-                "ctinv.row AS row",
-                "RP.Col AS RPCol",
-                "1.0 AS RPCoeff",
-                "EP.Col AS EPCol",
-                "1.0 AS EPCoeff",
-                "i1.Col AS invCol",
-                "-1.0 AS invCoeff",
-                "i2.Col AS LaginvCol",
-                "1.0 AS LaginvCoeff "
+                "states.state AS state",
+                "ctInventory.rowName AS RowName",
+                "regular.colName AS RegularName",
+                "1.0 AS RegularCoefficient",
+                "extra.colName AS ExtraName",
+                "1.0 AS ExtraCoefficient",
+                "i1.colName AS InventoryName",
+                "-1.0 AS InventoryCoefficient",
+                "i2.colName AS LaggedInventoryName",
+                "1.0 AS LaggedInventoryCoefficient "
               ],
               "FROM": [
-                "demands"
+                "states"
               ],
               "JOIN": [
-                "ctinv ON ctinv.period = demands.period",
-                "RP ON RP.period = demands.period",
-                "EP ON EP.period = demands.period",
-                "inv i1 ON i1.period = demands.period",
-                "inv i2 ON i2.period = demands.period - 1"
+                "ctInventory ON ctInventory.state = states.state",
+                "regular ON regular.state = states.state",
+                "extra ON extra.state = states.state",
+                "inventory i1 ON i1.state = states.state",
+                "inventory i2 ON i2.state = states.ancestor"
               ],
               "WHERE": [
-                "demands.period > 1"
+                "states.state > 1"
               ]
             }
           ]
@@ -423,8 +454,8 @@
           "KIND": "LINEAR",
           "SCHEMA": {
             "NAME": [
-              "period",
-              "row",
+              "state",
+              "rowName",
               "sense",
               "RHS",
               "dualValue"
@@ -437,45 +468,45 @@
               "DOUBLE"
             ],
             "KEYS": [
-              "row"
+              "rowName"
             ],
             "FOREIGN_KEYS": [
               {
-                "period": "demands.period"
+                "state": "states.state"
               }
             ]
           },
           "QUERY": [
             {
               "SELECT": [
-                "period AS period",
-                "CONCAT('ctCost','_', period) AS row",
+                "state AS state",
+                "CONCAT('ctCost','_', state) AS rowName",
                 "'==' AS sense",
                 "0.0 as RHS",
                 "NULL as dualValue"
               ],
-              "FROM": ["demands"]
+              "FROM": ["states"]
             }
           ]
         },
         {
-          "NAME": "ctCostMat",
+          "NAME": "ctCostMatrix",
           "CLASS": "MATRIX",
           "KIND": "LINEAR",
           "SCHEMA": {
             "NAME": [
-              "period",
-              "row",
-              "RPCol",
-              "RPCoeff",
-              "EPCol",
-              "EPCoeff",
-              "invCol",
-              "invCoeff",
-              "CostCol",
-              "costCoeff",
-              "LagCostCol",
-              "LagCostCoeff"
+              "state",
+              "rowName",
+              "regularName",
+              "regularCoefficient",
+              "extraName",
+              "extraCoefficient",
+              "inventoryName",
+              "inventoryCoefficient",
+              "costName",
+              "costCoefficient",
+              "laggedCostName",
+              "laggedCostCoefficient"
             ],
             "KIND": [
               "INTEGER",
@@ -496,71 +527,71 @@
 
             {
               "SELECT": [
-                "demands.period AS period",
-                "ctCost.row as row",
+                "states.state AS state",
+                "ctCost.rowName as RowName",
 
-                  "RP.Col as RPCol",
-                  "parameters.RPCost AS RPCoeff",
+                  "regular.colName as RegularName",
+                  "parameters.regularCost AS RegularCoefficient",
 
-                  "EP.Col as EPCol",
-                  "parameters.EPCost AS EPCoeff",
+                  "extra.colName as ExtraName",
+                  "parameters.extraCost AS ExtraCoefficient",
 
-                  "inv.Col AS invCol",
-                  "parameters.invCost AS invCoeff",
+                  "inventory.colName AS InventoryName",
+                  "parameters.inventoryCost AS InventoryCoefficient",
 
-                "c1.Col AS CostCol",
-                "-1.0 AS CostCoeff",
+                "c1.colName AS CostName",
+                "-1.0 AS CostCoefficient",
 
-                "NULL AS LagCostCol",
-                "NULL AS LagCostCoeff "
+                "NULL AS LaggedCostName",
+                "NULL AS LaggedCostCoefficient "
               ],
               "FROM": [
-                "parameters", "demands"
+                "parameters", "states"
               ],
               "JOIN": [
-                "ctCost ON ctCost.period = demands.period",
-                "RP ON RP.period = demands.period",
-                "EP ON EP.period = demands.period",
-                "inv ON inv.period = demands.period",
-                "cost c1 ON c1.period = demands.period"
+                "ctCost ON ctCost.state = states.state",
+                "regular ON regular.state = states.state",
+                "extra ON extra.state = states.state",
+                "inventory ON inventory.state = states.state",
+                "cost c1 ON c1.state = states.state"
               ],
               "WHERE": [
-                "demands.period == 1"
+                "states.state == 1"
               ]
             },
             {
               "SELECT": [
-                "demands.period AS period",
-                "ctCost.row as row",
+                "states.state AS state",
+                "ctCost.rowName as RowName",
 
-                  "RP.Col as RPCol",
-                  "parameters.RPCost AS RPCoeff",
+                  "regular.colName as RegularName",
+                  "parameters.regularCost AS RegularCoefficient",
 
-                  "EP.Col as EPCol",
-                  "parameters.EPCost AS EPCoeff",
+                  "extra.colName as ExtraName",
+                  "parameters.extraCost AS ExtraCoefficient",
 
-                  "inv.Col AS invCol",
-                  "parameters.invCost AS invCoeff",
+                  "inventory.colName AS InventoryName",
+                  "parameters.inventoryCost AS InventoryCoefficient",
 
-                "c1.Col AS CostCol",
-                "-1.0 AS CostCoeff",
+                "c1.colName AS CostName",
+                "-1.0 AS CostCoefficient",
 
-                "c2.Col AS LagCostCol",
-                "1.0 AS LagCostCoeff "
+                "c2.colName AS LaggedCostName",
+                "1.0 AS LaggedCostCoefficient "
               ],
               "FROM": [
-                "parameters", "demands"
+                "parameters", "states"
               ],
               "JOIN": [
-                "ctCost ON ctCost.period = demands.period",
-                "RP ON RP.period = demands.period",
-                "EP ON EP.period = demands.period",
-                "inv ON inv.period = demands.period",
-                "cost c1 ON c1.period = demands.period",
-                "cost c2 ON c2.period = demands.period - 1"
+                "ctCost ON ctCost.state = states.state",
+                "regular ON regular.state = states.state",
+                "extra ON extra.state = states.state",
+                "inventory ON inventory.state = states.state",
+                "cost c1 ON c1.state = states.state",
+                "cost c2 ON c2.state = states.ancestor"
               ],
               "WHERE": [
-                "demands.period > 1"
+                "states.state > 1"
               ]
             }
           ]

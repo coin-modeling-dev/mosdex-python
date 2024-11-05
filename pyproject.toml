@@ -11,9 +11,7 @@ python = "^3.11"
 records = "^0.6.0"
 pandas = "^2.2.2"
 jsonschema = "^4.23.0"
-duckdb = "^1.1.1"
-duckdb-engine = "^0.13.2"
-
+prettytable = "^3.11.0"
 
 [build-system]
 requires = ["poetry-core"]
