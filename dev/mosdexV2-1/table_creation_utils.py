@@ -11,6 +11,6 @@ def create_tables(model: dict):
         }
 
         # Dynamically create table classes using MosdexTable
-        db_tables[table_['NAME']] = MosdexTable.from_schema(table_metadata)
+        db_tables[table_['NAME']] = MosdexTable.apply_schema(table_metadata)
 
     return db_tables
