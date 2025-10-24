@@ -1,18 +1,22 @@
-[tool.poetry]
+[project]
 name = "mosdex-python"
-version = "0.1.1"
+version = "0.2.1"
 description = "python project for testing Mosdex"
-authors = ["Alan King <kingaj@us.ibm.com>"]
+authors = [{name = "Alan King", email = "alan.king@ars-proba.net"}]
 license = "MIT"
 readme = "README.md"
 
-[tool.poetry.dependencies]
-python = "^3.11"
-records = "^0.6.0"
-pandas = "^2.2.2"
-jsonschema = "^4.23.0"
-prettytable = "^3.11.0"
+requires-python = ">= 3.9"
+dependencies = ["sqlalchemy",
+                "prettytable",
+                "pandas",
+                "numpy",]
+
+
+
+[tool.setuptools]
+py-modules = []
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools>=80"]
+build-backend = "setuptools.build_meta"
