@@ -1,0 +1,571 @@
+{
+  "SYNTAX": "MOSDEX/MOSDEX v2-0/MOSDEXSchemaV2-0.json",
+  "MODULES": [
+    {
+      "NAME": "sailco",
+      "CLASS": "MODULE",
+      "KIND": "MODEL",
+      "HEADING": {
+        "DESCRIPTION": [
+          "inv problem with Lag decision variables"
+        ],
+        "VERSION": [
+          "2-0"
+        ],
+        "REFERENCE": [
+          "https://www.ibm.com/support/knowledgecenter/SSSA5P_12.7.1/ilog.odms.ide.help/OPL_Studio/opllanguser/topics/opl_languser_app_areas_pwl_inv.html"
+        ],
+        "AUTHOR": [
+          "Jeremy A. Bloom (jeremyblmca@gmail.com)"
+        ],
+        "NOTICES": [
+          "Copyright 2019 Jeremy A. Bloom"
+        ],
+        "MATH": [
+          "minimize TotalCost",
+          "subject to {",
+          "forall( t in Periods )",
+          "ctCapacity[t]: RP[t] <= Capacity;",
+          "forall( t in Periods )",
+          "ctBoat[t]:",
+          "inv[t]  + RP[t] + EP[t] == inv[t-1] - Demand[t];",
+          "forall( t in Periods)",
+          "ctCost[t]:",
+          "Cost[t] - RPCost * RP[t] - EPCost * EP[t] - invCost * inv[t] == 0.0 ",
+          "ctTotalCost:",
+          "TotalCost - sum ( t in Periods) Cost[t] == 0.0",
+          "}"
+        ]
+      },
+      "TABLES": [
+        {
+          "NAME": "demands",
+          "CLASS": "DATA",
+          "KIND": "INPUT",
+          "SCHEMA": {
+            "NAME": [
+              "period",
+              "demand"
+            ],
+            "KIND": [
+              "INTEGER",
+              "DOUBLE"
+            ],
+            "KEYS": [
+              "period"
+            ]
+          },
+          "INSTANCE": [
+            [
+              1,
+              40.0
+            ],
+            [
+              2,
+              60.0
+            ],
+            [
+              3,
+              75.0
+            ],
+            [
+              4,
+              25.0
+            ]
+          ]
+        },
+        {
+          "NAME": "parameters",
+          "CLASS": "DATA",
+          "KIND": "INPUT",
+          "SCHEMA": {
+            "NAME": [
+              "RPCost",
+              "EPCost",
+              "capacity",
+              "initialinv",
+              "invCost"
+            ],
+            "KIND": [
+              "DOUBLE",
+              "DOUBLE",
+              "DOUBLE",
+              "DOUBLE",
+              "DOUBLE"
+            ]
+          },
+          "INSTANCE": [
+
+            [
+              400.0,
+              450.0,
+              40.0,
+              10.0,
+              20.0
+            ]
+          ]
+        },
+        {
+          "NAME": "RP",
+          "CLASS": "VARIABLE",
+          "KIND": "CONTINUOUS",
+          "SCHEMA": {
+            "NAME": [
+              "period",
+              "Col",
+              "lowerBound",
+              "upperBound",
+              "primalValue"
+            ],
+            "KIND": [
+              "INTEGER",
+              "STRING",
+              "DOUBLE",
+              "DOUBLE",
+              "DOUBLE"
+            ],
+            "KEYS": [
+              "Col"
+            ],
+            "FOREIGN_KEYS": [
+              {
+                "period": "demands.period"
+              }
+            ]
+          },
+          "QUERY": [
+            {
+              "SELECT":
+              [
+                "demands.period AS period",
+                "CONCAT('RP', '_', period) AS Col",
+                "0.0 AS lowerBound",
+                "parameters.capacity AS upperBound",
+                "NULL AS primalValue"
+              ],
+              "FROM": [ "demands", "parameters" ]
+            }
+          ]
+        },
+        {
+          "NAME": "EP",
+          "CLASS": "VARIABLE",
+          "KIND": "CONTINUOUS",
+          "SCHEMA": {
+            "NAME": [
+              "period",
+              "Col",
+              "lowerBound",
+              "upperBound",
+              "primalValue"
+            ],
+            "KIND": [
+              "INTEGER",
+              "STRING",
+              "DOUBLE",
+              "DOUBLE",
+              "DOUBLE"
+            ],
+            "KEYS": [
+              "Col"
+            ],
+            "FOREIGN_KEYS": [
+              {
+                "period": "demands.period"
+              }
+            ]
+          },
+          "QUERY": [
+              {
+              "SELECT":
+              [
+                "period AS period",
+                "CONCAT('EP', '_', period) AS Col",
+                "0.0 AS lowerBound",
+                "'Infinity' AS upperBound",
+                "NULL as primalValue"
+              ],
+              "FROM": [ "demands" ]
+            }
+          ]
+        },
+        {
+          "NAME": "inv",
+          "CLASS": "VARIABLE",
+          "KIND": "CONTINUOUS",
+          "SCHEMA": {
+            "NAME": [
+              "period",
+              "Col",
+              "lowerBound",
+              "upperBound",
+              "primalValue"
+            ],
+            "KIND": [
+              "INTEGER",
+              "STRING",
+              "DOUBLE",
+              "DOUBLE",
+              "DOUBLE"
+            ],
+            "KEYS": [
+              "Col"
+            ],
+            "FOREIGN_KEYS": [
+              {
+                "period": "demands.period"
+              }
+            ]
+          },
+          "QUERY": [
+              {
+              "SELECT":
+              [
+                "demands.period AS period",
+                "CONCAT('inv', '_', period) AS Col",
+                "0.0 AS lowerBound",
+                "'Infinity' AS upperBound",
+                "NULL AS primalValue"
+              ],
+              "FROM": [ "demands" ]
+            }
+          ]
+        },
+        {
+          "NAME": "cost",
+          "CLASS": "VARIABLE",
+          "KIND": "CONTINUOUS",
+          "SCHEMA": {
+            "NAME": [
+              "period",
+              "Col",
+              "lowerBound",
+              "upperBound",
+              "primalValue"
+            ],
+            "KIND": [
+              "INTEGER",
+              "STRING",
+              "DOUBLE",
+              "DOUBLE",
+              "DOUBLE"
+            ],
+            "KEYS": [
+              "Col"
+            ],
+            "FOREIGN_KEYS": [
+              {
+                "period": "demands.period"
+              }
+            ]
+          },
+          "QUERY": [
+            {
+              "SELECT": [
+                "demands.period AS period",
+                "CONCAT('cost', '_', period) AS Col",
+                "0.0 as lowerBound",
+                "'Infinity' AS upperBound",
+                "NULL AS primalValue"
+              ],
+              "FROM": [
+                "demands"
+              ]
+            }
+          ]
+        },
+
+        {
+          "NAME": "ctinv",
+          "CLASS": "CONSTRAINT",
+          "KIND": "LINEAR",
+          "SCHEMA": {
+            "NAME": [
+              "period",
+              "row",
+              "sense",
+              "RHS",
+              "dualValue"
+            ],
+            "KIND": [
+              "INTEGER",
+              "STRING",
+              "STRING",
+              "DOUBLE",
+              "DOUBLE"
+            ],
+            "KEYS": [
+              "row"
+            ],
+            "FOREIGN_KEYS": [
+              {
+                "period": "demands.period"
+              }
+            ]
+          },
+          "QUERY": [
+            {
+              "SELECT":
+              [
+                "demands.period AS period",
+                "CONCAT('ctinv','_',period) AS row",
+                "'==' AS sense",
+                "demands.demand - parameters.initialinv AS RHS",
+                " NULL AS dualValue"
+              ],
+              "FROM": ["demands"],
+              "JOIN": ["parameters"],
+              "WHERE": ["demands.period == 1"]
+            },
+            {
+              "SELECT":
+              [
+                "demands.period AS period",
+                "CONCAT('ctinv','_',period) AS row",
+                "'==' AS sense",
+                "demands.demand AS RHS",
+                " NULL AS dualValue"],
+              "FROM": ["demands"],
+              "JOIN": ["parameters"],
+              "WHERE": ["demands.period > 1"]
+            }
+          ]
+        },
+        {
+          "NAME": "ctinvMat",
+          "CLASS": "MATRIX",
+          "KIND": "LINEAR",
+          "SCHEMA": {
+            "NAME": [
+              "period",
+              "row",
+              "RPCol",
+              "RPCoeff",
+              "EPCol",
+              "EPCoeff",
+              "invCol",
+              "invCoeff",
+              "LaginvCol",
+              "LaginvCoeff"
+            ],
+            "KIND": [
+              "INTEGER",
+              "STRING",
+              "STRING",
+              "DOUBLE",
+              "STRING",
+              "DOUBLE",
+              "STRING",
+              "DOUBLE",
+              "STRING",
+              "DOUBLE"
+            ]
+          },
+          "QUERY": [
+            {
+              "SELECT": [
+                "demands.period AS period",
+                "ctinv.row AS row",
+                "RP.Col AS RPCol",
+                "1.0 AS RPCoeff",
+                "EP.Col AS EPCol",
+                "1.0 AS EPCoeff",
+                "i1.Col AS invCol",
+                "-1.0 AS invCoeff",
+                "NULL AS LaginvCol",
+                "NULL AS LaginvCoeff "
+              ],
+              "FROM": [
+                "demands"
+              ],
+              "JOIN": [
+                "ctinv ON ctinv.period = demands.period",
+                "RP ON RP.period = demands.period",
+                "EP ON EP.period = demands.period",
+                "inv i1 ON i1.period = demands.period"
+              ],
+              "WHERE": [
+                "demands.period == 1"
+              ]
+            },
+            {
+              "SELECT": [
+                "demands.period AS period",
+                "ctinv.row AS row",
+                "RP.Col AS RPCol",
+                "1.0 AS RPCoeff",
+                "EP.Col AS EPCol",
+                "1.0 AS EPCoeff",
+                "i1.Col AS invCol",
+                "-1.0 AS invCoeff",
+                "i2.Col AS LaginvCol",
+                "1.0 AS LaginvCoeff "
+              ],
+              "FROM": [
+                "demands"
+              ],
+              "JOIN": [
+                "ctinv ON ctinv.period = demands.period",
+                "RP ON RP.period = demands.period",
+                "EP ON EP.period = demands.period",
+                "inv i1 ON i1.period = demands.period",
+                "inv i2 ON i2.period = demands.period - 1"
+              ],
+              "WHERE": [
+                "demands.period > 1"
+              ]
+            }
+          ]
+        },
+        {
+          "NAME": "ctCost",
+          "CLASS": "CONSTRAINT",
+          "KIND": "LINEAR",
+          "SCHEMA": {
+            "NAME": [
+              "period",
+              "row",
+              "sense",
+              "RHS",
+              "dualValue"
+            ],
+            "KIND": [
+              "INTEGER",
+              "STRING",
+              "STRING",
+              "DOUBLE",
+              "DOUBLE"
+            ],
+            "KEYS": [
+              "row"
+            ],
+            "FOREIGN_KEYS": [
+              {
+                "period": "demands.period"
+              }
+            ]
+          },
+          "QUERY": [
+            {
+              "SELECT": [
+                "period AS period",
+                "CONCAT('ctCost','_', period) AS row",
+                "'==' AS sense",
+                "0.0 as RHS",
+                "NULL as dualValue"
+              ],
+              "FROM": ["demands"]
+            }
+          ]
+        },
+        {
+          "NAME": "ctCostMat",
+          "CLASS": "MATRIX",
+          "KIND": "LINEAR",
+          "SCHEMA": {
+            "NAME": [
+              "period",
+              "row",
+              "RPCol",
+              "RPCoeff",
+              "EPCol",
+              "EPCoeff",
+              "invCol",
+              "invCoeff",
+              "CostCol",
+              "costCoeff",
+              "LagCostCol",
+              "LagCostCoeff"
+            ],
+            "KIND": [
+              "INTEGER",
+              "STRING",
+              "STRING",
+              "DOUBLE",
+              "STRING",
+              "DOUBLE",
+              "STRING",
+              "DOUBLE",
+              "STRING",
+              "DOUBLE",
+              "STRING",
+              "DOUBLE"
+            ]
+          },
+          "QUERY": [
+
+            {
+              "SELECT": [
+                "demands.period AS period",
+                "ctCost.row as row",
+
+                  "RP.Col as RPCol",
+                  "parameters.RPCost AS RPCoeff",
+
+                  "EP.Col as EPCol",
+                  "parameters.EPCost AS EPCoeff",
+
+                  "inv.Col AS invCol",
+                  "parameters.invCost AS invCoeff",
+
+                "c1.Col AS CostCol",
+                "-1.0 AS CostCoeff",
+
+                "NULL AS LagCostCol",
+                "NULL AS LagCostCoeff "
+              ],
+              "FROM": [
+                "parameters", "demands"
+              ],
+              "JOIN": [
+                "ctCost ON ctCost.period = demands.period",
+                "RP ON RP.period = demands.period",
+                "EP ON EP.period = demands.period",
+                "inv ON inv.period = demands.period",
+                "cost c1 ON c1.period = demands.period"
+              ],
+              "WHERE": [
+                "demands.period == 1"
+              ]
+            },
+            {
+              "SELECT": [
+                "demands.period AS period",
+                "ctCost.row as row",
+
+                  "RP.Col as RPCol",
+                  "parameters.RPCost AS RPCoeff",
+
+                  "EP.Col as EPCol",
+                  "parameters.EPCost AS EPCoeff",
+
+                  "inv.Col AS invCol",
+                  "parameters.invCost AS invCoeff",
+
+                "c1.Col AS CostCol",
+                "-1.0 AS CostCoeff",
+
+                "c2.Col AS LagCostCol",
+                "1.0 AS LagCostCoeff "
+              ],
+              "FROM": [
+                "parameters", "demands"
+              ],
+              "JOIN": [
+                "ctCost ON ctCost.period = demands.period",
+                "RP ON RP.period = demands.period",
+                "EP ON EP.period = demands.period",
+                "inv ON inv.period = demands.period",
+                "cost c1 ON c1.period = demands.period",
+                "cost c2 ON c2.period = demands.period - 1"
+              ],
+              "WHERE": [
+                "demands.period > 1"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
